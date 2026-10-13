@@ -1,2 +1,3 @@
 # hike-register
-Uni project, an appliction to regsiter hikes. Made in java
+An uni project. Application to register hikes.
+- Made in java
