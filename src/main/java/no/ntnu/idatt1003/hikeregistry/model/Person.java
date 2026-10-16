@@ -7,6 +7,7 @@ public class Person {
     private int id = 0;
     private final String firstName; // egen variabel for fornavn
     private final String lastName; // egen variabel for etternavn
+    // private final String gender;
     private String hikeGroup; // hvis personen er i en tur-gruppe kan han/hun notere det her får å få det på aktivtetene sine. Gir også mulighet for å etterhvert sortere etter tur-grupper
     private final Random r = new Random();
 
@@ -16,6 +17,7 @@ public class Person {
     public Person(String firstName, String lastName, String hikeGroup){
         this.firstName = firstName;
         this.lastName = lastName;
+        // this.gender = gender;
         this.hikeGroup = hikeGroup;
         this.id = r.nextInt(10,99);
     }
@@ -27,6 +29,8 @@ public class Person {
     public Person(String firstName, String lastName){
         this.firstName = firstName;
         this.lastName = lastName;
+        // this.gender = gender;
+        this.id = r.nextInt(10,99);
     }
 
     /** 
@@ -50,6 +54,11 @@ public class Person {
     public String getFullName(){
         return lastName + ", " + firstName;
     }
+
+    // returns gender
+    // public String getGender(){
+    //     return gender;
+    // }
 
     // returnere navnet på tur-gruppen
     public String getHikeGroup(){

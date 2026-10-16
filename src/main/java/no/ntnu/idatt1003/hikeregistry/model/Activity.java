@@ -14,10 +14,26 @@ public class Activity {
 
     // deklarerre variablene
     public Activity(String title, String description, double distanceKm, int rating, LocalDateTime timeRegistered, Person logger, int id){
+        if (title == null) {
+            throw new IllegalArgumentException("Activity must have a title!");
+        }
         this.title = title;
+
+        if (description == null){
+            throw new IllegalArgumentException("Activity must have a description!");
+        }
         this.description = description;
+
+        if (Double.isNaN(distanceKm) || Double.isInfinite(distanceKm)) {
+            throw new IllegalArgumentException("Activity must have a valid distance!");
+        }
         this.distanceKm = distanceKm;
+
+        if(rating < 1 || rating > 10){
+            throw new IllegalArgumentException("Rating must be between 1 and 10!");
+        }
         this.rating = rating;
+
         this.timeRegistered = timeRegistered;
         this.logger = logger;
         this.id = id;
