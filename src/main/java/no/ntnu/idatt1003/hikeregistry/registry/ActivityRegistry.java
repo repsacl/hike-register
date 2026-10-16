@@ -17,4 +17,15 @@ public class ActivityRegistry {
     public Activity[] getAllActivitys(){
         return activitys.toArray(new Activity[0]);
     }
+
+    public Activity getActivity(String title) {
+        Activity act = null;
+        for (int i = 0; i < activitys.size(); i++) {
+            if(title.equals(activitys.get(i).getTitle())){
+                act = activitys.get(i);
+            }
+        }
+
+        return act;
+    }
 }

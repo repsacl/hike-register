@@ -13,10 +13,12 @@ public class PersonRegistry {
     }
 
     // retunerer alle personenen som et array, er mer kjent med array og syntes det er lettere å håndtere for å vise fram personene
+    // returns a copy of the ArrayList so i cant be manipulated
     public Person[] getAllPersons(){
         return persons.toArray(new Person[0]);
     }
 
+    // finds person with firstname
     public Person getPerson(String firstname){
         Person who = null;
         for (int i = 0; i < persons.size(); i++) {
