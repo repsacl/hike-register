@@ -1,24 +1,105 @@
 package no.ntnu.idatt1003.hikeregistry.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for the {@link Person} class.
  *
- * <p>Note: The basic structure of this test class was suggested by an AI assistant (Claude)
+ * <p>
+ * Note: The basic structure of this test class was suggested by an AI assistant
+ * (Claude)
  * and then reviewed and adapted by me.
  */
-class PersonTest {
+public class PersonTest {
 
   /**
-   * Positive test: verifies that a person created with valid names
+   * Positive test: verifies that a person created with valid names and hikegroup
    * returns the full name formatted as "lastName, firstName".
+   * returns firstname,
+   * returns lastname,
+   * returns hikegroup.
    */
   @Test
-  void getFullName_validNames_returnsLastNameCommaFirstName() {
-    Person person = new Person("Ola", "Nordmann", "fjellgjengen");
+  void validateReturnAllTrue() {
+    Person person = new Person("Brotherman", "Testern", "hike-group");
 
-    assertEquals("Nordmann, Ola", person.getFullName());
+    assertEquals("Testern, Brotherman", person.getFullName());
+    assertEquals("Brotherman", person.getFirstName());
+    assertEquals("Testern", person.getLastName());
+    assertEquals("hike-group", person.getHikeGroup());
+  }
+
+  /**
+   * Negative test: verifies that a IllegalArgumentException throws when firstname
+   * is empty
+   */
+  @Test
+  void throwWhenFirstnameEmpty() {
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        () -> new Person("", "Testern", "hike"));
+
+    assertEquals("Person must have a firstname!", exception.getMessage());
+  }
+
+  /**
+   * Negative test: verifies that a IllegalArgumentException throws when firstname
+   * is null
+   */
+  @Test
+  void throwWhenFirstnameNull() {
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        () -> new Person(null, "Testern", "hike"));
+
+    assertEquals("Person must have a firstname!", exception.getMessage());
+  }
+
+  /**
+   * Negative test: verifies that a IllegalArgumentException throws when lastname
+   * is empty
+   */
+  @Test
+  void throwWhenLastNameEmpty() {
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        () -> new Person("Brotherman", "", "hike"));
+
+    assertEquals("Person must have a lastname!", exception.getMessage());
+  }
+
+  /**
+   * Negative test: verifies that a IllegalArgumentException throws when lastname
+   * is null
+   */
+  @Test
+  void throwWhenLastnameNull() {
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        () -> new Person("Brotherman", null, "hike"));
+
+    assertEquals("Person must have a lastname!", exception.getMessage());
+  }
+
+  /**
+   * Negative test: verifies that a IllegalArgumentException throws when hikegroup
+   * is null
+   */
+  @Test
+  void throwWhenHikegroupNull() {
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        () -> new Person("Brotherman", "Testern", null));
+
+    assertEquals("Person must have a valid hikegroup!", exception.getMessage());
+  }
+
+  /**
+   * Negative test: verifies that a IllegalArgumentException throws when hikegroup
+   * is empty
+   */
+  @Test
+  void throwWhenHikegroupEmpty() {
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        () -> new Person("Brotherman", "Testern", ""));
+
+    assertEquals("Person must have a valid hikegroup!", exception.getMessage());
   }
 }

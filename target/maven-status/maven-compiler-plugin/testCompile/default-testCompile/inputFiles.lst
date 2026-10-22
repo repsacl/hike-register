@@ -1,3 +1,5 @@
 /Users/casperlandberg/DATAING/prog1-mappe/src/test/java/no/ntnu/idatt1003/hikeregistry/model/ActivityTest.java
 /Users/casperlandberg/DATAING/prog1-mappe/src/test/java/no/ntnu/idatt1003/hikeregistry/model/PersonTest.java
+/Users/casperlandberg/DATAING/prog1-mappe/src/test/java/no/ntnu/idatt1003/hikeregistry/registry/ActivityRegistryTest.java
+/Users/casperlandberg/DATAING/prog1-mappe/src/test/java/no/ntnu/idatt1003/hikeregistry/registry/PersonRegistryTest.java
 /Users/casperlandberg/DATAING/prog1-mappe/src/test/java/no/ntnu/idatt1003/hikeregistry/ui/UserInterfaceTest.java

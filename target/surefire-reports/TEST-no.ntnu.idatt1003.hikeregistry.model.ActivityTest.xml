@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="no.ntnu.idatt1003.hikeregistry.model.ActivityTest" time="0.002" tests="2" errors="0" skipped="0" failures="0" flakes="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="no.ntnu.idatt1003.hikeregistry.model.ActivityTest" time="0.01" tests="9" errors="0" skipped="0" failures="0" flakes="0">
   <properties>
     <property name="java.specification.version" value="27"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -7,13 +7,12 @@
     <property name="java.vm.vendor" value="Homebrew"/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="java.vendor.url" value="https://github.com/Homebrew/homebrew-core/issues"/>
-    <property name="user.timezone" value="Europe/Oslo"/>
     <property name="os.name" value="Mac OS X"/>
     <property name="java.vm.specification.version" value="27"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="NO"/>
     <property name="sun.boot.library.path" value="/opt/homebrew/Cellar/openjdk/27/libexec/openjdk.jdk/Contents/Home/lib"/>
-    <property name="sun.java.command" value="/Users/casperlandberg/DATAING/prog1-mappe/target/surefire/surefirebooter-20261015134723897_3.jar /Users/casperlandberg/DATAING/prog1-mappe/target/surefire 2026-10-15T13-47-23_860-jvmRun1 surefire-20261015134723897_1tmp surefire_0-20261015134723897_2tmp"/>
+    <property name="sun.java.command" value="/Users/casperlandberg/DATAING/prog1-mappe/target/surefire/surefirebooter-20261022145457311_3.jar /Users/casperlandberg/DATAING/prog1-mappe/target/surefire 2026-10-22T14-54-57_272-jvmRun1 surefire-20261022145457311_1tmp surefire_0-20261022145457311_2tmp"/>
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="/Users/casperlandberg/DATAING/prog1-mappe/target/test-classes:/Users/casperlandberg/DATAING/prog1-mappe/target/classes:/Users/casperlandberg/.m2/repository/org/junit/jupiter/junit-jupiter/6.1.3/junit-jupiter-6.1.3.jar:/Users/casperlandberg/.m2/repository/org/junit/jupiter/junit-jupiter-api/6.1.3/junit-jupiter-api-6.1.3.jar:/Users/casperlandberg/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/Users/casperlandberg/.m2/repository/org/junit/platform/junit-platform-commons/6.1.3/junit-platform-commons-6.1.3.jar:/Users/casperlandberg/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/casperlandberg/.m2/repository/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar:/Users/casperlandberg/.m2/repository/org/junit/jupiter/junit-jupiter-params/6.1.3/junit-jupiter-params-6.1.3.jar:/Users/casperlandberg/.m2/repository/org/junit/jupiter/junit-jupiter-engine/6.1.3/junit-jupiter-engine-6.1.3.jar:/Users/casperlandberg/.m2/repository/org/junit/platform/junit-platform-engine/6.1.3/junit-platform-engine-6.1.3.jar"/>
@@ -30,7 +29,7 @@
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="apple.awt.application.name" value="ForkedBooter"/>
-    <property name="surefire.real.class.path" value="/Users/casperlandberg/DATAING/prog1-mappe/target/surefire/surefirebooter-20261015134723897_3.jar"/>
+    <property name="surefire.real.class.path" value="/Users/casperlandberg/DATAING/prog1-mappe/target/surefire/surefirebooter-20261022145457311_3.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.runtime.version" value="27"/>
@@ -60,6 +59,13 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.class.version" value="71.0"/>
   </properties>
-  <testcase name="validateRating" classname="no.ntnu.idatt1003.hikeregistry.model.ActivityTest" time="0.001"/>
-  <testcase name="constructor_validInput_storesTitleAndLogger" classname="no.ntnu.idatt1003.hikeregistry.model.ActivityTest" time="0.001"/>
+  <testcase name="throwWhenRatingIsUnder" classname="no.ntnu.idatt1003.hikeregistry.model.ActivityTest" time="0.002"/>
+  <testcase name="throwWhenRatingIsOver" classname="no.ntnu.idatt1003.hikeregistry.model.ActivityTest" time="0.001"/>
+  <testcase name="throwWhenDistanceNaN" classname="no.ntnu.idatt1003.hikeregistry.model.ActivityTest" time="0.001"/>
+  <testcase name="throwWhenDescriptionNull" classname="no.ntnu.idatt1003.hikeregistry.model.ActivityTest" time="0.001"/>
+  <testcase name="throwWhenDescriptionEmpty" classname="no.ntnu.idatt1003.hikeregistry.model.ActivityTest" time="0.001"/>
+  <testcase name="validateReturnALlTrue" classname="no.ntnu.idatt1003.hikeregistry.model.ActivityTest" time="0.001"/>
+  <testcase name="throwWhenTitleNull" classname="no.ntnu.idatt1003.hikeregistry.model.ActivityTest" time="0.001"/>
+  <testcase name="throwWhenTitleEmpty" classname="no.ntnu.idatt1003.hikeregistry.model.ActivityTest" time="0.0"/>
+  <testcase name="throwWhenDistanceNegative" classname="no.ntnu.idatt1003.hikeregistry.model.ActivityTest" time="0.0"/>
 </testsuite>

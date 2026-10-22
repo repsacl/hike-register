@@ -48,6 +48,12 @@
 
                 <configuration>
                     <configLocation>checkstyle.xml</configLocation>
+                    <!-- Google's rules are all "warning", so count warnings as violations -->
+                    <violationSeverity>warning</violationSeverity>
+                    <!-- Print every violation in the terminal -->
+                    <consoleOutput>true</consoleOutput>
+                    <!-- Check the test classes too -->
+                    <!-- <includeTestSourceDirectory>true</includeTestSourceDirectory> -->
                 </configuration>
 
                 <dependencies>
@@ -57,7 +63,9 @@
                         <version>14.3.0</version>
                     </dependency>
                 </dependencies>
+
             </plugin>
         </plugins>
+
     </build>
 </project>

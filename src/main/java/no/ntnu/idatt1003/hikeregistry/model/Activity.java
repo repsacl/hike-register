@@ -2,75 +2,125 @@ package no.ntnu.idatt1003.hikeregistry.model;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents a single hike/activity logged in the hike registry.
+ *
+ * <p>An activity has a title, a description, a distance in kilometers, a rating from 1 to 10,
+ * the time it was registered, the person who logged it and a unique id. All fields are
+ * immutable once the activity is created.</p>
+ */
 public class Activity {
 
-    private final String title; // tittel på turen. som regel kort og presist
-    private final String description; // beskrivelse av hvordan aktiviteten/turen var
-    private final double distanceKm; // lengde på turen i kilometer
-    private final int rating; // rangere turen fra 1-10
-    private final LocalDateTime timeRegistered; // dato/tidspunkt på nå turen ble registert
-    private final Person logger; // hvem som loggførte turen
-    private final int id;
+  private final String title; // tittel på turen. som regel kort og presist
+  private final String description; // beskrivelse av hvordan aktiviteten/turen var
+  private final double distanceKm; // lengde på turen i kilometer
+  private final int rating; // rangere turen fra 1-10
+  private final LocalDateTime timeRegistered; // dato/tidspunkt på nå turen ble registert
+  private final Person logger; // hvem som loggførte turen
+  private final int id;
 
-    // deklarerre variablene
-    public Activity(String title, String description, double distanceKm, int rating, LocalDateTime timeRegistered, Person logger, int id){
-        if (title == null) {
-            throw new IllegalArgumentException("Activity must have a title!");
-        }
-        this.title = title;
-
-        if (description == null){
-            throw new IllegalArgumentException("Activity must have a description!");
-        }
-        this.description = description;
-
-        if (Double.isNaN(distanceKm) || Double.isInfinite(distanceKm)) {
-            throw new IllegalArgumentException("Activity must have a valid distance!");
-        }
-        this.distanceKm = distanceKm;
-
-        if(rating < 1 || rating > 10){
-            throw new IllegalArgumentException("Rating must be between 1 and 10!");
-        }
-        this.rating = rating;
-
-        this.timeRegistered = timeRegistered;
-        this.logger = logger;
-        this.id = id;
+  /**
+   * Creates a new activity with the given values.
+   *
+   * @param title          the title of the activity, cannot be null or empty
+   * @param description    a description of how the activity went, cannot be null or empty
+   * @param distanceKm     the distance of the activity in kilometers, must be a finite number
+   *                       greater than 0
+   * @param rating         the rating of the activity, must be between 1 and 10 (inclusive)
+   * @param timeRegistered the date and time the activity was registered
+   * @param logger         the person who logged the activity
+   * @param id             the unique id of the activity
+   * @throws IllegalArgumentException if the title or description is null or empty, if the
+   *                                  distance is not a positive finite number, or if the rating
+   *                                  is not between 1 and 10
+   */
+  public Activity(String title, String description, double distanceKm, int rating, LocalDateTime timeRegistered,
+      Person logger, int id) {
+    if (title == null || title.equals("")) {
+      throw new IllegalArgumentException("Activity must have a title!");
     }
+    this.title = title;
 
-    // retunerer titel på turen, eks kan brukes for å søke etter titel
-    public String getTitle(){
-        return title;
+    if (description == null || description.equals("")) {
+      throw new IllegalArgumentException("Activity must have a description!");
     }
+    this.description = description;
 
-    // returnerer beskrivels av truen
-    public String getDescription(){
-        return description;
+    if (Double.isNaN(distanceKm) || Double.isInfinite(distanceKm) || distanceKm <= 0) {
+      throw new IllegalArgumentException("Activity must have a valid distance!");
     }
+    this.distanceKm = distanceKm;
 
-    // returnerer distansen gått i turen
-    public double getDistanceKm(){
-        return distanceKm;
+    if (rating < 1 || rating > 10) {
+      throw new IllegalArgumentException("Rating must be between 1 and 10!");
     }
+    this.rating = rating;
 
-    // retunerer rating av turen
-    public int getRating(){
-        return rating;
-    }
+    this.timeRegistered = timeRegistered;
+    this.logger = logger;
+    this.id = id;
+  }
 
-    // retunere tidspunkt på når turen ble registrert
-    public LocalDateTime getTimeRegistered(){
-        return timeRegistered;
-    }
+  /**
+   * Returns the title of this activity.
+   *
+   * @return the title of the activity
+   */
+  public String getTitle() {
+    return title;
+  }
 
-    // returnerer hvem som logget aktiviteten
-    public Person getLogger(){
-        return logger;
-    }
+  /**
+   * Returns the description of this activity.
+   *
+   * @return the description of the activity
+   */
+  public String getDescription() {
+    return description;
+  }
 
-    // retunerer aktiviteten sin id
-    public int getId(){
-        return id;
-    }
+  /**
+   * Returns the distance of this activity in kilometers.
+   *
+   * @return the distance of the activity in kilometers
+   */
+  public double getDistanceKm() {
+    return distanceKm;
+  }
+
+  /**
+   * Returns the rating of this activity.
+   *
+   * @return the rating of the activity, between 1 and 10
+   */
+  public int getRating() {
+    return rating;
+  }
+
+  /**
+   * Returns the date and time this activity was registered.
+   *
+   * @return the date and time the activity was registered
+   */
+  public LocalDateTime getTimeRegistered() {
+    return timeRegistered;
+  }
+
+  /**
+   * Returns the person who logged this activity.
+   *
+   * @return the person who logged the activity
+   */
+  public Person getLogger() {
+    return logger;
+  }
+
+  /**
+   * Returns the unique id of this activity.
+   *
+   * @return the id of the activity
+   */
+  public int getId() {
+    return id;
+  }
 }
