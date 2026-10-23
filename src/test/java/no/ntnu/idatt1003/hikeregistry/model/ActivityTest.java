@@ -26,10 +26,11 @@ public class ActivityTest {
    */
   @Test
   void validateReturnALlTrue() {
-    Person person = new Person("Brotherman", "Testern", "fjell-gruppen");
+    Group group = new Group("testern");
+    Person person = new Person("Brotherman", "Testern", group);
     LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
 
-    Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, person, 1);
+    Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, person, person.getHikeGroup(), 1);
 
     assertEquals("Fjelltur", activity.getTitle());
     assertEquals("Fin tur", activity.getDescription());
@@ -37,6 +38,7 @@ public class ActivityTest {
     assertEquals(7, activity.getRating());
     assertEquals(time, activity.getTimeRegistered());
     assertEquals(person, activity.getLogger());
+    assertEquals(group, activity.getGroup());
   }
 
   /**
@@ -45,7 +47,7 @@ public class ActivityTest {
    */
   @Test
   void throwWhenTitleEmpty() {
-    Person person = new Person("Brotherman", "Testern", "fjell-gruppen");
+    Person person = new Person("Brotherman", "Testern");
     LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
 
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -60,7 +62,7 @@ public class ActivityTest {
    */
   @Test
   void throwWhenTitleNull() {
-    Person person = new Person("Brotherman", "Testern", "fjell-gruppen");
+    Person person = new Person("Brotherman", "Testern");
     LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
 
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -75,7 +77,7 @@ public class ActivityTest {
    */
   @Test
   void throwWhenDescriptionEmpty() {
-    Person person = new Person("Brotherman", "Testern", "fjell-gruppen");
+    Person person = new Person("Brotherman", "Testern");
     LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
 
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -90,7 +92,7 @@ public class ActivityTest {
    */
   @Test
   void throwWhenDescriptionNull() {
-    Person person = new Person("Brotherman", "Testern", "fjell-gruppen");
+    Person person = new Person("Brotherman", "Testern");
     LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
 
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -105,7 +107,7 @@ public class ActivityTest {
    */
   @Test
   void throwWhenDistanceNegative() {
-    Person person = new Person("Brotherman", "Testern", "fjell-gruppen");
+    Person person = new Person("Brotherman", "Testern");
     LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
 
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -123,7 +125,7 @@ public class ActivityTest {
    */
   @Test
   void throwWhenDistanceNaN() {
-    Person person = new Person("Brotherman", "Testern", "fjell-gruppen");
+    Person person = new Person("Brotherman", "Testern");
     LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
 
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -138,7 +140,7 @@ public class ActivityTest {
    */
   @Test
   void throwWhenRatingIsUnder() {
-    Person person = new Person("Brotherman", "Testern", "fjell-gruppen");
+    Person person = new Person("Brotherman", "Testern");
     LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
 
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -153,7 +155,7 @@ public class ActivityTest {
    */
   @Test
   void throwWhenRatingIsOver() {
-    Person person = new Person("Brotherman", "Testern", "fjell-gruppen");
+    Person person = new Person("Brotherman", "Testern");
     LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
 
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,

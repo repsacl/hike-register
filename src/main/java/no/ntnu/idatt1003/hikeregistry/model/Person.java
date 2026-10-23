@@ -16,9 +16,9 @@ public class Person {
   private final String firstName; // egen variabel for fornavn
   private final String lastName; // egen variabel for etternavn
   // private final String gender;
-  private String hikeGroup; // hvis personen er i en tur-gruppe kan han/hun notere det her får å få det på
-                            // aktivtetene sine. Gir også mulighet for å etterhvert sortere etter
-                            // tur-grupper
+  private Group group; // hvis personen er i en tur-gruppe kan han/hun notere det her får å få det på
+                       // aktivtetene sine. Gir også mulighet for å etterhvert sortere etter
+                       // tur-grupper
   // private final Random r = new Random();
 
   /**
@@ -26,11 +26,11 @@ public class Person {
    *
    * @param firstName the person's first name, cannot be null or empty
    * @param lastName  the person's last name, cannot be null or empty
-   * @param hikeGroup the name of the hike group, cannot be null or empty
+   * @param group     the name of the hike group, cannot be null or empty
    * @throws IllegalArgumentException if the first name, last name or hike group
    *                                  is null or empty
    */
-  public Person(String firstName, String lastName, String hikeGroup) {
+  public Person(String firstName, String lastName, Group group) {
     if (firstName == null || firstName.equals("")) {
       throw new IllegalArgumentException("Person must have a firstname!");
     }
@@ -42,10 +42,10 @@ public class Person {
     this.lastName = lastName;
     // this.gender = gender;
 
-    if (hikeGroup == null || hikeGroup.equals("")) {
+    if (group == null) {
       throw new IllegalArgumentException("Person must have a valid hikegroup!");
     }
-    this.hikeGroup = hikeGroup;
+    this.group = group;
     // this.id = r.nextInt(10,99);
   }
 
@@ -60,18 +60,20 @@ public class Person {
    *
    * @param firstName the person's first name, cannot be null
    * @param lastName  the person's last name, cannot be null
+   * @param group     the group connected to this person i set to null
    * @throws IllegalArgumentException if the first name or last name is null
    */
   public Person(String firstName, String lastName) {
-    if (firstName == null) {
+    if (firstName == null || firstName.equals("")) {
       throw new IllegalArgumentException("Person must have a firstname!");
     }
     this.firstName = firstName;
 
-    if (lastName == null) {
+    if (lastName == null || lastName.equals("")) {
       throw new IllegalArgumentException("Person must have a lastname!");
     }
     this.lastName = lastName;
+    this.group = null;
     // this.gender = gender;
     // this.id = r.nextInt(10,99);
   }
@@ -109,8 +111,8 @@ public class Person {
    * @return the name of the hike group, or {@code null} if the person is not in a
    *         hike group
    */
-  public String getHikeGroup() {
-    return hikeGroup;
+  public Group getHikeGroup() {
+    return group;
   }
 
   /**
@@ -118,7 +120,7 @@ public class Person {
    *
    * @param name the name of the new hike group
    */
-  public void updateHikeGroup(String name) {
-    hikeGroup = name;
+  public void updateHikeGroup(Group newGroup) {
+    this.group = newGroup;
   }
 }

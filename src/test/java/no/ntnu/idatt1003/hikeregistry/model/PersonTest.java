@@ -23,12 +23,13 @@ public class PersonTest {
    */
   @Test
   void validateReturnAllTrue() {
-    Person person = new Person("Brotherman", "Testern", "hike-group");
+    Group group = new Group("testern");
+    Person person = new Person("Brotherman", "Testern", group);
 
     assertEquals("Testern, Brotherman", person.getFullName());
     assertEquals("Brotherman", person.getFirstName());
     assertEquals("Testern", person.getLastName());
-    assertEquals("hike-group", person.getHikeGroup());
+    assertEquals(group, person.getHikeGroup());
   }
 
   /**
@@ -37,8 +38,10 @@ public class PersonTest {
    */
   @Test
   void throwWhenFirstnameEmpty() {
+    Group group = new Group("testern");
+
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> new Person("", "Testern", "hike"));
+        () -> new Person("", "Testern", group));
 
     assertEquals("Person must have a firstname!", exception.getMessage());
   }
@@ -50,7 +53,7 @@ public class PersonTest {
   @Test
   void throwWhenFirstnameNull() {
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> new Person(null, "Testern", "hike"));
+        () -> new Person(null, "Testern"));
 
     assertEquals("Person must have a firstname!", exception.getMessage());
   }
@@ -62,7 +65,7 @@ public class PersonTest {
   @Test
   void throwWhenLastNameEmpty() {
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> new Person("Brotherman", "", "hike"));
+        () -> new Person("Brotherman", ""));
 
     assertEquals("Person must have a lastname!", exception.getMessage());
   }
@@ -74,7 +77,7 @@ public class PersonTest {
   @Test
   void throwWhenLastnameNull() {
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> new Person("Brotherman", null, "hike"));
+        () -> new Person("Brotherman", null));
 
     assertEquals("Person must have a lastname!", exception.getMessage());
   }
@@ -95,11 +98,12 @@ public class PersonTest {
    * Negative test: verifies that a IllegalArgumentException throws when hikegroup
    * is empty
    */
-  @Test
-  void throwWhenHikegroupEmpty() {
-    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> new Person("Brotherman", "Testern", ""));
+  // @Test
+  // void throwWhenHikegroupEmpty() {
+  // IllegalArgumentException exception =
+  // assertThrows(IllegalArgumentException.class,
+  // () -> new Person("Brotherman", "Testern"));
 
-    assertEquals("Person must have a valid hikegroup!", exception.getMessage());
-  }
+  // assertEquals("Person must have a valid hikegroup!", exception.getMessage());
+  // }
 }

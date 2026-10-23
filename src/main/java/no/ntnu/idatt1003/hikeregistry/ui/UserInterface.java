@@ -6,8 +6,10 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 import no.ntnu.idatt1003.hikeregistry.model.Activity;
+import no.ntnu.idatt1003.hikeregistry.model.Group;
 import no.ntnu.idatt1003.hikeregistry.model.Person;
 import no.ntnu.idatt1003.hikeregistry.registry.ActivityRegistry;
+import no.ntnu.idatt1003.hikeregistry.registry.GroupRegistry;
 import no.ntnu.idatt1003.hikeregistry.registry.PersonRegistry;
 
 public class UserInterface {
@@ -15,6 +17,7 @@ public class UserInterface {
 
   private final ActivityRegistry activityRegistry = new ActivityRegistry();
   private final PersonRegistry personRegistry = new PersonRegistry();
+  private final GroupRegistry groupRegistry = new GroupRegistry();
 
   private final Scanner scanner = new Scanner(System.in);
 
@@ -24,18 +27,23 @@ public class UserInterface {
    */
   public void init() {
     LocalDateTime now = LocalDateTime.now();
+    groupRegistry.addGroup(new Group("Testern-gruppen"));
+    groupRegistry.addGroup(new Group("Mountain-group"));
+    Group[] groups = groupRegistry.getAllGroups();
 
-    personRegistry.addPerson(new Person("Brotherman", "Testern", "brother-gruppen"));
-    personRegistry.addPerson(new Person("Testern", "Brotherman", "testern-gruppen"));
+    personRegistry.addPerson(new Person("Brotherman", "Testern", groups[0]));
+    personRegistry.addPerson(new Person("Bob", "Bobsen", groups[0]));
+    personRegistry.addPerson(new Person("Per", "Ola", groups[1]));
     Person[] persons = personRegistry.getAllPersons();
 
     activityRegistry.addActivity(new Activity("En lang tur", "Turen var veldig bra og lang, ble velsig sliten", 10,
         10, now, persons[0], 1));
     activityRegistry.addActivity(new Activity("En kort tur", "Turen var kort og kjedelig. Bare skog :(", 3, 3,
-        now.minusDays(2).minusHours(5), persons[0], 2));
+        now.minusDays(2).minusHours(5), persons[1], persons[1].getHikeGroup(), 2));
     activityRegistry
         .addActivity(new Activity("Fjelltur", "Jeg gikk til Gaustadtoppen. Det var bratt, men det gikk tilslutt.",
-            30, 8, now.minusMonths(2).minusDays(5).plusHours(2).plusMinutes(10), persons[1], 3));
+            30, 8, now.minusMonths(2).minusDays(5).plusHours(2).plusMinutes(10), persons[2], persons[2].getHikeGroup(),
+            3));
   }
 
   /**
@@ -122,12 +130,15 @@ public class UserInterface {
   private void showActivity(Activity activity) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
-    System.out.println("Title:            " + activity.getTitle());
-    System.out.println("Description:      " + activity.getDescription());
-    System.out.println("Distance:         " + activity.getDistanceKm() + "km");
-    System.out.println("Rating:           " + activity.getRating() + "/10");
-    System.out.println("Logged by:        " + activity.getLogger().getFullName());
-    System.out.println("Time registered:  " + formatter.format(activity.getTimeRegistered()) + "\n");
+    System.out.println("Title:                  " + activity.getTitle());
+    System.out.println("Description:            " + activity.getDescription());
+    System.out.println("Distance:               " + activity.getDistanceKm() + "km");
+    System.out.println("Rating:                 " + activity.getRating() + "/10");
+    System.out.println("Logged by:              " + activity.getLogger().getFullName());
+    if (activity.hasGroup()) {
+      System.out.println("Group:                  " + activity.getGroup().getName());
+    }
+    System.out.println("Time registered:        " + formatter.format(activity.getTimeRegistered()) + "\n");
   }
 
   // shows all activitys in the register
@@ -259,10 +270,10 @@ public class UserInterface {
    */
   private void showMenu() {
     System.out.println("==== WELCOME TO THE HIKE APP ====");
-    System.out.println("register:   to register a hike");
-    System.out.println("all:        to se all activities");
-    System.out.println("help:       to see more options and how to use the appllication");
-    System.out.println("exit:       to exit the application");
+    System.out.println("register:     to register a hike");
+    System.out.println("all:          to se all activities");
+    System.out.println("help:         to see more options and how to use the appllication");
+    System.out.println("exit:         to exit the application");
     System.out.println("\nchoose an option: ");
   }
 
@@ -274,7 +285,7 @@ public class UserInterface {
   private void showHelpOptions() {
     // some options are not made yet
     System.out.println("==== Help MENU ====");
-    System.out.println("all                         -> shows all public hike activitys");
+    System.out.println("all                         -> shows all public hike activitys shared with you");
     System.out.println("find person 'firstname'     -> finds a person and shows their profile");
     System.out.println("find hike 'title'           -> finds a specific hike");
     System.out.println("find group 'name'           -> shows this groups activitys");
