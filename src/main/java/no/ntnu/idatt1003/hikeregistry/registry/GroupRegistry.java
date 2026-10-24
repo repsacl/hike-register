@@ -9,10 +9,10 @@ public class GroupRegistry {
   private ArrayList<Group> groups = new ArrayList<>();
 
   public void addGroup(Group newGroup) {
-    if (checkIfExists(newGroup.getName())) {
-      System.out.println("Group alrady exists");
-      return;
-    }
+    // if (checkIfExists(newGroup.getName())) {
+    // System.out.println("Group alrady exists");
+    // return;
+    // }
 
     groups.add(newGroup);
   }

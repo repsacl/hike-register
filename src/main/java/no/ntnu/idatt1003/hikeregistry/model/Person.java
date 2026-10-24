@@ -19,6 +19,7 @@ public class Person {
   private Group group; // hvis personen er i en tur-gruppe kan han/hun notere det her får å få det på
                        // aktivtetene sine. Gir også mulighet for å etterhvert sortere etter
                        // tur-grupper
+  private int hikesRegistered = 0;
   // private final Random r = new Random();
 
   /**
@@ -102,7 +103,7 @@ public class Person {
    * @return the full name of the person
    */
   public String getFullName() {
-    return lastName + ", " + firstName;
+    return firstName + " " + lastName;
   }
 
   /**
@@ -113,6 +114,29 @@ public class Person {
    */
   public Group getHikeGroup() {
     return group;
+  }
+
+  /**
+   * Returns the how many hike this person has registered.
+   *
+   * @return how many hikes this person has registered
+   */
+  public int getHikesRegistered() {
+    return hikesRegistered;
+  }
+
+  /**
+   * Increases this persons hikes registered.
+   */
+  public void increasHikeRegistered() {
+    hikesRegistered += 1;
+  }
+
+  /**
+   * Decreases this persons hikes registered.
+   */
+  public void decreasHikeRegistered() {
+    hikesRegistered -= 1;
   }
 
   /**

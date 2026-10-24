@@ -26,7 +26,7 @@ public class PersonTest {
     Group group = new Group("testern");
     Person person = new Person("Brotherman", "Testern", group);
 
-    assertEquals("Testern, Brotherman", person.getFullName());
+    assertEquals("Brotherman Testern", person.getFullName());
     assertEquals("Brotherman", person.getFirstName());
     assertEquals("Testern", person.getLastName());
     assertEquals(group, person.getHikeGroup());

@@ -12,6 +12,10 @@ public class ActivityRegistry {
 
   // legger tl en ny aktivitet til registeret
   public void addActivity(Activity newActivity) {
+    newActivity.getLogger().increasHikeRegistered();
+    if (newActivity.hasGroup()) {
+      newActivity.getGroup().increasHikeRegistered();
+    }
     activitys.add(newActivity);
   }
 
@@ -24,30 +28,35 @@ public class ActivityRegistry {
 
   // find activty by title
   public Activity getActivityTitle(String title) {
-    Activity act = null;
+    Activity activity = null;
     for (int i = 0; i < activitys.size(); i++) {
       if (title.equalsIgnoreCase(activitys.get(i).getTitle())) {
-        act = activitys.get(i);
+        activity = activitys.get(i);
       }
     }
 
-    return act;
+    return activity;
   }
 
   // finds activity by data
   public Activity getActivityDate(LocalDateTime date) {
-    Activity act = null;
+    Activity activity = null;
     for (int i = 0; i < activitys.size(); i++) {
       if (date.equals(activitys.get(i).getTimeRegistered())) {
-        act = activitys.get(i);
+        activity = activitys.get(i);
       }
     }
 
-    return act;
+    return activity;
   }
 
   // deletes a activity
   public void deleteActivity(Activity activity) {
+    activity.getLogger().decreasHikeRegistered();
+    if (activity.hasGroup()) {
+      activity.getGroup().decreasHikeRegistered();
+    }
+
     activitys.remove(activity);
   }
 }
