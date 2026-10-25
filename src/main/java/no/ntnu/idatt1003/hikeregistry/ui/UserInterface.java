@@ -27,7 +27,7 @@ public class UserInterface {
    */
   public void init() {
     LocalDateTime now = LocalDateTime.now();
-    groupRegistry.addGroup(new Group("Testern-gruppen"));
+    groupRegistry.addGroup(new Group("GRUPPEN"));
     groupRegistry.addGroup(new Group("Mountain-group"));
     Group[] groups = groupRegistry.getAllGroups();
 
@@ -36,16 +36,19 @@ public class UserInterface {
     personRegistry.addPerson(new Person("Peter", "Oppland"));
     Person[] persons = personRegistry.getAllPersons();
 
+    // groups[0].addMember(persons[0]);
+    // groups[0].addMember(persons[1]);
+
     currentUser = persons[2];
 
     activityRegistry.addActivity(new Activity("En lang tur", "Turen var veldig bra og lang, ble velsig sliten", 10,
-        10, now, persons[0], 1));
+        10, now, persons[0]));
     activityRegistry.addActivity(new Activity("En kort tur", "Turen var kort og kjedelig. Bare skog :(", 3, 3,
-        now.minusDays(2).minusHours(5), persons[1], persons[1].getHikeGroup(), 2));
+        now.minusDays(2).minusHours(5), persons[1], persons[1].getHikeGroup()));
     activityRegistry
         .addActivity(new Activity("Fjelltur", "Jeg gikk til Gaustadtoppen. Det var bratt, men det gikk tilslutt.",
-            30, 8, now.minusMonths(2).minusDays(5).plusHours(2).plusMinutes(10), persons[2], persons[2].getHikeGroup(),
-            3));
+            30, 8, now.minusMonths(2).minusDays(5).plusHours(2).plusMinutes(10), persons[2],
+            persons[2].getHikeGroup()));
   }
 
   /**
@@ -75,10 +78,17 @@ public class UserInterface {
     // write with uppercase letters
     // better to use switch because
     switch (command) {
+      case "me" -> {
+        clearPreviusLines();
+        showUser();
+      }
       case "switch" -> {
         if (parts.length >= 2 && parts[1].equalsIgnoreCase("user")) {
           clearPreviusLines();
           switchUser();
+        } else if (parts.length >= 2 && parts[1].equalsIgnoreCase("group")) {
+          clearPreviusLines();
+          switchGroup();
         } else {
           System.out.println("Unknown command, did you mean 'switch user'?");
         }
@@ -116,7 +126,7 @@ public class UserInterface {
       case "join" -> {
         if (parts.length >= 2 && parts[1].equalsIgnoreCase("group")) {
           clearPreviusLines();
-          joinGroup();
+          switchGroup();
         } else {
           System.out.println("Join what? did you mean 'join group'?");
         }
@@ -165,6 +175,17 @@ public class UserInterface {
 
   }
 
+  private void showUser() {
+    System.out.println("\n==== CURRENT USER ====");
+    System.out.println("Name:         " + currentUser.getFullName());
+    if (currentUser.hasGroup()) {
+      System.out.println("Group:        " + currentUser.getHikeGroup().getName());
+    } else {
+      System.out.println("Group:        no group");
+    }
+    System.out.println("Hikes:        " + currentUser.getHikesRegistered() + "\n");
+  }
+
   /**
    * Shows information about a specific activity.
    *
@@ -185,12 +206,12 @@ public class UserInterface {
   }
 
   /**
-   * Shows all activitys shared with the user.
+   * Shows all activitys shared with the current user.
    */
   private void showAllActivites() {
-    Activity[] activitys = activityRegistry.getAllActivitys();
+    Activity[] activitys = activityRegistry.getAllActivitys(currentUser);
     System.out.println("==== ALL ACTIVITYS ====");
-    System.out.println("shows all public and shared activitys for you");
+    System.out.println("shows all your private activitys and activtys shared with you");
 
     for (int i = 0; i < activitys.length; i++) {
       showActivity(activitys[i]);
@@ -224,25 +245,29 @@ public class UserInterface {
       return;
     }
 
+    // String group = null;
+    // if (currentUser.hasGroup()) {
+    // System.out.println("\nRegister this activity in your group or private");
+    // group = readInputOrCancel("private");
+    // }
+
     try {
       double dist = Double.parseDouble(distance);
       int rate = Integer.parseInt(rating);
       LocalDateTime now = LocalDateTime.now();
 
       Activity activity = new Activity(title, description, dist, rate, now, currentUser,
-          currentUser.getHikeGroup(),
-          5);
+          currentUser.getHikeGroup());
 
       activityRegistry.addActivity(activity);
 
       System.out.println("\nHike activity registered!");
       showActivity(activity);
+    } catch (NumberFormatException e) {
+      System.out.println("Could not register activity: " + e.getMessage());
     } catch (IllegalArgumentException e) {
       System.out.println("Could not register activity: " + e.getMessage());
     }
-    // } catch (NumberFormatException e) {
-    // System.out.println("Rating or distance must be a number");
-    // }
   }
 
   /**
@@ -261,9 +286,8 @@ public class UserInterface {
       Group newGroup = new Group(name);
 
       newGroup.addMember(currentUser);
-      currentUser.updateHikeGroup(newGroup);
-
       groupRegistry.addGroup(newGroup);
+
       System.out.println("\nGroup registered!");
     } catch (IllegalArgumentException e) {
       System.out.println("Could not register group: " + e.getMessage());
@@ -284,16 +308,16 @@ public class UserInterface {
   // }
 
   /**
-   * User joins a group realated to a number shown.
+   * User switches a group or joins a group if not a member
    */
-  private void joinGroup() {
-    System.out.println("\n==== JOIN A GROUP ====");
+  private void switchGroup() {
+    System.out.println("\n==== JOIN GROUP ====");
     System.out.println("Write 'cancel' to end the registration at any time\n");
     System.out.println("Select one of the groups below\n");
 
     Group[] groups = groupRegistry.getAllGroups();
     for (int i = 0; i < groups.length; i++) {
-      System.out.println(i + ")");
+      System.out.println(i + 1 + ")");
       System.out.println("Name       " + groups[i].getName());
       System.out.println("Members:   " + groups[i].getCountMembers());
       System.out.println("Hikes:     " + groups[i].getHikesRegistered() + "\n");
@@ -314,8 +338,8 @@ public class UserInterface {
       int choice = Integer.parseInt(input);
 
       for (int i = 0; i < groups.length; i++) {
-        if (choice == i) {
-          currentUser.updateHikeGroup(groups[i]);
+        if (choice - 1 == i) {
+          groups[i].addMember(currentUser);
         }
       }
       System.out.println("\nGroup joind!");
@@ -351,36 +375,36 @@ public class UserInterface {
 
       System.out.println("\nNew user registered!");
       System.out.println("Current user logged in -> " + currentUser.getFullName());
-      System.out.println("Suggestion: join a group!");
+      System.out.println("\nSuggestion: join a group!\n");
     } catch (IllegalArgumentException e) {
       System.out.println("Could not register user: " + e.getMessage());
     }
   }
 
   /**
-   * Shows all users with a number in front of them. This functions is realted to
-   * switchUser method.
+   * Switches users with a number related to a profile.
    */
-  private void showUsers() {
+  private void switchUser() {
     System.out.println("\n==== SWITCH USER ====");
     System.out.println("Write 'cancel' to end the registration at any time\n");
     System.out.println("Select one of the users below\n");
 
     Person[] users = personRegistry.getAllPersons();
+
     for (int i = 0; i < users.length; i++) {
       if (users[i] == currentUser) {
         continue;
       }
-      System.out.println(i + 1 + ") " + users[i].getFullName());
+      System.out.println(i + 1 + ")");
+      System.out.println("Name:     " + users[i].getFullName());
+      if (users[i].hasGroup()) {
+        System.out.println("Group:    " + users[i].getHikeGroup().getName());
+      } else {
+        System.out.println("Group:    no group");
+      }
+      System.out.println("Hikes:    " + users[i].getHikesRegistered());
     }
     System.out.println("\nor write 'register' to register a new user\n");
-  }
-
-  /**
-   * Switches users with a number related to a profile.
-   */
-  private void switchUser() {
-    showUsers();
 
     String input = readInputOrCancel("select a number");
     if (input == null) {
@@ -394,7 +418,6 @@ public class UserInterface {
     try {
       int choice = Integer.parseInt(input);
 
-      Person[] users = personRegistry.getAllPersons();
       for (int i = 0; i < users.length; i++) {
         if (choice - 1 == i) {
           currentUser = users[i];
@@ -496,7 +519,7 @@ public class UserInterface {
     System.out.println("switch user             -> switch user to a selected profile");
     System.out.println("help:                   -> shows more options and how to use the appllication");
     System.out.println("exit:                   -> exit the application");
-    System.out.println("choose an option:\n");
+    System.out.println("choose a command:\n");
     System.out.println("Current user logged in -> " + currentUser.getFullName());
 
   }
@@ -511,16 +534,17 @@ public class UserInterface {
     System.out.println("\n==== Help MENU ====");
     System.out.println("all                         -> see all public hike activitys shared with you");
     System.out.println("switch user                 -> switch user to a selected acount or register a new user.");
-    System.out.println("find person 'firstname'     -> finds a person and shows their profile");
+    System.out.println("switch group                -> switch group to a new group");
+    System.out.println("join group                  -> to join a hike group");
+    System.out.println(
+        "find person 'name'          -> finds a person by firstname/lastname/fullname and shows their profile");
     System.out.println("find hike 'title'           -> finds a specific hike");
     System.out.println("find group 'name'           -> shows this groups activitys");
-    System.out.println("delete hike 'title'         -> deletes a specific hike");
-    // System.out.println("shared -> shows shared activitys to this user");
     System.out.println("register hike               -> to registe a new hike");
     System.out.println("register group              -> to registe a new hike group");
     System.out.println("register user               -> to registe a new user");
-    System.out.println("join group                  -> to join a hike group");
-    System.out.println("profile                     -> login to your profile/create profile/show your profile/");
+    System.out.println("delete hike 'title'         -> deletes a specific hike");
+    System.out.println("me                          -> shows your profile and hikes");
     System.out.println("help                        -> show all options");
     System.out.println("clear                       -> clears previus lines in the terminal");
     System.out.println("exit                        -> exits the application");

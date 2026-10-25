@@ -10,7 +10,7 @@ public class Group {
   private int hikesRegistered = 0;
 
   public Group(String name) {
-    if (name.equals("") || name == null) {
+    if (name == null || name.equals("")) {
       throw new IllegalArgumentException("Group must have a name!");
     }
     this.name = name;
@@ -50,15 +50,20 @@ public class Group {
    * @param newMember
    */
   public void addMember(Person newMember) {
-    if (checkIfMember(newMember.getFirstName(), newMember.getLastName())) {
-      throw new IllegalArgumentException("Person is already a member!");
+    if (newMember == null) {
+      throw new IllegalArgumentException("New member cant be null");
     }
-    // if (newMember == null) {
-    // throw new IllegalArgumentException("Person cant be null");
-    // }
+    if (checkIfMember(newMember.getFirstName(), newMember.getLastName())) {
+      throw new IllegalArgumentException("Is already a member!");
+    }
 
+    if (newMember.hasGroup() && newMember.getHikeGroup() == this) {
+      newMember.getHikeGroup().removeMember(newMember);
+    }
+    // adds new member to the members list
     members.add(newMember);
-    // newMember.updateHikeGroup(name);???????
+    // updates the newMember assosiated group
+    newMember.updateHikeGroup(this);
   }
 
   public int getCountMembers() {
@@ -77,6 +82,7 @@ public class Group {
   }
 
   public void removeMember(Person member) {
+    member.updateHikeGroup(null);
     members.remove(member);
   }
 

@@ -47,6 +47,7 @@ public class Person {
       throw new IllegalArgumentException("Person must have a valid hikegroup!");
     }
     this.group = group;
+    group.addMember(this);
     // this.id = r.nextInt(10,99);
   }
 
@@ -114,6 +115,19 @@ public class Person {
    */
   public Group getHikeGroup() {
     return group;
+  }
+
+  /**
+   * Returns tue or fals if person is a member in a group
+   *
+   * @return
+   */
+  public boolean hasGroup() {
+    boolean isGroup = false;
+    if (group != null) {
+      isGroup = true;
+    }
+    return isGroup;
   }
 
   /**

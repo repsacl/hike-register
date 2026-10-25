@@ -1,17 +1,16 @@
 package no.ntnu.idatt1003.hikeregistry.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 /**
  * Represents a single hike/activity logged in the hike registry.
  *
  * <p>
  * An activity has a title, a description, a distance in kilometers, a rating
- * from 1 to 10,
- * the time it was registered, the person who logged it,
- * the group who performed it and a unique id.
- * All fields are
- * immutable once the activity is created.
+ * from 1 to 10, the time it was registered, the person who logged it and an
+ * optional group. Only the logger, the group members and people added later
+ * can see the activity.
  * </p>
  */
 public class Activity {
@@ -23,31 +22,22 @@ public class Activity {
   private final LocalDateTime timeRegistered;
   private final Person logger;
   private final Group group;
-  private final int id;
+  private final ArrayList<Person> seeActivity = new ArrayList<>();
 
   /**
-   * Creates a new activity with the given values.
+   * Creates a new activity done by a group.
    *
-   * @param title          the title of the activity, cannot be null or empty
-   * @param description    a description of how the activity went, cannot be null
-   *                       or empty
-   * @param distanceKm     the distance of the activity in kilometers, must be a
-   *                       finite number
-   *                       greater than 0
-   * @param rating         the rating of the activity, must be between 1 and 10
-   *                       (inclusive)
+   * @param title          the title, cannot be null or empty
+   * @param description    how the activity went, cannot be null or empty
+   * @param distanceKm     the distance in kilometers, must be greater than 0
+   * @param rating         the rating, from 1 to 10
    * @param timeRegistered the date and time the activity was registered
    * @param logger         the person who logged the activity
-   * @param group          the group that was on this activity
-   * @param id             the unique id of the activity
-   * @throws IllegalArgumentException if the title or description is null or
-   *                                  empty, if the
-   *                                  distance is not a positive finite number, or
-   *                                  if the rating
-   *                                  is not between 1 and 10
+   * @param group          the group that did the activity, can be null
+   * @throws IllegalArgumentException if any of the values are invalid
    */
   public Activity(String title, String description, double distanceKm, int rating, LocalDateTime timeRegistered,
-      Person logger, Group group, int id) {
+      Person logger, Group group) {
     if (title == null || title.equals("")) {
       throw new IllegalArgumentException("Activity must have a title!");
     }
@@ -59,46 +49,36 @@ public class Activity {
     this.description = description;
 
     if (Double.isNaN(distanceKm) || Double.isInfinite(distanceKm) || distanceKm <= 0) {
-      throw new IllegalArgumentException("Activity must have a valid distance!");
+      throw new NumberFormatException("Activity must have a valid distance!");
     }
     this.distanceKm = distanceKm;
 
     if (rating < 1 || rating > 10) {
-      throw new IllegalArgumentException("Rating must be between 1 and 10!");
+      throw new NumberFormatException("Rating must be between 1 and 10!");
     }
     this.rating = rating;
 
     this.timeRegistered = timeRegistered;
     this.logger = logger;
+    seeActivity.add(logger);
     this.group = group;
-    this.id = id;
+
+    updateSeeActivity();
   }
 
   /**
-   * Creates a new activity with the given values without a group connected to the
-   * activity.
-   * Makes is possible for users to log a activity without a group.
+   * Creates a new activity without a group.
    *
-   * @param title          the title of the activity, cannot be null or empty
-   * @param description    a description of how the activity went, cannot be null
-   *                       or empty
-   * @param distanceKm     the distance of the activity in kilometers, must be a
-   *                       finite number
-   *                       greater than 0
-   * @param rating         the rating of the activity, must be between 1 and 10
-   *                       (inclusive)
+   * @param title          the title, cannot be null or empty
+   * @param description    how the activity went, cannot be null or empty
+   * @param distanceKm     the distance in kilometers, must be greater than 0
+   * @param rating         the rating, from 1 to 10
    * @param timeRegistered the date and time the activity was registered
    * @param logger         the person who logged the activity
-   * @param group          the group is set to null
-   * @param id             the unique id of the activity
-   * @throws IllegalArgumentException if the title or description is null or
-   *                                  empty, if the
-   *                                  distance is not a positive finite number, or
-   *                                  if the rating
-   *                                  is not between 1 and 10
+   * @throws IllegalArgumentException if any of the values are invalid
    */
   public Activity(String title, String description, double distanceKm, int rating, LocalDateTime timeRegistered,
-      Person logger, int id) {
+      Person logger) {
     if (title == null || title.equals("")) {
       throw new IllegalArgumentException("Activity must have a title!");
     }
@@ -110,19 +90,21 @@ public class Activity {
     this.description = description;
 
     if (Double.isNaN(distanceKm) || Double.isInfinite(distanceKm) || distanceKm <= 0) {
-      throw new IllegalArgumentException("Activity must have a valid distance!");
+      throw new NumberFormatException("Activity must have a valid distance!");
     }
     this.distanceKm = distanceKm;
 
     if (rating < 1 || rating > 10) {
-      throw new IllegalArgumentException("Rating must be between 1 and 10!");
+      throw new NumberFormatException("Rating must be between 1 and 10!");
     }
     this.rating = rating;
 
     this.timeRegistered = timeRegistered;
     this.logger = logger;
+    seeActivity.add(logger);
     this.group = null;
-    this.id = id;
+
+    updateSeeActivity();
   }
 
   /**
@@ -180,14 +162,19 @@ public class Activity {
   }
 
   /**
-   * Returns the group who performed this activty.
+   * Returns the group that did this activity.
    *
-   * @return the group who performed this activity
+   * @return the group, or null if the activity has no group
    */
   public Group getGroup() {
     return group;
   }
 
+  /**
+   * Checks if this activity has a group.
+   *
+   * @return true if the activity has a group, otherwise false
+   */
   public boolean hasGroup() {
     boolean hasGroup = false;
     if (group != null) {
@@ -198,11 +185,69 @@ public class Activity {
   }
 
   /**
-   * Returns the unique id of this activity.
+   * Checks if the given person can see this activity.
    *
-   * @return the id of the activity
+   * <p>
+   * The logger, the group members at the time the activity was created and
+   * people added with {@link #addCanSeeActivity(Person)} can always see it.
+   * Anyone who is currently in the group can also see it. A person who joins
+   * the group later and then leaves loses access.
+   * </p>
+   *
+   * @param person the person to check
+   * @return true if the person can see the activity, otherwise false
    */
-  public int getId() {
-    return id;
+  public boolean canSeeActivity(Person person) {
+    boolean canSee = false;
+
+    if (isAdded(person) || person.getHikeGroup() == group && hasGroup()) {
+      return canSee = true;
+    }
+
+    return canSee;
+  }
+
+  /**
+   * Gives a person access to see this activity. Does nothing if the person
+   * already has access.
+   *
+   * @param person the person to give access
+   */
+  public void addCanSeeActivity(Person person) {
+    if (isAdded(person) == false) {
+      seeActivity.add(person);
+    }
+  }
+
+  /**
+   * Checks if the given person has already been given access to this activity.
+   *
+   * @param person the person to check
+   * @return true if the person has access, otherwise false
+   */
+  private boolean isAdded(Person person) {
+    boolean added = false;
+
+    for (int i = 0; i < seeActivity.size(); i++) {
+      if (person == seeActivity.get(i)) {
+        added = true;
+      }
+    }
+
+    return added;
+  }
+
+  /**
+   * Gives all current members of the group access to see this activity.
+   * Does nothing if the activity has no group.
+   */
+  private void updateSeeActivity() {
+    if (group == null) {
+      return;
+    }
+    Person[] members = group.getAllMembers();
+    for (int i = 0; i < members.length; i++) {
+      addCanSeeActivity(members[i]);
+    }
   }
 }

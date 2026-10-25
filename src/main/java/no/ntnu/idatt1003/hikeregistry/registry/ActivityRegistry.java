@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import no.ntnu.idatt1003.hikeregistry.model.Activity;
+import no.ntnu.idatt1003.hikeregistry.model.Person;
 
 public class ActivityRegistry {
   // valgte dette for det har flere funksjoner til seg som gjøre det lettere å
@@ -21,9 +22,17 @@ public class ActivityRegistry {
 
   // retunerer alle aktivitetene som et array, er mer kjent med array og syntes
   // det er lettere å håndtere et for å vise fram aktivitetene
-  public Activity[] getAllActivitys() {
-    Activity[] act = activitys.toArray(new Activity[0]);
-    return act;
+  public Activity[] getAllActivitys(Person person) {
+    ArrayList<Activity> returnActivitys = new ArrayList<>();
+
+    // removes the activitys that person can not see.
+    for (int i = 0; i < activitys.size(); i++) {
+      if (activitys.get(i).canSeeActivity(person)) {
+        returnActivitys.add(activitys.get(i));
+      }
+    }
+
+    return returnActivitys.toArray(new Activity[0]);
   }
 
   // find activty by title
@@ -41,6 +50,7 @@ public class ActivityRegistry {
   // finds activity by data
   public Activity getActivityDate(LocalDateTime date) {
     Activity activity = null;
+
     for (int i = 0; i < activitys.size(); i++) {
       if (date.equals(activitys.get(i).getTimeRegistered())) {
         activity = activitys.get(i);
