@@ -20,11 +20,20 @@ public class PersonRegistry {
     return persons.toArray(new Person[0]);
   }
 
-  // finds person with firstname
-  public Person getPerson(String firstname) {
+  /**
+   * Finds person by name. The user can write firstname lastname and both.
+   *
+   * @param name
+   * @return
+   */
+  public Person getPerson(String name) {
     Person who = null;
     for (int i = 0; i < persons.size(); i++) {
-      if (firstname.equalsIgnoreCase(persons.get(i).getFirstName())) {
+      if (name.equalsIgnoreCase(persons.get(i).getFirstName())) {
+        who = persons.get(i);
+      } else if (name.equalsIgnoreCase(persons.get(i).getLastName())) {
+        who = persons.get(i);
+      } else if (name.equalsIgnoreCase(persons.get(i).getFullName())) {
         who = persons.get(i);
       }
     }

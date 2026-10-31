@@ -22,12 +22,12 @@ public class ActivityRegistry {
 
   // retunerer alle aktivitetene som et array, er mer kjent med array og syntes
   // det er lettere å håndtere et for å vise fram aktivitetene
-  public Activity[] getAllActivitys(Person person) {
+  public Activity[] getAllActivitys(Person user) {
     ArrayList<Activity> returnActivitys = new ArrayList<>();
 
     // removes the activitys that person can not see.
     for (int i = 0; i < activitys.size(); i++) {
-      if (activitys.get(i).canSeeActivity(person)) {
+      if (activitys.get(i).canSeeActivity(user)) {
         returnActivitys.add(activitys.get(i));
       }
     }
@@ -35,32 +35,48 @@ public class ActivityRegistry {
     return returnActivitys.toArray(new Activity[0]);
   }
 
-  // find activty by title
-  public Activity getActivityTitle(String title) {
-    Activity activity = null;
+  /**
+   * Finds a activty by title and returns it.
+   *
+   * @param title
+   * @return
+   */
+  public Activity[] getActivityTitle(String title, Person user) {
+    ArrayList<Activity> returnActivitys = new ArrayList<>();
+
     for (int i = 0; i < activitys.size(); i++) {
-      if (title.equalsIgnoreCase(activitys.get(i).getTitle())) {
-        activity = activitys.get(i);
+      if (title.equalsIgnoreCase(activitys.get(i).getTitle()) && activitys.get(i).canSeeActivity(user)) {
+        returnActivitys.add(activitys.get(i));
       }
     }
 
-    return activity;
+    return returnActivitys.toArray(new Activity[0]);
   }
 
-  // finds activity by data
-  public Activity getActivityDate(LocalDateTime date) {
-    Activity activity = null;
+  /**
+   *
+   * @param date
+   * @param user to check if it can see the activity
+   * @return list of activitys on the given date
+   */
+  public Activity[] getActivityDate(LocalDateTime date, Person user) {
+    ArrayList<Activity> returnActivitys = new ArrayList<>();
 
     for (int i = 0; i < activitys.size(); i++) {
-      if (date.equals(activitys.get(i).getTimeRegistered())) {
-        activity = activitys.get(i);
+      if (date.toLocalDate().equals(activitys.get(i).getTimeRegistered().toLocalDate())
+          && activitys.get(i).canSeeActivity(user)) {
+        returnActivitys.add(activitys.get(i));
       }
     }
 
-    return activity;
+    return returnActivitys.toArray(new Activity[0]);
   }
 
-  // deletes a activity
+  /**
+   * Delets an activity
+   *
+   * @param activity
+   */
   public void deleteActivity(Activity activity) {
     activity.getLogger().decreasHikeRegistered();
     if (activity.hasGroup()) {

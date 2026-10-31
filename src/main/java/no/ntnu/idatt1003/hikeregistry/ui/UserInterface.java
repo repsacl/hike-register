@@ -2,6 +2,7 @@ package no.ntnu.idatt1003.hikeregistry.ui;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import no.ntnu.idatt1003.hikeregistry.model.Activity;
@@ -33,11 +34,8 @@ public class UserInterface {
 
     personRegistry.addPerson(new Person("Brotherman", "Testern", groups[0]));
     personRegistry.addPerson(new Person("Bob", "Bobsen", groups[0]));
-    personRegistry.addPerson(new Person("Peter", "Oppland"));
+    personRegistry.addPerson(new Person("Peter", "Oppland", groups[1]));
     Person[] persons = personRegistry.getAllPersons();
-
-    // groups[0].addMember(persons[0]);
-    // groups[0].addMember(persons[1]);
 
     currentUser = persons[2];
 
@@ -72,7 +70,7 @@ public class UserInterface {
     String[] parts = input.trim().split("\\s", 3);
     String command = parts[0].toLowerCase();
 
-    // System.out.println(Arrays.toString(parts));
+    System.out.println(Arrays.toString(parts));
 
     // uses equalsignorecase to ignore capital letters, so the user dont have to
     // write with uppercase letters
@@ -81,6 +79,14 @@ public class UserInterface {
       case "me" -> {
         clearPreviusLines();
         showUser();
+      }
+      case "users" -> {
+        clearPreviusLines();
+        showAllUsers();
+      }
+      case "groups" -> {
+        clearPreviusLines();
+        showAllGroups();
       }
       case "switch" -> {
         if (parts.length >= 2 && parts[1].equalsIgnoreCase("user")) {
@@ -97,9 +103,10 @@ public class UserInterface {
         if (parts.length >= 3 && parts[1].equalsIgnoreCase("person")) {
           clearPreviusLines();
           findPerson(parts[2].replace("\"", ""));
+          System.out.println(Arrays.toString(parts));
         } else if (parts.length >= 3 && parts[1].equalsIgnoreCase("hike")) {
           clearPreviusLines();
-          findActivity(parts[2].replace("\"", ""));
+          findActivityTitle(parts[2].replace("\"", ""));
         } else if (parts.length == 2) {
           System.out
               .println("Unknown command: " + parts[1] + " try 'find hike <title>' or 'help' to se all commands");
@@ -129,6 +136,19 @@ public class UserInterface {
           switchGroup();
         } else {
           System.out.println("Join what? did you mean 'join group'?");
+        }
+      }
+      case "leave" -> {
+        if (parts.length >= 2 && parts[1].equalsIgnoreCase("group")) {
+          try {
+            currentUser.leaveGroup();
+            System.out.println("\nGroup left!");
+            showUser();
+          } catch (IllegalArgumentException e) {
+            System.out.println("Could not leave group!: " + e.getMessage());
+          }
+        } else {
+          System.out.println("Leave what? did you mean 'leave group'?");
         }
       }
       case "all" -> {
@@ -177,13 +197,7 @@ public class UserInterface {
 
   private void showUser() {
     System.out.println("\n==== CURRENT USER ====");
-    System.out.println("Name:         " + currentUser.getFullName());
-    if (currentUser.hasGroup()) {
-      System.out.println("Group:        " + currentUser.getHikeGroup().getName());
-    } else {
-      System.out.println("Group:        no group");
-    }
-    System.out.println("Hikes:        " + currentUser.getHikesRegistered() + "\n");
+    showPerson(currentUser);
   }
 
   /**
@@ -194,7 +208,7 @@ public class UserInterface {
   private void showActivity(Activity activity) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
-    System.out.println("\nTitle:                  " + activity.getTitle());
+    System.out.println("Title:                  " + activity.getTitle());
     System.out.println("Description:            " + activity.getDescription()); // + "\n");
     System.out.println("Distance:               " + activity.getDistanceKm() + "km");
     System.out.println("Rating:                 " + activity.getRating() + "/10");
@@ -211,10 +225,18 @@ public class UserInterface {
   private void showAllActivites() {
     Activity[] activitys = activityRegistry.getAllActivitys(currentUser);
     System.out.println("==== ALL ACTIVITYS ====");
-    System.out.println("shows all your private activitys and activtys shared with you");
+    System.out.println("shows all your private activitys and activtys shared with you\n");
 
     for (int i = 0; i < activitys.length; i++) {
       showActivity(activitys[i]);
+    }
+  }
+
+  private void showActivityList(Activity[] activityList) {
+    System.out.println();
+
+    for (int i = 0; i < activityList.length; i++) {
+      showActivity(activityList[i]);
     }
   }
 
@@ -271,7 +293,7 @@ public class UserInterface {
   }
 
   /**
-   * Regsiters a group and adds the current user as a member.
+   * Registers a group and adds the current user as a member.
    */
   private void registerGroup() {
     System.out.println("\n==== REGISTER A GROUP ====");
@@ -294,18 +316,28 @@ public class UserInterface {
     }
   }
 
-  // private void showGroups() {
-  // System.out.println("\n==== ALL GROUPS ====");
-  // System.out.println("shows all active groups\n");
+  private void showAllGroups() {
+    System.out.println("\n==== ALL GROUPS ====");
+    System.out.println("shows all active groups\n");
 
-  // Group[] groups = groupRegistry.getAllGroups();
-  // for (int i = 0; i < groups.length; i++) {
-  // System.out.println("Name: " + groups[i].getName());
-  // System.out.println("Hikes registrered: " + groups[i].getHikesRegistered() +
-  // "\n");
-  // }
+    Group[] groups = groupRegistry.getAllGroups();
 
-  // }
+    for (int i = 0; i < groups.length; i++) {
+      showGroup(groups[i]);
+    }
+
+  }
+
+  /**
+   * Shows a spesific groups information.
+   *
+   * @param group
+   */
+  private void showGroup(Group group) {
+    System.out.println("Name       " + group.getName());
+    System.out.println("Members:   " + group.getCountMembers());
+    System.out.println("Hikes:     " + group.getHikesRegistered() + "\n");
+  }
 
   /**
    * User switches a group or joins a group if not a member
@@ -318,9 +350,7 @@ public class UserInterface {
     Group[] groups = groupRegistry.getAllGroups();
     for (int i = 0; i < groups.length; i++) {
       System.out.println(i + 1 + ")");
-      System.out.println("Name       " + groups[i].getName());
-      System.out.println("Members:   " + groups[i].getCountMembers());
-      System.out.println("Hikes:     " + groups[i].getHikesRegistered() + "\n");
+      showGroup(groups[i]);
     }
 
     System.out.println("\nor write 'register' to register a new group\n");
@@ -351,7 +381,7 @@ public class UserInterface {
   }
 
   /**
-   * Registers a new user
+   * Registers a new user and login to that new user.
    */
   private void regsiterUser() {
     System.out.println("\n==== REGISTER A NEW USER ====");
@@ -396,17 +426,11 @@ public class UserInterface {
         continue;
       }
       System.out.println(i + 1 + ")");
-      System.out.println("Name:     " + users[i].getFullName());
-      if (users[i].hasGroup()) {
-        System.out.println("Group:    " + users[i].getHikeGroup().getName());
-      } else {
-        System.out.println("Group:    no group");
-      }
-      System.out.println("Hikes:    " + users[i].getHikesRegistered());
+      showPerson(users[i]);
     }
     System.out.println("\nor write 'register' to register a new user\n");
 
-    String input = readInputOrCancel("select a number");
+    String input = readInputOrCancel("Select a number");
     if (input == null) {
       return;
     }
@@ -450,15 +474,16 @@ public class UserInterface {
   }
 
   /**
-   * Find a person by name. Uses a registry function thet returns the person
+   * Find a person by name. User can write firstname, lastname and both. Uses a
+   * registry function thet returns the person
    *
-   * @param firstName
+   * @param name
    */
-  private void findPerson(String firstName) {
-    Person person = personRegistry.getPerson(firstName);
+  private void findPerson(String name) {
+    Person person = personRegistry.getPerson(name);
 
     if (person == null) {
-      System.out.println("No person found with firstname " + firstName);
+      System.out.println("No person found with name " + name);
       return;
     }
 
@@ -474,16 +499,19 @@ public class UserInterface {
    * If an activity dose not exist,
    * then returns a print to the user with that the activity does not exist
    */
-  private void findActivity(String title) {
-    Activity activity = activityRegistry.getActivityTitle(title);
+  private void findActivityTitle(String title) {
+    Activity[] activityList = activityRegistry.getActivityTitle(title, currentUser);
 
-    if (activity == null) {
+    if (activityList.length == 0) {
       System.out.println("No hike found with title: " + title);
       return;
+    } else if (activityList.length == 1) {
+      System.out.println("Found hike " + title);
+    } else if (activityList.length > 1) {
+      System.out.println("Found multiple hikes with title: " + title);
     }
 
-    System.out.println("Found hike " + title);
-    showActivity(activity);
+    showActivityList(activityList);
   }
 
   /**
@@ -493,19 +521,76 @@ public class UserInterface {
    * Then deletes the activity from the activity register.
    */
   private void deleteActivityTitle(String title) {
-    Activity activity = activityRegistry.getActivityTitle(title);
+    Activity[] activityList = activityRegistry.getActivityTitle(title, currentUser);
 
-    if (activity == null) {
+    if (activityList.length == 0) {
       System.out.println("No hike found with title: " + title);
       return;
+    } else if (activityList.length == 1) {
+      activityRegistry.deleteActivity(activityList[0]);
+      System.out.println("Hike: " + title + ", is deleted");
+      return;
+    } else if (activityList.length > 1) {
+      System.out.println("Found multiple hikes with title: " + title);
     }
-    activityRegistry.deleteActivity(activity);
 
-    System.out.println("Hike: " + title + ", is deleted");
+    System.out.println("\n==== DELETE ACTIVITY ====");
+    System.out.println("Write 'cancel' to end at any time");
+    System.out.println("Select one of the activities to delete below\n");
+
+    for (int i = 0; i < activityList.length; i++) {
+      System.out.println(i + 1 + ")");
+      showActivity(activityList[i]);
+    }
+
+    String input = readInputOrCancel("Select a number");
+    if (input == null) {
+      return;
+    }
+
+    try {
+      int choice = Integer.parseInt(input);
+
+      activityRegistry.deleteActivity(activityList[choice - 1]);
+      System.out.println("Hike: " + title + " " + choice + ", is deleted");
+
+    } catch (IllegalArgumentException e) {
+      System.out.println("Could not delete activity: " + e.getMessage());
+    }
   }
 
   public Person getCurrentUser() {
     return currentUser;
+  }
+
+  /**
+   * shows a Persons info.
+   *
+   * @param person
+   */
+  private void showPerson(Person person) {
+    System.out.println("Name:     " + person.getFullName());
+    if (person.hasGroup()) {
+      System.out.println("Group:    " + person.getHikeGroup().getName());
+    } else {
+      System.out.println("Group:    no group");
+    }
+    System.out.println("Hikes:    " + person.getHikesRegistered() + "\n");
+  }
+
+  /**
+   * shows all users/persons
+   */
+  private void showAllUsers() {
+    Person[] users = personRegistry.getAllPersons();
+    System.out.println("==== USERS ====\n");
+    System.out.println("shows all users");
+    for (int i = 0; i < users.length; i++) {
+      if (users[i] == currentUser) {
+        System.out.println("== YOU ==");
+      }
+      showPerson(users[i]);
+    }
   }
 
   /**

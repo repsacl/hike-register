@@ -12,15 +12,12 @@ package no.ntnu.idatt1003.hikeregistry.model;
  */
 public class Person {
 
-  // private int id = 0;
   private final String firstName; // egen variabel for fornavn
   private final String lastName; // egen variabel for etternavn
-  // private final String gender;
   private Group group; // hvis personen er i en tur-gruppe kan han/hun notere det her får å få det på
                        // aktivtetene sine. Gir også mulighet for å etterhvert sortere etter
                        // tur-grupper
   private int hikesRegistered = 0;
-  // private final Random r = new Random();
 
   /**
    * Creates a new person who is a member of a hike group.
@@ -28,27 +25,24 @@ public class Person {
    * @param firstName the person's first name, cannot be null or empty
    * @param lastName  the person's last name, cannot be null or empty
    * @param group     the name of the hike group, cannot be null or empty
-   * @throws IllegalArgumentException if the first name, last name or hike group
-   *                                  is null or empty
+   * @throws IllegalArgumentException if the first name, last name is null or
+   *                                  empty
    */
   public Person(String firstName, String lastName, Group group) {
-    if (firstName == null || firstName.equals("")) {
+    if (firstName == null || firstName.isBlank()) {
       throw new IllegalArgumentException("Person must have a firstname!");
     }
     this.firstName = firstName;
 
-    if (lastName == null || lastName.equals("")) {
+    if (lastName == null || lastName.isBlank()) {
       throw new IllegalArgumentException("Person must have a lastname!");
     }
     this.lastName = lastName;
-    // this.gender = gender;
-
-    if (group == null) {
-      throw new IllegalArgumentException("Person must have a valid hikegroup!");
-    }
     this.group = group;
-    group.addMember(this);
-    // this.id = r.nextInt(10,99);
+
+    if (group != null) {
+      group.addMember(this);
+    }
   }
 
   // personer som skal loggføre må ikke være i en tur-gruppe
@@ -66,18 +60,7 @@ public class Person {
    * @throws IllegalArgumentException if the first name or last name is null
    */
   public Person(String firstName, String lastName) {
-    if (firstName == null || firstName.equals("")) {
-      throw new IllegalArgumentException("Person must have a firstname!");
-    }
-    this.firstName = firstName;
-
-    if (lastName == null || lastName.equals("")) {
-      throw new IllegalArgumentException("Person must have a lastname!");
-    }
-    this.lastName = lastName;
-    this.group = null;
-    // this.gender = gender;
-    // this.id = r.nextInt(10,99);
+    this(firstName, lastName, null);
   }
 
   /**
@@ -147,10 +130,13 @@ public class Person {
   }
 
   /**
-   * Decreases this persons hikes registered.
+   * Decreases this persons hikes registered. Wont go below zero
    */
   public void decreasHikeRegistered() {
     hikesRegistered -= 1;
+    if (hikesRegistered < 0) {
+      hikesRegistered = 0;
+    }
   }
 
   /**
@@ -159,6 +145,20 @@ public class Person {
    * @param name the name of the new hike group
    */
   public void updateHikeGroup(Group newGroup) {
-    this.group = newGroup;
+    // if (newGroup == null) {
+    // group.removeMember(this);
+    // }
+    group = newGroup;
+  }
+
+  /**
+   * Removes this person from it's current group.
+   * Group is set to null
+   */
+  public void leaveGroup() {
+    if (group == null) {
+      throw new IllegalArgumentException("You were no group member to beging with.");
+    }
+    group.removeMember(this);
   }
 }

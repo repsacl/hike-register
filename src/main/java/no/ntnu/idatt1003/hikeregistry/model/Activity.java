@@ -38,12 +38,12 @@ public class Activity {
    */
   public Activity(String title, String description, double distanceKm, int rating, LocalDateTime timeRegistered,
       Person logger, Group group) {
-    if (title == null || title.equals("")) {
+    if (title == null || title.isBlank()) {
       throw new IllegalArgumentException("Activity must have a title!");
     }
     this.title = title;
 
-    if (description == null || description.equals("")) {
+    if (description == null || description.isBlank()) {
       throw new IllegalArgumentException("Activity must have a description!");
     }
     this.description = description;
@@ -79,32 +79,8 @@ public class Activity {
    */
   public Activity(String title, String description, double distanceKm, int rating, LocalDateTime timeRegistered,
       Person logger) {
-    if (title == null || title.equals("")) {
-      throw new IllegalArgumentException("Activity must have a title!");
-    }
-    this.title = title;
 
-    if (description == null || description.equals("")) {
-      throw new IllegalArgumentException("Activity must have a description!");
-    }
-    this.description = description;
-
-    if (Double.isNaN(distanceKm) || Double.isInfinite(distanceKm) || distanceKm <= 0) {
-      throw new NumberFormatException("Activity must have a valid distance!");
-    }
-    this.distanceKm = distanceKm;
-
-    if (rating < 1 || rating > 10) {
-      throw new NumberFormatException("Rating must be between 1 and 10!");
-    }
-    this.rating = rating;
-
-    this.timeRegistered = timeRegistered;
-    this.logger = logger;
-    seeActivity.add(logger);
-    this.group = null;
-
-    updateSeeActivity();
+    this(title, description, distanceKm, rating, timeRegistered, logger, null);
   }
 
   /**
