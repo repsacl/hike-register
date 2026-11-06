@@ -1,17 +1,28 @@
 package no.ntnu.idatt1003.hikeregistry.registry;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import no.ntnu.idatt1003.hikeregistry.model.Activity;
 import no.ntnu.idatt1003.hikeregistry.model.Person;
 
+/**
+ * Represents a registry that keeps track of all activitys in the hike registry.
+ *
+ * <p>
+ * The registry can add and remove activitys, return all activitys that a person
+ * can see, returns activitys by title,
+ * returns activtys by date and interval between to dates.
+ * </p>
+ */
 public class ActivityRegistry {
-  // valgte dette for det har flere funksjoner til seg som gjøre det lettere å
-  // håndtere data, eks legge til og fjerne
   private final ArrayList<Activity> activitys = new ArrayList<>();
 
-  // legger tl en ny aktivitet til registeret
+  /**
+   * Adds a new activity tot the activty register.
+   *
+   * @param newActivity
+   */
   public void addActivity(Activity newActivity) {
     newActivity.getLogger().increasHikeRegistered();
     if (newActivity.hasGroup()) {
@@ -20,64 +31,89 @@ public class ActivityRegistry {
     activitys.add(newActivity);
   }
 
-  // retunerer alle aktivitetene som et array, er mer kjent med array og syntes
-  // det er lettere å håndtere et for å vise fram aktivitetene
+  /**
+   * Gets all activitys who a person can see, and returns them in an array.
+   *
+   * @param user
+   * @return array with activitys
+   */
   public Activity[] getAllActivitys(Person user) {
-    ArrayList<Activity> returnActivitys = new ArrayList<>();
-
-    // removes the activitys that person can not see.
-    for (int i = 0; i < activitys.size(); i++) {
-      if (activitys.get(i).canSeeActivity(user)) {
-        returnActivitys.add(activitys.get(i));
-      }
-    }
-
-    return returnActivitys.toArray(new Activity[0]);
+    // includes only activtys that user can see
+    return activitys.stream()
+        .filter(act -> act.canSeeActivity(user))
+        .toArray(Activity[]::new);
   }
 
   /**
-   * Finds a activty by title and returns it.
+   * Get all activitys made by a person and returns them in an array.
+   *
+   * @param user
+   * @return array with activitys
+   */
+  public Activity[] getOwnActivitys(Person user) {
+    // includes only activty that user logged.
+    return activitys.stream()
+        .filter(act -> act.getLogger() == user)
+        .toArray(Activity[]::new);
+  }
+
+  /**
+   * Finds a activtys by title and returns it as an array if person can see it.
    *
    * @param title
-   * @return
+   * @return array with activitys
    */
   public Activity[] getActivityTitle(String title, Person user) {
-    ArrayList<Activity> returnActivitys = new ArrayList<>();
-
-    for (int i = 0; i < activitys.size(); i++) {
-      if (title.equalsIgnoreCase(activitys.get(i).getTitle()) && activitys.get(i).canSeeActivity(user)) {
-        returnActivitys.add(activitys.get(i));
-      }
-    }
-
-    return returnActivitys.toArray(new Activity[0]);
+    return activitys.stream()
+        .filter(act -> act.getTitle().equalsIgnoreCase(title) && act.canSeeActivity(user))
+        .toArray(Activity[]::new);
   }
 
   /**
+   * Get all activitys on a spesific date.
    *
    * @param date
    * @param user to check if it can see the activity
    * @return list of activitys on the given date
    */
-  public Activity[] getActivityDate(LocalDateTime date, Person user) {
-    ArrayList<Activity> returnActivitys = new ArrayList<>();
-
-    for (int i = 0; i < activitys.size(); i++) {
-      if (date.toLocalDate().equals(activitys.get(i).getTimeRegistered().toLocalDate())
-          && activitys.get(i).canSeeActivity(user)) {
-        returnActivitys.add(activitys.get(i));
-      }
-    }
-
-    return returnActivitys.toArray(new Activity[0]);
+  public Activity[] getActivityDate(LocalDate date, Person user) {
+    return activitys.stream()
+        .filter(act -> act.getTimeRegistered().toLocalDate().equals(date) && act.canSeeActivity(user))
+        .toArray(Activity[]::new);
   }
 
   /**
-   * Delets an activity
+   * Get all activitys innside an interval between a start-date and an end-date.
+   *
+   * @param startDate
+   * @param endDate
+   * @param user      to check if it can see the activity
+   * @return list of activitys between th given dates
+   */
+  public Activity[] getActivityDateStartEnd(LocalDate startDate, LocalDate endDate, Person user) {
+    if (startDate.isAfter(endDate)) {
+      throw new IllegalArgumentException("Start-date cant be after end-date!");
+    }
+
+    return activitys.stream()
+        .filter(act -> !act.getTimeRegistered().toLocalDate().isBefore(startDate)
+            && !act.getTimeRegistered().toLocalDate().isAfter(endDate) &&
+            act.canSeeActivity(user))
+        .toArray(Activity[]::new);
+  }
+
+  /**
+   * Delets a spesific activity, users can only delete their own hikes.
    *
    * @param activity
+   * @param user
+   * @throws IllegalArgumentException if user aint th logger
    */
-  public void deleteActivity(Activity activity) {
+  public void deleteActivity(Activity activity, Person user) {
+    if (activity.getLogger() != user) {
+      throw new IllegalArgumentException("Persons can not delete an others activity!");
+    }
+
     activity.getLogger().decreasHikeRegistered();
     if (activity.hasGroup()) {
       activity.getGroup().decreasHikeRegistered();

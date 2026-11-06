@@ -4,18 +4,31 @@ import java.util.ArrayList;
 
 import no.ntnu.idatt1003.hikeregistry.model.Person;
 
+/**
+ * Represents a registry that keeps track of all persons in the hike registry.
+ *
+ * <p>
+ * The registry can add and remove, return persons by firstname, lastname and
+ * both. returns all persons as an array.
+ * </p>
+ */
 public class PersonRegistry {
-  // valgte dette for det har flere funksjoner til seg som gjøre det lettere å
-  // håndtere data
   private final ArrayList<Person> persons = new ArrayList<>();
 
+  /**
+   * Adds a new person to person registry.
+   *
+   * @param newPerson
+   */
   public void addPerson(Person newPerson) {
     persons.add(newPerson);
   }
 
-  // retunerer alle personenen som et array, er mer kjent med array og syntes det
-  // er lettere å håndtere for å vise fram personene
-  // returns a copy of the ArrayList so i cant be manipulated
+  /**
+   * Gets all persons in person registry.
+   *
+   * @return array with all persons
+   */
   public Person[] getAllPersons() {
     return persons.toArray(new Person[0]);
   }
@@ -24,20 +37,13 @@ public class PersonRegistry {
    * Finds person by name. The user can write firstname lastname and both.
    *
    * @param name
-   * @return
+   * @return person
    */
   public Person getPerson(String name) {
-    Person who = null;
-    for (int i = 0; i < persons.size(); i++) {
-      if (name.equalsIgnoreCase(persons.get(i).getFirstName())) {
-        who = persons.get(i);
-      } else if (name.equalsIgnoreCase(persons.get(i).getLastName())) {
-        who = persons.get(i);
-      } else if (name.equalsIgnoreCase(persons.get(i).getFullName())) {
-        who = persons.get(i);
-      }
-    }
-
-    return who;
+    return persons.stream()
+        .filter(prs -> prs.getFirstName().equalsIgnoreCase(name) || prs.getFullName().equalsIgnoreCase(name)
+            || prs.getLastName().equalsIgnoreCase(name))
+        .findFirst()
+        .orElse(null);
   }
 }

@@ -129,7 +129,7 @@ public class GroupTest {
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
         () -> group.addMember(null));
 
-    assertEquals("New member cant be null", exception.getMessage());
+    assertEquals("New member cant be null.", exception.getMessage());
   }
 
   /**
