@@ -5,9 +5,23 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit tests for the {@link Group} class.
+ */
 public class GroupTest {
+
+  private Group group;
+
+  /**
+   * Creates a fresh, empty group before each test.
+   */
+  @BeforeEach
+  void setUp() {
+    group = new Group("Group");
+  }
 
   /**
    * Positive test: verifies that group created with a valid string
@@ -18,7 +32,6 @@ public class GroupTest {
    */
   @Test
   void validateReturnAllTrue() {
-    Group group = new Group("Group");
     Person person = new Person("Brotherman", "Testern", group);
 
     assertEquals("Group", group.getName());
@@ -34,8 +47,6 @@ public class GroupTest {
    */
   @Test
   void HikesRegisteredIncreasDecreas() {
-    Group group = new Group("Group");
-
     assertEquals(0, group.getHikesRegistered());
 
     group.increasHikeRegistered();
@@ -51,7 +62,6 @@ public class GroupTest {
    */
   @Test
   void hikesRegisteredNeverBelowZero() {
-    Group group = new Group("Group");
     group.decreasHikeRegistered();
     group.decreasHikeRegistered();
 
@@ -64,7 +74,6 @@ public class GroupTest {
    */
   @Test
   void addNewMemberFollowsPerson() {
-    Group group = new Group("Group");
     Person person = new Person("Brotherman", "Testern");
 
     group.addMember(person);
@@ -81,7 +90,6 @@ public class GroupTest {
    */
   @Test
   void addNewMemberWithGroupFollows() {
-    Group group = new Group("Group");
     Group group2 = new Group("Group2");
     Person person = new Person("Brotherman", "Testern", group2);
 
@@ -124,8 +132,6 @@ public class GroupTest {
    */
   @Test
   void throwWhenAddMemberNull() {
-    Group group = new Group("Group");
-
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
         () -> group.addMember(null));
 
@@ -138,7 +144,6 @@ public class GroupTest {
    */
   @Test
   void throwWhenAddMemberExists() {
-    Group group = new Group("Group");
     Person person = new Person("Brotherman", "Testern", group);
 
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,

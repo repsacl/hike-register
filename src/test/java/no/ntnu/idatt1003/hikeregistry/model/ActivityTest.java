@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -20,20 +21,35 @@ import org.junit.jupiter.api.Test;
  */
 public class ActivityTest {
 
+  private Group group;
+  private Group group2;
+  private Person person;
+  private LocalDateTime time;
+
+  /**
+   * Creates two groups, a person without a group and a fixed time before each
+   * test.
+   *
+   * <p>
+   * A fixed {@link LocalDateTime} is used instead of {@code now()} so the tests
+   * give the same result every time they run.
+   * </p>
+   */
+  @BeforeEach
+  void setUp() {
+    group = new Group("Group");
+    group2 = new Group("Group2");
+    person = new Person("Brotherman", "Testern");
+    time = LocalDateTime.of(2026, 10, 1, 12, 0);
+  }
+
   /**
    * Positive test: verifies that an activity created with valid input returns
    * the correct values.
-   *
-   * <p>
-   * A fixed {@link LocalDateTime} is used instead of {@code now()} so the test
-   * gives the same result every time it runs.
-   * </p>
    */
   @Test
   void validateReturnALlTrue() {
-    Group group = new Group("testern");
-    Person person = new Person("Brotherman", "Testern", group);
-    LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
+    group.addMember(person);
 
     Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, person, person.getHikeGroup());
 
@@ -55,9 +71,6 @@ public class ActivityTest {
    */
   @Test
   void returTrueNoGroup() {
-    Person person = new Person("Brotherman", "Testern");
-    LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
-
     Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, person, person.getHikeGroup());
     Activity activity2 = new Activity("Fjelltur", "Fin tur", 10, 7, time, person);
 
@@ -75,7 +88,6 @@ public class ActivityTest {
   @Test
   void returnTrueSeeActicty() {
     Person brotherman = new Person("Brotherman", "Testern");
-    LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
 
     Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman, brotherman.getHikeGroup());
 
@@ -96,9 +108,7 @@ public class ActivityTest {
    */
   @Test
   void returnFalseSeeActicty() {
-    Group group = new Group("Group");
     Person brotherman = new Person("Brotherman", "Testern");
-    LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
 
     Person bob = new Person("Bob", "Bobsen", group);
 
@@ -116,12 +126,9 @@ public class ActivityTest {
    */
   @Test
   void returnTrueSeeActictyGroup() {
-    Group group = new Group("Group");
     Person brotherman = new Person("Brotherman", "Testern", group);
     Person bob = new Person("Bob", "Bobsen", group);
     Person peter = new Person("Peter", "Oppland", group);
-
-    LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
 
     Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman, brotherman.getHikeGroup());
 
@@ -139,15 +146,10 @@ public class ActivityTest {
    */
   @Test
   void returnFalseSeeActictyNotAdded() {
-    Group group = new Group("Group");
-    Group group2 = new Group("Group2");
-
     Person brotherman = new Person("Brotherman", "Testern", group);
 
     Person bob = new Person("Bob", "Bobsen", group2);
     Person peter = new Person("Peter", "Oppland");
-
-    LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
 
     Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman, brotherman.getHikeGroup());
 
@@ -161,15 +163,10 @@ public class ActivityTest {
    */
   @Test
   void returnTrueSeeActivityAfterSwitchGroup() {
-    Group group = new Group("Group");
-    Group group2 = new Group("Group2");
-
     Person brotherman = new Person("Brotherman", "Testern", group);
 
     Person bob = new Person("Bob", "Bobsen", group);
     Person peter = new Person("Peter", "Oppland", group);
-
-    LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
 
     Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman, brotherman.getHikeGroup());
 
@@ -191,13 +188,9 @@ public class ActivityTest {
    */
   @Test
   void returnFalseSeeActivityAfterHikeAfterSwitchGroup() {
-    Group group = new Group("Group");
-    Group group2 = new Group("Group2");
-
     Person brotherman = new Person("Brotherman", "Testern", group);
     Person bob = new Person("Bob", "Bobsen", group);
 
-    LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
     Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman, brotherman.getHikeGroup());
 
     Person cal = new Person("Cal", "Tango");
@@ -218,9 +211,6 @@ public class ActivityTest {
    */
   @Test
   void throwWhenTitleEmpty() {
-    Person person = new Person("Brotherman", "Testern");
-    LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
-
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
         () -> new Activity("", "Fin tur", 10, 10, time, person));
 
@@ -233,9 +223,6 @@ public class ActivityTest {
    */
   @Test
   void throwWhenTitleNull() {
-    Person person = new Person("Brotherman", "Testern");
-    LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
-
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
         () -> new Activity(null, "Fin tur", 10, 10, time, person));
 
@@ -248,9 +235,6 @@ public class ActivityTest {
    */
   @Test
   void throwWhenDescriptionEmpty() {
-    Person person = new Person("Brotherman", "Testern");
-    LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
-
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
         () -> new Activity("Fjelltur", "", 10, 10, time, person));
 
@@ -263,9 +247,6 @@ public class ActivityTest {
    */
   @Test
   void throwWhenDescriptionNull() {
-    Person person = new Person("Brotherman", "Testern");
-    LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
-
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
         () -> new Activity("Fjelltur", null, 10, 10, time, person));
 
@@ -278,9 +259,6 @@ public class ActivityTest {
    */
   @Test
   void throwWhenDistanceNegative() {
-    Person person = new Person("Brotherman", "Testern");
-    LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
-
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
         () -> new Activity("Fjelltur", "Fin tur", 0, 10, time, person));
     assertEquals("Activity must have a valid distance!", exception.getMessage());
@@ -296,9 +274,6 @@ public class ActivityTest {
    */
   @Test
   void throwWhenDistanceNaN() {
-    Person person = new Person("Brotherman", "Testern");
-    LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
-
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
         () -> new Activity("Fjelltur", "Fin tur", Double.NaN, 10, time, person));
 
@@ -311,9 +286,6 @@ public class ActivityTest {
    */
   @Test
   void throwWhenDistanceInf() {
-    Person person = new Person("Brotherman", "Testern");
-    LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
-
     Double distance = (1.0 / 0.0);
 
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -328,9 +300,6 @@ public class ActivityTest {
    */
   @Test
   void throwWhenRatingIsUnder() {
-    Person person = new Person("Brotherman", "Testern");
-    LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
-
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
         () -> new Activity("Fjelltur", "Fin tur", 10, 0, time, person));
 
@@ -343,9 +312,6 @@ public class ActivityTest {
    */
   @Test
   void throwWhenRatingIsOver() {
-    Person person = new Person("Brotherman", "Testern");
-    LocalDateTime time = LocalDateTime.of(2026, 10, 1, 12, 0);
-
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
         () -> new Activity("Fjelltur", "Fin tur", 10, 11, time, person));
 

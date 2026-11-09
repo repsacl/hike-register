@@ -6,17 +6,23 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for the {@link Person} class.
- *
- * <p>
- * Note: The basic structure of this test class was suggested by an AI assistant
- * (Claude)
- * and then reviewed and adapted by me.
  */
 public class PersonTest {
+
+  private Group group;
+
+  /**
+   * Creates a fresh, empty group before each test.
+   */
+  @BeforeEach
+  void setUp() {
+    group = new Group("testern");
+  }
 
   /**
    * Positive test: verifies that a person created with valid names and hikegroup
@@ -31,7 +37,6 @@ public class PersonTest {
    */
   @Test
   void validateReturnAllTrue() {
-    Group group = new Group("testern");
     Person brotherman = new Person("Brotherman", "Testern", group);
     Person bob = new Person("Bob", "Bobsen");
 
@@ -89,7 +94,6 @@ public class PersonTest {
    */
   @Test
   void constructorAddsPersonToGroup() {
-    Group group = new Group("testern");
     Person brotherman = new Person("Brotherman", "Testern", group);
 
     assertEquals(group, brotherman.getHikeGroup());
@@ -102,7 +106,6 @@ public class PersonTest {
    */
   @Test
   void hasGroupFollowsUpdates() {
-    Group group = new Group("testern");
     Person brotherman = new Person("Brotherman", "Testern");
     assertFalse(brotherman.hasGroup());
 
@@ -131,7 +134,6 @@ public class PersonTest {
    */
   @Test
   void personLeaveGroup() {
-    Group group = new Group("testern");
     Person brotherman = new Person("Brotherman", "Testern");
 
     group.addMember(brotherman);
@@ -151,7 +153,6 @@ public class PersonTest {
    */
   @Test
   void throwWhenFirstnameEmpty() {
-
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
         () -> new Person("", "Testern"));
 
@@ -164,7 +165,6 @@ public class PersonTest {
    */
   @Test
   void throwWhenFirstnameEmptyGroup() {
-    Group group = new Group("testern");
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
         () -> new Person("", "Testern", group));
 

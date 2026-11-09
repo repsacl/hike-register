@@ -21,6 +21,14 @@ public class PersonRegistry {
    * @param newPerson
    */
   public void addPerson(Person newPerson) {
+    if (newPerson == null) {
+      throw new IllegalArgumentException("Person added to the registry cant be null!");
+    }
+
+    if (persons.stream().anyMatch(prs -> prs.getFullName().equalsIgnoreCase(newPerson.getFullName()))) {
+      throw new IllegalArgumentException("Person already exists in the registry!");
+    }
+
     persons.add(newPerson);
   }
 
@@ -36,13 +44,18 @@ public class PersonRegistry {
   /**
    * Finds person by name. The user can write firstname lastname and both.
    *
-   * @param name
-   * @return person
+   * @param name to search
+   * @return person matching name
    */
   public Person getPerson(String name) {
+    if (name == null || name.isBlank()) {
+      return null;
+    }
+    String searchName = name.trim();
+
     return persons.stream()
-        .filter(prs -> prs.getFirstName().equalsIgnoreCase(name) || prs.getFullName().equalsIgnoreCase(name)
-            || prs.getLastName().equalsIgnoreCase(name))
+        .filter(prs -> prs.getFirstName().equalsIgnoreCase(searchName) || prs.getFullName().equalsIgnoreCase(searchName)
+            || prs.getLastName().equalsIgnoreCase(searchName))
         .findFirst()
         .orElse(null);
   }
