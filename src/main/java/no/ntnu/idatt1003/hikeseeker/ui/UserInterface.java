@@ -1,16 +1,18 @@
-package no.ntnu.idatt1003.hikeregistry.ui;
+package no.ntnu.idatt1003.hikeseeker.ui;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Scanner;
 
-import no.ntnu.idatt1003.hikeregistry.model.Activity;
-import no.ntnu.idatt1003.hikeregistry.model.Group;
-import no.ntnu.idatt1003.hikeregistry.model.Person;
-import no.ntnu.idatt1003.hikeregistry.registry.ActivityRegistry;
-import no.ntnu.idatt1003.hikeregistry.registry.GroupRegistry;
-import no.ntnu.idatt1003.hikeregistry.registry.PersonRegistry;
+import no.ntnu.idatt1003.hikeseeker.model.Activity;
+import no.ntnu.idatt1003.hikeseeker.model.Group;
+import no.ntnu.idatt1003.hikeseeker.model.Person;
+import no.ntnu.idatt1003.hikeseeker.registry.ActivityRegistry;
+import no.ntnu.idatt1003.hikeseeker.registry.GroupRegistry;
+import no.ntnu.idatt1003.hikeseeker.registry.PersonRegistry;
 
 public class UserInterface {
   private boolean running = true;
@@ -88,6 +90,10 @@ public class UserInterface {
           System.out.println("'My' what? Try 'my hikes' or 'help' to see all commands");
         }
       }
+      case "shared" -> {
+        clearPreviusLines();
+        showAllShared();
+      }
       case "users" -> {
         clearPreviusLines();
         showAllUsers();
@@ -112,15 +118,19 @@ public class UserInterface {
           clearPreviusLines();
           findPerson(parts[2].replace("\"", ""));
           System.out.println(Arrays.toString(parts));
-        } else if (parts.length >= 3 && parts[1].equalsIgnoreCase("hike")) {
+        } else if (parts.length >= 3 && parts[1].equalsIgnoreCase("title")) {
           clearPreviusLines();
           findActivityTitle(parts[2].replace("\"", ""));
+
+        } else if (parts.length >= 3 && parts[1].equalsIgnoreCase("date")) {
+          clearPreviusLines();
+          findActivityDate(parts[2]);
         } else if (parts.length == 2) {
           System.out
-              .println("Unknown command: " + parts[1] + " try 'find hike <title>' or 'help' to se all commands");
+              .println("Unknown command: " + parts[1] + " try 'find title <title>' or 'help' to se all commands");
         } else {
           System.out
-              .println("Find what? Try 'find hike <title>', 'find person <firstname>' or 'help' to see all commands");
+              .println("Find what? Try 'find title <title>', 'find person <name>' or 'help' to see all commands");
         }
       }
       case "register" -> {
@@ -135,7 +145,22 @@ public class UserInterface {
           regsiterUser();
         } else {
           System.out
-              .println("Register what? Try 'register hike', 'register group' or 'help' to see more register commands");
+              .println("Register what? Try 'register hike', 'register group' or 'help' to see more commands");
+        }
+      }
+      case "edit" -> {
+        if (parts.length >= 2 && parts[1].equalsIgnoreCase("hike")) {
+          clearPreviusLines();
+          editHike();
+        } else {
+          System.out
+              .println("edit what? Try 'edit hike' or 'help' to see all commands");
+        }
+      }
+      case "share" -> {
+        if (parts.length >= 3 && parts[1].equalsIgnoreCase("hike")) {
+          clearPreviusLines();
+          shareActivityPerson(parts[2]);
         }
       }
       case "join" -> {
@@ -148,6 +173,7 @@ public class UserInterface {
       }
       case "leave" -> {
         if (parts.length >= 2 && parts[1].equalsIgnoreCase("group")) {
+          clearPreviusLines();
           try {
             currentUser.leaveGroup();
             System.out.println("\nGroup left!");
@@ -216,7 +242,7 @@ public class UserInterface {
       return;
     }
 
-    System.out.println("== Activitys ==");
+    System.out.println("\n==== ALl YOUR ACTIVITYS ====\n");
     for (int i = 0; i < activitys.length; i++) {
       showActivity(activitys[i]);
     }
@@ -229,7 +255,7 @@ public class UserInterface {
    * @param activity
    */
   private void showActivity(Activity activity) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
     System.out.println("Title:                  " + activity.getTitle());
     System.out.println("Description:            " + activity.getDescription()); // + "\n");
@@ -239,6 +265,7 @@ public class UserInterface {
     if (activity.hasGroup()) {
       System.out.println("Group:                  " + activity.getGroup().getName());
     }
+    System.out.println("Shared:                 " + activity.isShared());
     System.out.println("Time registered:        " + formatter.format(activity.getTimeRegistered()) + "\n");
   }
 
@@ -261,11 +288,37 @@ public class UserInterface {
     }
   }
 
+  /**
+   * Takes a list og activtys and prints them out
+   *
+   * @param activityList - list of activitys
+   */
   private void showActivityList(Activity[] activityList) {
     System.out.println();
 
     for (int i = 0; i < activityList.length; i++) {
       showActivity(activityList[i]);
+    }
+  }
+
+  /**
+   * Shows all activitys shared with the user
+   */
+  private void showAllShared() {
+    Activity[] activitys = activityRegistry.getAllActivitys(currentUser);
+
+    if (activitys.length == 0 || activitys == new Activity[] {}) {
+      System.out.println("\nNo hikes found, no hikes to show!\n");
+      return;
+    }
+
+    System.out.println("==== ALL SHARED ACTIVITYS ====");
+    System.out.println("shows all activtys shared with you\n");
+
+    for (int i = 0; i < activitys.length; i++) {
+      if (activitys[i].getLogger() != currentUser) {
+        showActivity(activitys[i]);
+      }
     }
   }
 
@@ -296,11 +349,10 @@ public class UserInterface {
       return;
     }
 
-    // String group = null;
-    // if (currentUser.hasGroup()) {
-    // System.out.println("\nRegister this activity in your group or private");
-    // group = readInputOrCancel("private");
-    // }
+    String share = null;
+    if (currentUser.hasGroup()) {
+      share = readInputOrCancel("Share with group?: yes/no");
+    }
 
     try {
       double dist = Double.parseDouble(distance);
@@ -310,14 +362,86 @@ public class UserInterface {
       Activity activity = new Activity(title, description, dist, rate, now, currentUser,
           currentUser.getHikeGroup());
 
-      activityRegistry.addActivity(activity);
+      if (share != null && share.equalsIgnoreCase("yes")) {
+        activity.setShared(true);
+      } else if (share != null && share.equalsIgnoreCase("no")) {
+        activity.setShared(false);
+      }
 
-      System.out.println("\nHike activity registered!");
+      activityRegistry.addActivity(activity);
+      System.out.println("\nHike activity registered!\n");
       showActivity(activity);
-    } catch (NumberFormatException e) {
-      System.out.println("Could not register activity: " + e.getMessage());
     } catch (IllegalArgumentException e) {
-      System.out.println("Could not register activity: " + e.getMessage());
+      System.out.println("\nCould not register activity: " + e.getMessage() + "\n");
+    }
+  }
+
+  /**
+   * Edits a spesific hike
+   */
+  private void editHike() {
+    System.out.println("==== EDIT HIKE ====");
+    System.out.println("Write 'cancel' to end the edit\n");
+    System.out.println("choose one of the hikes to edit\n");
+
+    Activity[] activitys = activityRegistry.getOwnActivitys(currentUser);
+
+    // int canEdit = 0;
+    for (int i = 0; i < activitys.length; i++) {
+      if (activitys[i].hasGroup()) {
+        System.out.println(i + 1 + ")");
+        showActivity(activitys[i]);
+        // canEdit++;
+      }
+    }
+
+    String number = readInputOrCancel("Select hike nr.");
+    if (number == null) {
+      return;
+    }
+
+    System.out.println("\nShare with group?");
+    String input = readInputOrCancel("yes/no");
+    if (input == null) {
+      return;
+    }
+
+    try {
+      // System.out.println(canEdit);
+      // if (canEdit > 0) {
+      // System.out.println("\nNo hikes that you can edit!\n");
+      // continue;
+      // }
+
+      int choice = Integer.parseInt(number);
+      if (choice > activitys.length) {
+        System.out.println("\nHike number cant be greter thean the ones shown!\n");
+      }
+
+      if (choice <= 0) {
+        System.out.println("\nHike number cant be smaller than the nubers shown!\n");
+      }
+
+      if (input.equalsIgnoreCase("no")) {
+        for (int i = 0; i < activitys.length; i++) {
+          if (choice - 1 == i) {
+            activitys[i].setShared(false);
+            System.out.println("\nHike set to private!\n");
+            showActivity(activitys[i]);
+          }
+        }
+      } else if (input.equalsIgnoreCase("yes")) {
+        for (int i = 0; i < activitys.length; i++) {
+          if (choice - 1 == i) {
+            activitys[i].setShared(true);
+            System.out.println("\nHike shared with group!\n");
+            showActivity(activitys[i]);
+          }
+        }
+      }
+
+    } catch (IllegalArgumentException e) {
+      System.out.println("\nCould not edit hike! " + e.getMessage() + "\n");
     }
   }
 
@@ -336,15 +460,18 @@ public class UserInterface {
     try {
       Group newGroup = new Group(name);
 
-      newGroup.addMember(currentUser);
       groupRegistry.addGroup(newGroup);
+      newGroup.addMember(currentUser);
 
-      System.out.println("\nGroup registered!");
+      System.out.println("\nGroup registered!\n");
     } catch (IllegalArgumentException e) {
-      System.out.println("Could not register group: " + e.getMessage());
+      System.out.println("\nCould not register group: " + e.getMessage() + "\n");
     }
   }
 
+  /**
+   * Shows all groups in the groupsregistry
+   */
   private void showAllGroups() {
     System.out.println("\n==== ALL GROUPS ====");
     System.out.println("shows all active groups\n");
@@ -382,6 +509,8 @@ public class UserInterface {
       showGroup(groups[i]);
     }
 
+    System.out.println("\n0) if you dont want to be member of a group");
+
     System.out.println("\nor write 'register' to register a new group\n");
 
     String input = readInputOrCancel("Select a number");
@@ -396,16 +525,30 @@ public class UserInterface {
     try {
       int choice = Integer.parseInt(input);
 
+      if (choice == 0 && currentUser.hasGroup()) {
+        currentUser.leaveGroup();
+        System.out.println("\nGroup left!\n");
+        showUser();
+        return;
+      } else if (choice < 0) {
+        System.out.println("\nNumber cant be smaller than 1!\n");
+        return;
+      } else if (choice > groups.length) {
+        System.out.println("\nNumber cant be greater than " + groups.length + "!\n");
+        return;
+      }
+
       for (int i = 0; i < groups.length; i++) {
         if (choice - 1 == i) {
           groups[i].addMember(currentUser);
         }
       }
+
       System.out.println("\nGroup joind!");
-      System.out.println("Current group -> " + currentUser.getHikeGroup().getName());
+      System.out.println("Current group -> " + currentUser.getHikeGroup().getName() + "\n");
 
     } catch (IllegalArgumentException e) {
-      System.out.println("Could not join a group: " + e.getMessage());
+      System.out.println("\nCould not join a group: " + e.getMessage() + "\n");
     }
   }
 
@@ -436,7 +579,7 @@ public class UserInterface {
       System.out.println("Current user logged in -> " + currentUser.getFullName());
       System.out.println("\nSuggestion: join a group!\n");
     } catch (IllegalArgumentException e) {
-      System.out.println("Could not register user: " + e.getMessage());
+      System.out.println("\nCould not register user: " + e.getMessage() + "\n");
     }
   }
 
@@ -471,16 +614,24 @@ public class UserInterface {
     try {
       int choice = Integer.parseInt(input);
 
+      if (choice < 0) {
+        System.out.println("\nNumber cant be smaller than 1!\n");
+        return;
+      } else if (choice > users.length) {
+        System.out.println("\nNumber cant be greater than " + users.length + "!\n");
+        return;
+      }
+
       for (int i = 0; i < users.length; i++) {
         if (choice - 1 == i) {
           currentUser = users[i];
         }
       }
       System.out.println("\nUser switched!");
-      System.out.println("Current user logged in -> " + currentUser.getFullName());
+      System.out.println("Current user logged in -> " + currentUser.getFullName() + "\n");
 
     } catch (IllegalArgumentException e) {
-      System.out.println("Could not switch user: " + e.getMessage());
+      System.out.println("\nCould not switch user: " + e.getMessage() + "\n");
     }
   }
 
@@ -525,23 +676,82 @@ public class UserInterface {
   }
 
   /**
-   * A function to find a secific activity/hike
+   * Finds a secific hike with a title-name.
    * If an activity dose not exist,
-   * then returns a print to the user with that the activity does not exist
+   * then returns a print to the user that the given title-name does not exist.
+   *
+   * @param title - title of activty to find
    */
   private void findActivityTitle(String title) {
     Activity[] activityList = activityRegistry.getActivityTitle(title, currentUser);
 
     if (activityList.length == 0) {
-      System.out.println("No hike found with title: " + title);
+      System.out.println("\nNo hike found with title: " + title + "\n");
       return;
     } else if (activityList.length == 1) {
-      System.out.println("Found hike " + title);
+      System.out.println("\nFound hike " + title + "\n");
     } else if (activityList.length > 1) {
-      System.out.println("Found multiple hikes with title: " + title);
+      System.out.println("\nFound multiple hikes with title: " + title + "\n");
     }
 
     showActivityList(activityList);
+  }
+
+  /**
+   * Finds a secific activity/hike with a date.
+   * If an activity dose not exist,
+   * then returns a print to the user the no activity exist with the given date.
+   *
+   */
+  private void findActivityDate(String dateString) {
+    Activity[] activities = null;
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
+    String[] parts = dateString.trim().split("\\s");
+
+    try {
+      if (parts.length == 1) {
+        LocalDate date = LocalDate.parse(dateString, formatter);
+        activities = activityRegistry.getActivityDate(date, currentUser);
+      } else if (parts.length >= 2) {
+        LocalDate startDate = LocalDate.parse(parts[0], formatter);
+        LocalDate endDate = LocalDate.parse(parts[1], formatter);
+
+        activities = activityRegistry.getActivityDateStartEnd(startDate, endDate, currentUser);
+      }
+
+      if (activities.length == 0 && parts.length == 1) {
+        System.out.println("\nNo hike found with date: " + dateString + "\n");
+        return;
+      } else if (activities.length == 0 && parts.length >= 2) {
+        System.out.println("\nNo hike found with dates: " + parts[0] + " and " + parts[1] + "\n");
+        return;
+      } else if (activities.length == 1 && parts.length == 1) {
+        System.out.println("\nFound one hike with date: " + dateString + "\n");
+      } else if (activities.length == 1 && parts.length >= 2) {
+        System.out.println("\nFound one hike with dates: " + parts[0] + " and " + parts[1] + "\n");
+      } else if (activities.length > 1 && parts.length >= 2) {
+        System.out.println("\nFound multiple hikes with dates: " + parts[0] + " and " + parts[1] + "\n");
+      } else if (activities.length > 1 && parts.length == 1) {
+        System.out.println("\nFound multiple hikes with dates: " + dateString + "\n");
+      }
+
+      showActivityList(activities);
+    } catch (DateTimeParseException e) {
+      System.out.println("\nCould not find hike: " + dateString + " is not a valide date!\n");
+    } catch (IllegalArgumentException e) {
+      System.out.println("\nCould not find hike:" + e.getMessage() + "\n");
+    }
+  }
+
+  private void shareActivityPerson(String namePerson) {
+
+    try {
+      Person person = personRegistry.getPerson(namePerson);
+
+    } catch (IllegalArgumentException e) {
+      System.out.println("Could not share with ");
+    }
   }
 
   /**
@@ -625,6 +835,7 @@ public class UserInterface {
     System.out.println("\n==== WELCOME TO THE HIKE APP ====");
     System.out.println("register hike:          -> to register a hike");
     System.out.println("all:                    -> see all your hike activitys and activitys shared with you");
+    System.out.println("my hikes                -> shows all hikes logged by you");
     System.out.println("switch user             -> switch user to a selected profile");
     System.out.println("help:                   -> shows more options and how to use the appllication");
     System.out.println("exit:                   -> exit the application");
@@ -643,6 +854,7 @@ public class UserInterface {
     System.out.println("\n==== Help MENU ====");
     System.out.println("all                         -> see all your hike activitys and hikes shared with you");
     System.out.println("my hikes                    -> shows all hikes logged by you");
+    System.out.println("shared                      -> shows all hikes shared with you");
     System.out.println("switch user                 -> switch user to a selected acount or register a new user.");
     System.out.println("users                       -> shows all persons/users in the hike registry");
     System.out.println("groups                      -> shwos all groups in the hike registry");
@@ -650,13 +862,14 @@ public class UserInterface {
     System.out.println("join group                  -> to join a new hike group");
     System.out.println(
         "find person 'name'          -> finds a person by firstname/lastname/fullname and shows their profile");
-    System.out.println("find hike 'title'           -> finds a specific hike that user can see");
-    System.out.println("find hike 'date'            -> find hikes on a spesific date");
-    System.out.println("find hike 'start' 'date'    -> find hikes between to hikes");
+    System.out.println("find title 'title'           -> finds a specific hike that user can see");
+    System.out.println("find date 'date'            -> find hikes on a spesific date");
+    System.out.println("find hike 'start' 'end'    -> find hikes between to hikes");
     System.out.println("find group 'name'           -> shows this groups activitys");
     System.out.println("register hike               -> to registe a new hike");
     System.out.println("register group              -> to registe a new hike group");
     System.out.println("register user               -> to registe a new user");
+    System.out.println("edit hike                   -> to change a hikes sharing status");
     System.out.println("delete hike                 -> menu of all your hikes to deletes a specific activity");
     System.out.println("me                          -> shows your profile");
     System.out.println("help                        -> show all options");

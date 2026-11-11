@@ -1,4 +1,4 @@
-package no.ntnu.idatt1003.hikeregistry.model;
+package no.ntnu.idatt1003.hikeseeker.model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,6 +22,7 @@ public class Activity {
   private final LocalDateTime timeRegistered;
   private final Person logger;
   private final Group group;
+  private boolean shared;
   private final ArrayList<Person> seeActivity = new ArrayList<>();
 
   /**
@@ -62,8 +63,9 @@ public class Activity {
     this.logger = logger;
     seeActivity.add(logger);
     this.group = group;
+    this.shared = false; // private or shared activity
 
-    updateSeeActivity();
+    // updateSeeActivity();
   }
 
   /**
@@ -138,7 +140,7 @@ public class Activity {
   }
 
   /**
-   * Returns the group that did this activity.
+   * Returns the group that is associated to this activity.
    *
    * @return the group, or null if the activity has no group
    */
@@ -161,6 +163,24 @@ public class Activity {
   }
 
   /**
+   * Returns true or false if a this activity is shared.
+   *
+   * @return true or false
+   */
+  public boolean isShared() {
+    return shared;
+  }
+
+  /**
+   * Sets a new value, true or false for {@code shared}.
+   *
+   * @param newShared - the new true or false of {@code shared}
+   */
+  public void setShared(boolean newShared) {
+    shared = newShared;
+  }
+
+  /**
    * Checks if the given person can see this activity.
    *
    * <p>
@@ -176,7 +196,7 @@ public class Activity {
   public boolean canSeeActivity(Person person) {
     boolean canSee = false;
 
-    if (isAdded(person) || person.getHikeGroup() == group && hasGroup()) {
+    if (isAdded(person) || person.getHikeGroup() == group && hasGroup() && isShared()) {
       return canSee = true;
     }
 
@@ -213,17 +233,17 @@ public class Activity {
     return added;
   }
 
-  /**
-   * Gives all current members of the group access to see this activity.
-   * Does nothing if the activity has no group.
-   */
-  private void updateSeeActivity() {
-    if (group == null) {
-      return;
-    }
-    Person[] members = group.getAllMembers();
-    for (int i = 0; i < members.length; i++) {
-      addCanSeeActivity(members[i]);
-    }
-  }
+  // /**
+  // * Gives all current members of the group access to see this activity.
+  // * Does nothing if the activity has no group.
+  // */
+  // private void updateSeeActivity() {
+  // if (group == null) {
+  // return;
+  // }
+  // Person[] members = group.getAllMembers();
+  // for (int i = 0; i < members.length; i++) {
+  // addCanSeeActivity(members[i]);
+  // }
+  // }
 }

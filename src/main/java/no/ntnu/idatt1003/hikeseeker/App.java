@@ -1,6 +1,6 @@
-package no.ntnu.idatt1003.hikeregistry;
+package no.ntnu.idatt1003.hikeseeker;
 
-import no.ntnu.idatt1003.hikeregistry.ui.UserInterface;
+import no.ntnu.idatt1003.hikeseeker.ui.UserInterface;
 
 public class App {
   public static void main(String[] args) {

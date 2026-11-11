@@ -1,8 +1,8 @@
-package no.ntnu.idatt1003.hikeregistry.registry;
+package no.ntnu.idatt1003.hikeseeker.registry;
 
 import java.util.ArrayList;
 
-import no.ntnu.idatt1003.hikeregistry.model.Group;
+import no.ntnu.idatt1003.hikeseeker.model.Group;
 
 /**
  * Represents a registry that keeps track of all groups in the hike registry.
@@ -23,6 +23,14 @@ public class GroupRegistry {
    * @param newGroup
    */
   public void addGroup(Group newGroup) {
+    if (newGroup == null) {
+      throw new IllegalArgumentException("Group added to the registry cant be null!");
+    }
+
+    if (checkIfExists(newGroup.getName())) {
+      throw new IllegalArgumentException("Group already exists in the registry!");
+    }
+
     groups.add(newGroup);
   }
 
@@ -60,11 +68,29 @@ public class GroupRegistry {
    * @param name
    * @return group name as string
    */
-  public String getGroupName(String name) {
+  public Group getGroup(String name) {
+    if (name == null || name.isBlank()) {
+      return null;
+    }
+    String searchName = name.trim();
+
     return groups.stream()
-        .filter(grp -> grp.getName().equalsIgnoreCase(name))
+        .filter(grp -> grp.getName().equalsIgnoreCase(searchName))
         .findFirst()
-        .map(Group::getName)
         .orElse(null);
   }
+
+  // /**
+  // * Gets a groups name and returns it as a string.
+  // *
+  // * @param name
+  // * @return group name as string
+  // */
+  // public String getGroupName(String name) {
+  // return groups.stream()
+  // .filter(grp -> grp.getName().equalsIgnoreCase(name))
+  // .findFirst()
+  // .map(Group::getName)
+  // .orElse(null);
+  // }
 }

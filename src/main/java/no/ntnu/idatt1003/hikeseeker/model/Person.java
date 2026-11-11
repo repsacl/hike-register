@@ -1,4 +1,4 @@
-package no.ntnu.idatt1003.hikeregistry.model;
+package no.ntnu.idatt1003.hikeseeker.model;
 
 /**
  * Represents a person who can log activities in the hike registry.

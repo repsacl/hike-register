@@ -1,4 +1,4 @@
-package no.ntnu.idatt1003.hikeregistry.model;
+package no.ntnu.idatt1003.hikeseeker.model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -129,8 +129,10 @@ public class Group {
    * @param member
    */
   public void removeMember(Person member) {
-    member.updateHikeGroup(null);
-    members.remove(member);
+    if (member.getHikeGroup() == this) {
+      member.updateHikeGroup(null);
+      members.remove(member);
+    }
   }
 
   /**

@@ -1,4 +1,4 @@
-package no.ntnu.idatt1003.hikeregistry.registry;
+package no.ntnu.idatt1003.hikeseeker.registry;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -8,7 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.ntnu.idatt1003.hikeregistry.model.Person;
+import no.ntnu.idatt1003.hikeseeker.model.Person;
+import no.ntnu.idatt1003.hikeseeker.registry.PersonRegistry;
 
 /**
  * Unit tests for the {@link PersonRegistry} class.
@@ -78,15 +79,15 @@ public class PersonRegistryTest {
   void addPersonTwiceDoesNotCreateDuplicate() {
     personRegistry.addPerson(brotherman);
 
-    Person brot = new Person("BrothermMAN", "TESTern");
-
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
         () -> personRegistry.addPerson(brotherman));
 
     assertEquals("Person already exists in the registry!", exception.getMessage());
 
+    Person brot = new Person("BrotherMAN", "TESTern");
+
     IllegalArgumentException exception2 = assertThrows(IllegalArgumentException.class,
-        () -> personRegistry.addPerson(brotherman));
+        () -> personRegistry.addPerson(brot));
 
     assertEquals("Person already exists in the registry!", exception2.getMessage());
   }

@@ -1,4 +1,4 @@
-package no.ntnu.idatt1003.hikeregistry.model;
+package no.ntnu.idatt1003.hikeseeker.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -8,6 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import no.ntnu.idatt1003.hikeseeker.model.Group;
+import no.ntnu.idatt1003.hikeseeker.model.Person;
 
 /**
  * Unit tests for the {@link Person} class.

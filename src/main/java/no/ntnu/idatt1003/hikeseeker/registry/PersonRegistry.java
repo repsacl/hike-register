@@ -1,8 +1,8 @@
-package no.ntnu.idatt1003.hikeregistry.registry;
+package no.ntnu.idatt1003.hikeseeker.registry;
 
 import java.util.ArrayList;
 
-import no.ntnu.idatt1003.hikeregistry.model.Person;
+import no.ntnu.idatt1003.hikeseeker.model.Person;
 
 /**
  * Represents a registry that keeps track of all persons in the hike registry.

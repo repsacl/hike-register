@@ -1,4 +1,4 @@
-package no.ntnu.idatt1003.hikeregistry.registry;
+package no.ntnu.idatt1003.hikeseeker.registry;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -9,9 +9,10 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.ntnu.idatt1003.hikeregistry.model.Activity;
-import no.ntnu.idatt1003.hikeregistry.model.Group;
-import no.ntnu.idatt1003.hikeregistry.model.Person;
+import no.ntnu.idatt1003.hikeseeker.model.Activity;
+import no.ntnu.idatt1003.hikeseeker.model.Group;
+import no.ntnu.idatt1003.hikeseeker.model.Person;
+import no.ntnu.idatt1003.hikeseeker.registry.ActivityRegistry;
 
 /**
  * Unit tests for the {@link ActivityRegistry} class.
@@ -85,6 +86,10 @@ public class ActivityRegistryTest {
     Activity activity3 = new Activity("En kort tur", "Turen var kort og kjedelig. Bare skog :(", 3, 3,
         time.minusDays(2).minusHours(5), bob);
 
+    activity.setShared(true);
+    activity2.setShared(true);
+    activity3.setShared(false);
+
     activityRegistry.addActivity(activity);
     activityRegistry.addActivity(activity2);
     activityRegistry.addActivity(activity3);
@@ -117,6 +122,9 @@ public class ActivityRegistryTest {
     Activity activity = new Activity("Dårligtur", "Dårlig tur", 5, 2, time, brotherman, group);
     Activity activity2 = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman, group);
 
+    // adds to activitys to search through
+    activity2.setShared(true);
+    activity.setShared(true);
     activityRegistry.addActivity(activity);
     activityRegistry.addActivity(activity2);
 
@@ -236,6 +244,9 @@ public class ActivityRegistryTest {
     Activity activity2 = new Activity("Dårligtur", "Dårlig tur", 5, 2, time, bob, group);
     Activity activity3 = new Activity("Kort tur", "En kort tur", 2, 5, time, brotherman);
 
+    activity.setShared(true);
+    activity2.setShared(true);
+
     activityRegistry.addActivity(activity);
     activityRegistry.addActivity(activity2);
     activityRegistry.addActivity(activity3);
@@ -280,6 +291,8 @@ public class ActivityRegistryTest {
     Activity activity3 = new Activity("Kort tur", "En kort tur", 2, 5, time.minusHours(12), brotherman);
     Activity activity4 = new Activity("Lang tur", "En lang tur", 20, 6, time.minusHours(12).minusMinutes(1),
         brotherman);
+    activity.setShared(true);
+    activity2.setShared(true);
 
     activityRegistry.addActivity(activity);
     activityRegistry.addActivity(activity2);

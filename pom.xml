@@ -6,7 +6,7 @@
 
     <!-- TODO: Endre artifactId om du vil (bør matche prosjektnavnet ditt) -->
     <groupId>no.ntnu.idatt1003</groupId>
-    <artifactId>the-hike</artifactId>
+    <artifactId>hike-seeker</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
