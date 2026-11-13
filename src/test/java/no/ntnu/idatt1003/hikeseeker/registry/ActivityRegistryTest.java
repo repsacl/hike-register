@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import no.ntnu.idatt1003.hikeseeker.model.Activity;
 import no.ntnu.idatt1003.hikeseeker.model.Group;
 import no.ntnu.idatt1003.hikeseeker.model.Person;
-import no.ntnu.idatt1003.hikeseeker.registry.ActivityRegistry;
 
 /**
  * Unit tests for the {@link ActivityRegistry} class.
@@ -51,7 +50,7 @@ public class ActivityRegistryTest {
 
     activityRegistry.addActivity(activity);
 
-    assertArrayEquals(new Activity[] { activity }, activityRegistry.getAllActivitys(brotherman));
+    assertArrayEquals(new Activity[] { activity }, activityRegistry.getAllActivities(brotherman));
     assertEquals(1, brotherman.getHikesRegistered());
   }
 
@@ -67,7 +66,7 @@ public class ActivityRegistryTest {
 
     activityRegistry.addActivity(activity);
 
-    assertArrayEquals(new Activity[] { activity }, activityRegistry.getAllActivitys(brotherman));
+    assertArrayEquals(new Activity[] { activity }, activityRegistry.getAllActivities(brotherman));
     assertEquals(1, group.getHikesRegistered());
   }
 
@@ -94,8 +93,8 @@ public class ActivityRegistryTest {
     activityRegistry.addActivity(activity2);
     activityRegistry.addActivity(activity3);
 
-    assertArrayEquals(new Activity[] { activity, activity2, activity3 }, activityRegistry.getAllActivitys(bob));
-    assertArrayEquals(new Activity[] { activity, activity2 }, activityRegistry.getAllActivitys(brotherman));
+    assertArrayEquals(new Activity[] { activity3, activity, activity2 }, activityRegistry.getAllActivities(bob));
+    assertArrayEquals(new Activity[] { activity, activity2 }, activityRegistry.getAllActivities(brotherman));
     assertEquals(2, group.getHikesRegistered());
   }
 
@@ -107,7 +106,7 @@ public class ActivityRegistryTest {
   void getEmptyArrayIfNoActivitysAdded() {
     Person bob = new Person("Bob", "Bobsen");
 
-    assertArrayEquals(new Activity[] {}, activityRegistry.getAllActivitys(bob));
+    assertArrayEquals(new Activity[] {}, activityRegistry.getAllActivities(bob));
   }
 
   /**
@@ -199,12 +198,12 @@ public class ActivityRegistryTest {
     activityRegistry.addActivity(activity);
     activityRegistry.addActivity(activity2);
 
-    assertArrayEquals(new Activity[] { activity, activity2 }, activityRegistry.getAllActivitys(brotherman));
+    assertArrayEquals(new Activity[] { activity, activity2 }, activityRegistry.getAllActivities(brotherman));
     assertEquals(2, brotherman.getHikesRegistered());
 
     activityRegistry.deleteActivity(activity2, brotherman);
 
-    assertArrayEquals(new Activity[] { activity }, activityRegistry.getAllActivitys(brotherman));
+    assertArrayEquals(new Activity[] { activity }, activityRegistry.getAllActivities(brotherman));
     assertEquals(1, brotherman.getHikesRegistered());
     assertEquals(1, group.getHikesRegistered());
   }
@@ -226,7 +225,7 @@ public class ActivityRegistryTest {
         () -> activityRegistry.deleteActivity(activity, bob));
 
     assertEquals("Persons can not delete an others activity!", exception.getMessage());
-    assertArrayEquals(new Activity[] { activity }, activityRegistry.getAllActivitys(brotherman));
+    assertArrayEquals(new Activity[] { activity }, activityRegistry.getAllActivities(brotherman));
     assertEquals(1, brotherman.getHikesRegistered());
     assertEquals(1, group.getHikesRegistered());
   }
@@ -251,11 +250,11 @@ public class ActivityRegistryTest {
     activityRegistry.addActivity(activity2);
     activityRegistry.addActivity(activity3);
 
-    assertArrayEquals(new Activity[] { activity, activity2, activity3 }, activityRegistry.getAllActivitys(brotherman));
-    assertArrayEquals(new Activity[] { activity, activity3 }, activityRegistry.getOwnActivitys(brotherman));
+    assertArrayEquals(new Activity[] { activity, activity2, activity3 }, activityRegistry.getAllActivities(brotherman));
+    assertArrayEquals(new Activity[] { activity, activity3 }, activityRegistry.getOwnActivities(brotherman));
 
-    assertArrayEquals(new Activity[] { activity, activity2 }, activityRegistry.getAllActivitys(bob));
-    assertArrayEquals(new Activity[] { activity2 }, activityRegistry.getOwnActivitys(bob));
+    assertArrayEquals(new Activity[] { activity, activity2 }, activityRegistry.getAllActivities(bob));
+    assertArrayEquals(new Activity[] { activity2 }, activityRegistry.getOwnActivities(bob));
   }
 
   /**
@@ -273,8 +272,8 @@ public class ActivityRegistryTest {
 
     activity.addCanSeeActivity(bob);
 
-    assertArrayEquals(new Activity[] { activity }, activityRegistry.getAllActivitys(bob));
-    assertArrayEquals(new Activity[] {}, activityRegistry.getOwnActivitys(bob));
+    assertArrayEquals(new Activity[] { activity }, activityRegistry.getAllActivities(bob));
+    assertArrayEquals(new Activity[] {}, activityRegistry.getOwnActivities(bob));
   }
 
   /**
@@ -300,7 +299,7 @@ public class ActivityRegistryTest {
     // activity 4 wont join th array since its the day before
     activityRegistry.addActivity(activity4);
 
-    assertArrayEquals(new Activity[] { activity, activity2, activity3 },
+    assertArrayEquals(new Activity[] { activity3, activity, activity2 },
         activityRegistry.getActivityDate(time.toLocalDate(), brotherman));
     assertArrayEquals(new Activity[] { activity, activity2 },
         activityRegistry.getActivityDate(time.toLocalDate(), bob));

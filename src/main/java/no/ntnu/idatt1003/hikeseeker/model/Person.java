@@ -32,12 +32,12 @@ public class Person {
     if (firstName == null || firstName.isBlank()) {
       throw new IllegalArgumentException("Person must have a firstname!");
     }
-    this.firstName = firstName;
+    this.firstName = firstName.trim();
 
     if (lastName == null || lastName.isBlank()) {
       throw new IllegalArgumentException("Person must have a lastname!");
     }
-    this.lastName = lastName;
+    this.lastName = lastName.trim();
     this.group = group;
 
     if (group != null) {

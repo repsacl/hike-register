@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import no.ntnu.idatt1003.hikeseeker.model.Group;
-import no.ntnu.idatt1003.hikeseeker.registry.GroupRegistry;
 
 /**
  * Unit tests for the {@link GroupRegistry} class.

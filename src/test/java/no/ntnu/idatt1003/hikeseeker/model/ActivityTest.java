@@ -11,9 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.ntnu.idatt1003.hikeseeker.model.Activity;
-import no.ntnu.idatt1003.hikeseeker.model.Group;
-import no.ntnu.idatt1003.hikeseeker.model.Person;
+// import no.ntnu.idatt1003.hikeseeker.model.Activity;
+// import no.ntnu.idatt1003.hikeseeker.model.Group;
+// import no.ntnu.idatt1003.hikeseeker.model.Person;
 
 /**
  * Unit tests for the {@link Activity} class.
@@ -27,7 +27,7 @@ public class ActivityTest {
 
   private Group group;
   private Group group2;
-  private Person person;
+  private Person brotherman;
   private LocalDateTime time;
 
   /**
@@ -43,40 +43,52 @@ public class ActivityTest {
   void setUp() {
     group = new Group("Group");
     group2 = new Group("Group2");
-    person = new Person("Brotherman", "Testern");
+    brotherman = new Person("Brotherman", "Testern");
     time = LocalDateTime.of(2026, 10, 1, 12, 0);
   }
 
   /**
    * Positive test: verifies that an activity created with valid input returns
    * the correct values.
+   * Returns title
+   * Returns description
+   * Returns distance
+   * Returns rating
+   * Returns time registrered
+   * Returns logger
+   * Returns group
+   * Returns shared
+   * Returns hasGroup
+   * Returns canSeeActivity
    */
   @Test
   void validateReturnALlTrue() {
-    group.addMember(person);
+    group.addMember(brotherman);
 
-    Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, person, person.getHikeGroup());
+    Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman, brotherman.getHikeGroup());
 
     assertEquals("Fjelltur", activity.getTitle());
     assertEquals("Fin tur", activity.getDescription());
     assertEquals(10, activity.getDistanceKm());
     assertEquals(7, activity.getRating());
     assertEquals(time, activity.getTimeRegistered());
-    assertEquals(person, activity.getLogger());
+    assertEquals(brotherman, activity.getLogger());
     assertEquals(group, activity.getGroup());
+    assertFalse(activity.getShared());
 
     assertTrue(activity.hasGroup());
-    assertTrue(activity.canSeeActivity(person));
+    assertTrue(activity.canSeeActivity(brotherman));
   }
 
   /**
-   * Positive test: verifies that an activity without a group returns null from
+   * Positive test: verifies that an activity without a group and person without a
+   * group returns null from
    * getGroup and false from hasGroup, for both constructors.
    */
   @Test
-  void returTrueNoGroup() {
-    Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, person, person.getHikeGroup());
-    Activity activity2 = new Activity("Fjelltur", "Fin tur", 10, 7, time, person);
+  void returnTrueNoGroup() {
+    Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman, brotherman.getHikeGroup());
+    Activity activity2 = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman);
 
     assertNull(activity.getGroup());
     assertFalse(activity.hasGroup());
@@ -86,144 +98,218 @@ public class ActivityTest {
   }
 
   /**
-   * Positive test: verifies that people added with addCanSeeActivity can see
-   * the activity.
+   * Positive test: verifies that an activitys {@code shared} is set to false by
+   * standard.
    */
   @Test
-  void returnTrueSeeActicty() {
-    Person brotherman = new Person("Brotherman", "Testern");
-
+  void returnFlaseSharedSetToFalseStandard() {
     Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman, brotherman.getHikeGroup());
 
-    Person bob = new Person("Bob", "Bobsen");
-    Person peter = new Person("Peter", "Oppland");
-
-    activity.addCanSeeActivity(bob);
-    activity.addCanSeeActivity(peter);
-
-    assertTrue(activity.canSeeActivity(brotherman));
-    assertTrue(activity.canSeeActivity(bob));
-    assertTrue(activity.canSeeActivity(peter));
+    assertFalse(activity.getShared());
   }
 
   /**
-   * Positive test: verifies that people who are not the logger and not added
-   * cannot see an activity without a group.
+   * Positive test: verifies that an activitys {@code shared} is set to true by
+   * using {@code setShared(true)} method when activity is associated wit a group.
    */
   @Test
-  void returnFalseSeeActictyNotShared() {
-    Person brotherman = new Person("Brotherman", "Testern");
+  void returnTrueSharedSetToTrue() {
+    group.addMember(brotherman);
+    Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman, brotherman.getHikeGroup());
+    activity.setShared(true);
+
+    assertTrue(activity.getShared());
+  }
+
+  /**
+   * Negative test: verifies that a person who wants shares his activty, but the
+   * activtys is not associated with a group, throws an error.
+   */
+  @Test
+  void throwWhenSetSharedTrueNoGroup() {
+    Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time,
+        brotherman, brotherman.getHikeGroup());
+
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        () -> activity.setShared(true));
+
+    assertEquals("Can't share activity, no group is associated with it!",
+        exception.getMessage());
+  }
+
+  /**
+   * Positive test: verifies that people added with {@code addCanSeeActivity()}
+   * can see the activity added to.
+   */
+  @Test
+  void returnTrueCanSeeActictyAddedNoGroup() {
+    Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman, brotherman.getHikeGroup());
+    Person bob = new Person("Bob", "Bobsen");
+
+    // brotherman shared activity with bob
+    activity.addCanSeeActivity(bob);
+    assertTrue(activity.canSeeActivity(bob));
+  }
+
+  /**
+   * Positive test: verifies that people with different groups added with
+   * {@code addCanSeeActivity()}, and shared is false,
+   * can still see the activty added to.
+   */
+  @Test
+  void returnTrueCanSeeActictyAddedDifferentGroupAndSharedFalse() {
+    group.addMember(brotherman);
+    Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman, brotherman.getHikeGroup());
+
+    Person bob = new Person("Bob", "Bobsen", group2);
+
+    activity.addCanSeeActivity(bob);
+    assertTrue(activity.canSeeActivity(bob));
+  }
+
+  /**
+   * Positive test: verifies that people with different groups added with
+   * {@code addCanSeeActivity()}, and shared is true,
+   * can still see the activty added to.
+   */
+  @Test
+  void returnTrueCanSeeActictyAddedDifferentGroupAndSharedTrue() {
+    group.addMember(brotherman);
+    Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman, brotherman.getHikeGroup());
+    activity.setShared(true);
+
+    Person bob = new Person("Bob", "Bobsen", group2);
+
+    activity.addCanSeeActivity(bob);
+    assertTrue(activity.canSeeActivity(bob));
+  }
+
+  /**
+   * Positive test: verifies that people who are not the logger, not added, or no
+   * group
+   * cannot see an activity that is associated without their group.
+   */
+  @Test
+  void returnFalseCanSeeActictyNotSharedNotAdded() {
+    group.addMember(brotherman);
+
+    Person bob = new Person("Bob", "Bobsen", group);
+    Person peter = new Person("Peter", "Oppland");
+
+    Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman, brotherman.getHikeGroup());
+
+    assertFalse(activity.canSeeActivity(bob));
+    assertFalse(activity.canSeeActivity(peter));
+  }
+
+  /**
+   * Positive test: verifies that a member looses a shared activity when shared is
+   * set to false.
+   */
+  @Test
+  void returnFalseCanSeeActivitySharedSetToFalseAfterTrue() {
+    group.addMember(brotherman);
 
     Person bob = new Person("Bob", "Bobsen", group);
 
     Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman, brotherman.getHikeGroup());
 
-    Person peter = new Person("Peter", "Oppland");
+    activity.setShared(true);
+    assertTrue(activity.canSeeActivity(bob));
 
+    activity.setShared(false);
     assertFalse(activity.canSeeActivity(bob));
-    assertFalse(activity.canSeeActivity(peter));
+  }
+
+  /**
+   * Negative test: verifies that a IllegalArgumentException is thrown
+   * when a person added with {@code addCanSeeActivity()} is null.
+   */
+  @Test
+  void throwWhenAddCanSeeActivityNull() {
+    Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time,
+        brotherman, brotherman.getHikeGroup());
+
+    NullPointerException exception = assertThrows(NullPointerException.class,
+        () -> activity.addCanSeeActivity(null));
+
+    assertEquals("Person added cannot be null!", exception.getMessage());
   }
 
   /**
    * Positive test: verifies that all group members can see the activity,
-   * including someone who joins the group after it was created.
+   * including members added later.
    */
   @Test
-  void returnTrueSeeActictyShared() {
-    Person brotherman = new Person("Brotherman", "Testern", group);
+  void returnTrueCanSeeActictySharedAndLaterMembers() {
+    group.addMember(brotherman);
     Person bob = new Person("Bob", "Bobsen", group);
-    Person peter = new Person("Peter", "Oppland", group);
 
     Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman, brotherman.getHikeGroup());
     activity.setShared(true);
 
-    Person cal = new Person("Cal", "Tango", group);
+    Person peter = new Person("Peter", "Oppland", group);
 
-    assertTrue(activity.canSeeActivity(brotherman));
     assertTrue(activity.canSeeActivity(bob));
     assertTrue(activity.canSeeActivity(peter));
-    assertTrue(activity.canSeeActivity(cal));
   }
 
   /**
-   * Positive test: verifies that people in another group, or in no group,
-   * cannot see the activity.
+   * Positive test: verifies that a member who was in the group, could se
+   * shared activtys, but after switching, the member looses them.
    */
   @Test
-  void returnFalseSeeActictyNotAdded() {
-    Person brotherman = new Person("Brotherman", "Testern", group);
+  void returnFalseCanSeeActivityAfterSwitchGroup() {
+    group.addMember(brotherman);
 
-    Person bob = new Person("Bob", "Bobsen", group2);
-    Person peter = new Person("Peter", "Oppland");
+    Person bob = new Person("Bob", "Bobsen", group);
 
     Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman, brotherman.getHikeGroup());
+    activity.setShared(true);
+
+    assertTrue(activity.canSeeActivity(bob));
+
+    group2.addMember(bob);
 
     assertFalse(activity.canSeeActivity(bob));
-    assertFalse(activity.canSeeActivity(peter));
   }
 
-  // /**
-  // * Positive test: verifies that a member who was in the group when the
-  // * activity was created can still see it after switching group.
-  // */
-  // @Test
-  // void returnTrueSeeActivityAfterSwitchGroup() {
-  // Person brotherman = new Person("Brotherman", "Testern", group);
+  /**
+   * Positive test: verifies that a member of a group, can se still see
+   * shared activities, even if on of the activities logger switched group.
+   * Logger can also see it's activitys even if them are associated with another
+   * group.
+   */
+  @Test
+  void returnTrueCanSeeActivityShareAfterLoggerSwitchOrLeave() {
+    group.addMember(brotherman);
+    Person bob = new Person("Bob", "Bobsen", group);
 
-  // Person bob = new Person("Bob", "Bobsen", group);
-  // Person peter = new Person("Peter", "Oppland", group);
+    Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman, brotherman.getHikeGroup());
+    activity.setShared(true);
 
-  // Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time,
-  // brotherman, brotherman.getHikeGroup());
-  // activity.setShared(true);
+    assertTrue(activity.canSeeActivity(bob));
+    assertTrue(activity.canSeeActivity(brotherman));
 
-  // assertTrue(activity.canSeeActivity(bob));
-  // assertTrue(activity.canSeeActivity(peter));
-
-  // Person cal = new Person("Cal", "Tango");
-  // group.addMember(cal);
-
-  // group2.addMember(peter);
-
-  // assertTrue(activity.canSeeActivity(cal));
-  // assertTrue(activity.canSeeActivity(peter));
-  // }
-
-  // /**
-  // * Positive test: verifies that a person who joins the group after the
-  // * activity loses access when they leave the group.
-  // */
-  // @Test
-  // void returnFalseSeeActivityAfterHikeAfterSwitchGroup() {
-  // Person brotherman = new Person("Brotherman", "Testern", group);
-  // Person bob = new Person("Bob", "Bobsen", group);
-
-  // Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time,
-  // brotherman, brotherman.getHikeGroup());
-  // activity.setShared(true);
-
-  // Person cal = new Person("Cal", "Tango");
-  // group.addMember(cal);
-  // group2.addMember(bob);
-
-  // assertTrue(activity.canSeeActivity(cal));
-  // assertTrue(activity.canSeeActivity(bob));
-
-  // // cal was not a member when the hike was done, so he loses access
-  // group2.addMember(cal);
-  // assertFalse(activity.canSeeActivity(cal));
-  // }
+    group2.addMember(brotherman);
+    assertTrue(activity.canSeeActivity(bob));
+    assertTrue(activity.canSeeActivity(brotherman));
+  }
 
   /**
    * Negative test: verifies that an IllegalArgumentException is thrown when the
-   * title is empty.
+   * title is empty or blank.
    */
   @Test
   void throwWhenTitleEmpty() {
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> new Activity("", "Fin tur", 10, 10, time, person));
+        () -> new Activity("", "Fin tur", 10, 10, time, brotherman));
+
+    IllegalArgumentException exception2 = assertThrows(IllegalArgumentException.class,
+        () -> new Activity("  ", "Fin tur", 10, 10, time, brotherman));
 
     assertEquals("Activity must have a title!", exception.getMessage());
+    assertEquals("Activity must have a title!", exception2.getMessage());
   }
 
   /**
@@ -233,21 +319,25 @@ public class ActivityTest {
   @Test
   void throwWhenTitleNull() {
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> new Activity(null, "Fin tur", 10, 10, time, person));
+        () -> new Activity(null, "Fin tur", 10, 10, time, brotherman));
 
     assertEquals("Activity must have a title!", exception.getMessage());
   }
 
   /**
    * Negative test: verifies that an IllegalArgumentException is thrown when the
-   * description is empty.
+   * description is empty or blank.
    */
   @Test
   void throwWhenDescriptionEmpty() {
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> new Activity("Fjelltur", "", 10, 10, time, person));
+        () -> new Activity("Fjelltur", "", 10, 10, time, brotherman));
+
+    IllegalArgumentException exception2 = assertThrows(IllegalArgumentException.class,
+        () -> new Activity("Fjelltur", "  ", 10, 10, time, brotherman));
 
     assertEquals("Activity must have a description!", exception.getMessage());
+    assertEquals("Activity must have a description!", exception2.getMessage());
   }
 
   /**
@@ -257,23 +347,34 @@ public class ActivityTest {
   @Test
   void throwWhenDescriptionNull() {
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> new Activity("Fjelltur", null, 10, 10, time, person));
+        () -> new Activity("Fjelltur", null, 10, 10, time, brotherman));
 
     assertEquals("Activity must have a description!", exception.getMessage());
   }
 
   /**
-   * Negative test: verifies that an IllegalArgumentException is thrown when the
-   * distance is zero or negative.
+   * Positive test: verifies that a small distance is allowed as long it's
+   * positive
    */
   @Test
-  void throwWhenDistanceNegative() {
+  void DistanceSmallisAllowed() {
+    Activity activity = new Activity("Fjelltur", "Fin tur", .1, 7, time, brotherman, brotherman.getHikeGroup());
+
+    assertEquals(.1, activity.getDistanceKm());
+  }
+
+  /**
+   * Negative test: verifies that an IllegalArgumentException is thrown when the
+   * distance is zero and/or negative.
+   */
+  @Test
+  void throwWhenDistanceZeroAndNegative() {
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> new Activity("Fjelltur", "Fin tur", 0, 10, time, person));
+        () -> new Activity("Fjelltur", "Fin tur", 0, 10, time, brotherman));
     assertEquals("Activity must have a valid distance!", exception.getMessage());
 
     IllegalArgumentException exception2 = assertThrows(IllegalArgumentException.class,
-        () -> new Activity("Fjelltur", "Fin tur", -10, 10, time, person));
+        () -> new Activity("Fjelltur", "Fin tur", -10, 10, time, brotherman));
     assertEquals("Activity must have a valid distance!", exception2.getMessage());
   }
 
@@ -284,7 +385,7 @@ public class ActivityTest {
   @Test
   void throwWhenDistanceNaN() {
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> new Activity("Fjelltur", "Fin tur", Double.NaN, 10, time, person));
+        () -> new Activity("Fjelltur", "Fin tur", Double.NaN, 10, time, brotherman));
 
     assertEquals("Activity must have a valid distance!", exception.getMessage());
   }
@@ -298,9 +399,30 @@ public class ActivityTest {
     Double distance = (1.0 / 0.0);
 
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> new Activity("Fjelltur", "Fin tur", distance, 10, time, person));
+        () -> new Activity("Fjelltur", "Fin tur", distance, 10, time, brotherman));
 
     assertEquals("Activity must have a valid distance!", exception.getMessage());
+  }
+
+  /**
+   * Positive test: verifies that 1 as a rating is allowed as long it's
+   * positive
+   */
+  @Test
+  void RatingOneAllowed() {
+    Activity activity = new Activity("Fjelltur", "Fin tur", 10, 1, time, brotherman, brotherman.getHikeGroup());
+
+    assertEquals(1, activity.getRating());
+  }
+
+  /**
+   * Positive test: verifies that 10 as a rating is allowed.
+   */
+  @Test
+  void RatingTenAllowed() {
+    Activity activity = new Activity("Fjelltur", "Fin tur", 10, 10, time, brotherman, brotherman.getHikeGroup());
+
+    assertEquals(10, activity.getRating());
   }
 
   /**
@@ -308,11 +430,15 @@ public class ActivityTest {
    * rating is under 1.
    */
   @Test
-  void throwWhenRatingIsUnder() {
+  void throwWhenRatingIsUnderOne() {
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> new Activity("Fjelltur", "Fin tur", 10, 0, time, person));
+        () -> new Activity("Fjelltur", "Fin tur", 10, 0, time, brotherman));
+
+    IllegalArgumentException exception2 = assertThrows(IllegalArgumentException.class,
+        () -> new Activity("Fjelltur", "Fin tur", 10, -1, time, brotherman));
 
     assertEquals("Rating must be between 1 and 10!", exception.getMessage());
+    assertEquals("Rating must be between 1 and 10!", exception2.getMessage());
   }
 
   /**
@@ -322,9 +448,33 @@ public class ActivityTest {
   @Test
   void throwWhenRatingIsOver() {
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> new Activity("Fjelltur", "Fin tur", 10, 11, time, person));
+        () -> new Activity("Fjelltur", "Fin tur", 10, 11, time, brotherman));
 
     assertEquals("Rating must be between 1 and 10!", exception.getMessage());
+  }
+
+  /**
+   * Negative test: verifies that an IllegalArgumentException is thrown when the
+   * timeRegistrered is null.
+   */
+  @Test
+  void throwWhenTimeRegistreredNull() {
+    NullPointerException exception = assertThrows(NullPointerException.class,
+        () -> new Activity("Fjelltur", "Fin tur", 10, 7, null, brotherman));
+
+    assertEquals("Activity must have a time registered!", exception.getMessage());
+  }
+
+  /**
+   * Negative test: verifies that an IllegalArgumentException is thrown when the
+   * logger is null.
+   */
+  @Test
+  void throwWhenLoggerNull() {
+    NullPointerException exception = assertThrows(NullPointerException.class,
+        () -> new Activity("Fjelltur", "Fin tur", 10, 7, time, null));
+
+    assertEquals("Activity must have a logger!", exception.getMessage());
   }
 
 }

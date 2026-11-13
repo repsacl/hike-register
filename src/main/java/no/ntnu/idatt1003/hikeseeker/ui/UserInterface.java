@@ -116,7 +116,7 @@ public class UserInterface {
       case "find" -> {
         if (parts.length >= 3 && parts[1].equalsIgnoreCase("person")) {
           clearPreviusLines();
-          findPerson(parts[2].replace("\"", ""));
+          // findPerson(parts[2].replace("\"", ""));
           System.out.println(Arrays.toString(parts));
         } else if (parts.length >= 3 && parts[1].equalsIgnoreCase("title")) {
           clearPreviusLines();
@@ -158,9 +158,12 @@ public class UserInterface {
         }
       }
       case "share" -> {
-        if (parts.length >= 3 && parts[1].equalsIgnoreCase("hike")) {
+        if (parts.length >= 2 && parts[1].equalsIgnoreCase("hike")) {
           clearPreviusLines();
-          shareActivityPerson(parts[2]);
+          shareActivityPerson();
+        } else {
+          System.out
+              .println("share what? Try 'share hike' or 'help' to see all commands");
         }
       }
       case "join" -> {
@@ -235,16 +238,16 @@ public class UserInterface {
   }
 
   private void showUsersActivitys() {
-    Activity[] activitys = activityRegistry.getOwnActivitys(currentUser);
+    Activity[] activities = activityRegistry.getOwnActivities(currentUser);
 
-    if (activitys.length == 0 || activitys == new Activity[] {}) {
+    if (activities.length == 0 || activities == new Activity[] {}) {
       System.out.println("\nNo hikes found, no hikes to show!\n");
       return;
     }
 
-    System.out.println("\n==== ALl YOUR ACTIVITYS ====\n");
-    for (int i = 0; i < activitys.length; i++) {
-      showActivity(activitys[i]);
+    System.out.println("\n==== ALl YOUR ACTIVITIES ====\n");
+    for (int i = 0; i < activities.length; i++) {
+      showActivity(activities[i]);
     }
 
   }
@@ -265,7 +268,7 @@ public class UserInterface {
     if (activity.hasGroup()) {
       System.out.println("Group:                  " + activity.getGroup().getName());
     }
-    System.out.println("Shared:                 " + activity.isShared());
+    System.out.println("Shared:                 " + activity.getShared());
     System.out.println("Time registered:        " + formatter.format(activity.getTimeRegistered()) + "\n");
   }
 
@@ -273,7 +276,7 @@ public class UserInterface {
    * Shows all activitys shared with the current user.
    */
   private void showAllActivites() {
-    Activity[] activitys = activityRegistry.getAllActivitys(currentUser);
+    Activity[] activitys = activityRegistry.getAllActivities(currentUser);
 
     if (activitys.length == 0 || activitys == new Activity[] {}) {
       System.out.println("\nNo hikes found, no hikes to show!\n");
@@ -289,9 +292,9 @@ public class UserInterface {
   }
 
   /**
-   * Takes a list og activtys and prints them out
+   * Takes a list of activtys and prints them out
    *
-   * @param activityList - list of activitys
+   * @param activityList - list of activities
    */
   private void showActivityList(Activity[] activityList) {
     System.out.println();
@@ -302,12 +305,25 @@ public class UserInterface {
   }
 
   /**
-   * Shows all activitys shared with the user
+   * Takes a list of persons and prints them out
+   *
+   * @param personList - list of activities
+   */
+  private void showPersonList(Person[] personList) {
+    System.out.println();
+
+    for (int i = 0; i < personList.length; i++) {
+      showPerson(personList[i]);
+    }
+  }
+
+  /**
+   * Shows all activities shared with the user
    */
   private void showAllShared() {
-    Activity[] activitys = activityRegistry.getAllActivitys(currentUser);
+    Activity[] activities = activityRegistry.getAllActivities(currentUser);
 
-    if (activitys.length == 0 || activitys == new Activity[] {}) {
+    if (activities.length == 0 || activities == new Activity[] {}) {
       System.out.println("\nNo hikes found, no hikes to show!\n");
       return;
     }
@@ -315,9 +331,9 @@ public class UserInterface {
     System.out.println("==== ALL SHARED ACTIVITYS ====");
     System.out.println("shows all activtys shared with you\n");
 
-    for (int i = 0; i < activitys.length; i++) {
-      if (activitys[i].getLogger() != currentUser) {
-        showActivity(activitys[i]);
+    for (int i = 0; i < activities.length; i++) {
+      if (activities[i].getLogger() != currentUser) {
+        showActivity(activities[i]);
       }
     }
   }
@@ -384,13 +400,13 @@ public class UserInterface {
     System.out.println("Write 'cancel' to end the edit\n");
     System.out.println("choose one of the hikes to edit\n");
 
-    Activity[] activitys = activityRegistry.getOwnActivitys(currentUser);
+    Activity[] activities = activityRegistry.getOwnActivities(currentUser);
 
     // int canEdit = 0;
-    for (int i = 0; i < activitys.length; i++) {
-      if (activitys[i].hasGroup()) {
+    for (int i = 0; i < activities.length; i++) {
+      if (activities[i].hasGroup()) {
         System.out.println(i + 1 + ")");
-        showActivity(activitys[i]);
+        showActivity(activities[i]);
         // canEdit++;
       }
     }
@@ -414,7 +430,7 @@ public class UserInterface {
       // }
 
       int choice = Integer.parseInt(number);
-      if (choice > activitys.length) {
+      if (choice > activities.length) {
         System.out.println("\nHike number cant be greter thean the ones shown!\n");
       }
 
@@ -423,19 +439,19 @@ public class UserInterface {
       }
 
       if (input.equalsIgnoreCase("no")) {
-        for (int i = 0; i < activitys.length; i++) {
+        for (int i = 0; i < activities.length; i++) {
           if (choice - 1 == i) {
-            activitys[i].setShared(false);
+            activities[i].setShared(false);
             System.out.println("\nHike set to private!\n");
-            showActivity(activitys[i]);
+            showActivity(activities[i]);
           }
         }
       } else if (input.equalsIgnoreCase("yes")) {
-        for (int i = 0; i < activitys.length; i++) {
+        for (int i = 0; i < activities.length; i++) {
           if (choice - 1 == i) {
-            activitys[i].setShared(true);
+            activities[i].setShared(true);
             System.out.println("\nHike shared with group!\n");
-            showActivity(activitys[i]);
+            showActivity(activities[i]);
           }
         }
       }
@@ -660,19 +676,22 @@ public class UserInterface {
    * @param name
    */
   private void findPerson(String name) {
-    Person person = personRegistry.getPerson(name);
+    Person[] persons = personRegistry.getPerson(name);
 
-    if (person == null) {
-      System.out.println("No person found with name " + name);
-      return;
-    }
+    // if (persons == null) {
+    // System.out.println("No person found with name " + name);
+    // return;
+    // }
 
     // perhaps make person to have count of made activities.
     // or show all activities made by this person
     System.out.println("\n==== PERSON SEARCH ====");
-    System.out.println(" Found " + person.getFullName() + "\n" + person.getFirstName() + " have registrered "
-        + person.getHikesRegistered() + " hikes\n");
-    showPerson(person);
+
+    if (persons.length == 0) {
+      System.out.println("No person found with name " + name);
+    }
+
+    showPersonList(persons);
   }
 
   /**
@@ -744,13 +763,78 @@ public class UserInterface {
     }
   }
 
-  private void shareActivityPerson(String namePerson) {
+  /**
+   * Shares one of the users activty with another person.
+   */
+  private void shareActivityPerson() {
+    System.out.println("==== SHARE ACTIVITY ====");
+    System.out.println("Write 'cancel' to end at any time\n");
+
+    Activity[] activities = activityRegistry.getOwnActivities(currentUser);
+    Person[] persons = personRegistry.getAllPersons();
+
+    for (int i = 0; i < activities.length; i++) {
+      System.out.println(i + 1 + ")");
+      showActivity(activities[i]);
+    }
+
+    System.out.println("\nSelect a hike you want to share\n");
+
+    String number = readInputOrCancel("Hike nr.");
+    if (number == null) {
+      return;
+    }
+
+    for (int i = 0; i < persons.length; i++) {
+      System.out.println(i + 1 + ")");
+      showPerson(persons[i]);
+    }
+
+    System.out.println("\nSelect the person you want to share the hike with\n");
+
+    String personNr = readInputOrCancel("Person nr.");
+    if (personNr == null) {
+      return;
+    }
 
     try {
-      Person person = personRegistry.getPerson(namePerson);
+      Person person = null;
+
+      int choiceAct = Integer.parseInt(number);
+      int choicePer = Integer.parseInt(personNr);
+
+      if (choiceAct < 0) {
+        System.out.println("\nHike number cant be less than 1!\n");
+        return;
+      } else if (choiceAct > activities.length) {
+        System.out.println("\nHike number cant be greater than " + activities.length + "!\n");
+        return;
+      }
+
+      if (choicePer < 0) {
+        System.out.println("\nPerson number cant be less than 1!\n");
+        return;
+      } else if (choicePer > persons.length) {
+        System.out.println("\nPerson number cant be greater than " + persons.length + "!\n");
+        return;
+      }
+
+      for (int i = 0; i < persons.length; i++) {
+        if (choicePer - 1 == i) {
+          person = persons[i];
+        }
+      }
+
+      for (int i = 0; i < activities.length; i++) {
+        if (choiceAct - 1 == i) {
+          activities[i].addCanSeeActivity(person);
+        }
+      }
+
+      System.out.println("Hike shared with " + person.getFullName() + "!\n");
 
     } catch (IllegalArgumentException e) {
-      System.out.println("Could not share with ");
+      System.out.println("\nCould not share hike with " + personNr + " " + e.getMessage() + "\n");
     }
   }
 
@@ -760,7 +844,7 @@ public class UserInterface {
    * Then deletes the activity from the activity register.
    */
   private void deleteActivity() {
-    Activity[] activityList = activityRegistry.getOwnActivitys(currentUser);
+    Activity[] activityList = activityRegistry.getOwnActivities(currentUser);
 
     if (activityList.length == 0) {
       System.out.println("\nNo hikes found, no hikes to delete!\n");

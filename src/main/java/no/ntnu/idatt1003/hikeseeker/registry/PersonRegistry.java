@@ -47,16 +47,26 @@ public class PersonRegistry {
    * @param name to search
    * @return person matching name
    */
-  public Person getPerson(String name) {
-    if (name == null || name.isBlank()) {
-      return null;
-    }
-    String searchName = name.trim();
+  public Person[] getPerson(String name) {
+    Person[] returnPersons = {};
 
-    return persons.stream()
-        .filter(prs -> prs.getFirstName().equalsIgnoreCase(searchName) || prs.getFullName().equalsIgnoreCase(searchName)
-            || prs.getLastName().equalsIgnoreCase(searchName))
-        .findFirst()
-        .orElse(null);
+    if (name == null || name.isBlank()) {
+      return returnPersons;
+    }
+    String[] parts = name.trim().split("\\s+", 2);
+
+    if (parts.length == 2) {
+      return persons.stream()
+          .filter(prs -> prs.getFullName().equalsIgnoreCase(parts[0] + " " + parts[1])
+              || prs.getFirstName().equalsIgnoreCase(parts[0]) || prs.getLastName().equalsIgnoreCase(parts[1]))
+          .toArray(Person[]::new);
+    } else if (parts.length == 1) {
+      return persons.stream()
+          .filter(prs -> prs.getFirstName().equalsIgnoreCase(parts[0]) || prs.getFullName().equalsIgnoreCase(parts[0])
+              || prs.getLastName().equalsIgnoreCase(parts[0]))
+          .toArray(Person[]::new);
+    }
+
+    return returnPersons;
   }
 }

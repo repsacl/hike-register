@@ -35,7 +35,9 @@ public class Activity {
    * @param timeRegistered the date and time the activity was registered
    * @param logger         the person who logged the activity
    * @param group          the group that did the activity, can be null
-   * @throws IllegalArgumentException if any of the values are invalid
+   * @throws IllegalArgumentException if title, description, rating and distance
+   *                                  is invalide
+   * @throws NullPointerException     if timeRegistered and logger is invalid
    */
   public Activity(String title, String description, double distanceKm, int rating, LocalDateTime timeRegistered,
       Person logger, Group group) {
@@ -50,17 +52,25 @@ public class Activity {
     this.description = description;
 
     if (Double.isNaN(distanceKm) || Double.isInfinite(distanceKm) || distanceKm <= 0) {
-      throw new NumberFormatException("Activity must have a valid distance!");
+      throw new IllegalArgumentException("Activity must have a valid distance!");
     }
     this.distanceKm = distanceKm;
 
     if (rating < 1 || rating > 10) {
-      throw new NumberFormatException("Rating must be between 1 and 10!");
+      throw new IllegalArgumentException("Rating must be between 1 and 10!");
     }
     this.rating = rating;
 
+    if (timeRegistered == null) {
+      throw new NullPointerException("Activity must have a time registered!");
+    }
     this.timeRegistered = timeRegistered;
+
+    if (logger == null) {
+      throw new NullPointerException("Activity must have a logger!");
+    }
     this.logger = logger;
+
     seeActivity.add(logger);
     this.group = group;
     this.shared = false; // private or shared activity
@@ -77,7 +87,10 @@ public class Activity {
    * @param rating         the rating, from 1 to 10
    * @param timeRegistered the date and time the activity was registered
    * @param logger         the person who logged the activity
-   * @throws IllegalArgumentException if any of the values are invalid
+   * @param group          the group that did the activity, can be null
+   * @throws IllegalArgumentException if title, description, rating and distance
+   *                                  is invalide
+   * @throws NullPointerException     if timeRegistered and logger is invalid
    */
   public Activity(String title, String description, double distanceKm, int rating, LocalDateTime timeRegistered,
       Person logger) {
@@ -167,7 +180,7 @@ public class Activity {
    *
    * @return true or false
    */
-  public boolean isShared() {
+  public boolean getShared() {
     return shared;
   }
 
@@ -177,6 +190,9 @@ public class Activity {
    * @param newShared - the new true or false of {@code shared}
    */
   public void setShared(boolean newShared) {
+    if (newShared == true && hasGroup() == false) {
+      throw new IllegalArgumentException("Can't share activity, no group is associated with it!");
+    }
     shared = newShared;
   }
 
@@ -184,19 +200,23 @@ public class Activity {
    * Checks if the given person can see this activity.
    *
    * <p>
-   * The logger, the group members at the time the activity was created and
-   * people added with {@link #addCanSeeActivity(Person)} can always see it.
-   * Anyone who is currently in the group can also see it. A person who joins
-   * the group later and then leaves loses access.
+   * The logger, the group members and the people added with
+   * {@link #addCanSeeActivity(Person)} can see it if shared is true.
+   * A person who joins the group later can see it.
+   * If people leave the group, they no longer see it.
    * </p>
    *
    * @param person the person to check
    * @return true if the person can see the activity, otherwise false
    */
   public boolean canSeeActivity(Person person) {
+    if (person == null) {
+      throw new NullPointerException("Person to check cannot be null!");
+    }
+
     boolean canSee = false;
 
-    if (isAdded(person) || person.getHikeGroup() == group && hasGroup() && isShared()) {
+    if (isAdded(person) || person.getHikeGroup() == group && hasGroup() && getShared()) {
       return canSee = true;
     }
 
@@ -210,7 +230,11 @@ public class Activity {
    * @param person the person to give access
    */
   public void addCanSeeActivity(Person person) {
-    if (isAdded(person) == false) {
+    if (person == null) {
+      throw new NullPointerException("Person added cannot be null!");
+    }
+
+    if (!isAdded(person)) {
       seeActivity.add(person);
     }
   }
@@ -232,18 +256,4 @@ public class Activity {
 
     return added;
   }
-
-  // /**
-  // * Gives all current members of the group access to see this activity.
-  // * Does nothing if the activity has no group.
-  // */
-  // private void updateSeeActivity() {
-  // if (group == null) {
-  // return;
-  // }
-  // Person[] members = group.getAllMembers();
-  // for (int i = 0; i < members.length; i++) {
-  // addCanSeeActivity(members[i]);
-  // }
-  // }
 }

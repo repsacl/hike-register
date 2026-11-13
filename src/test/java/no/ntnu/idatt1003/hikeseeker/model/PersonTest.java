@@ -9,9 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import no.ntnu.idatt1003.hikeseeker.model.Group;
-import no.ntnu.idatt1003.hikeseeker.model.Person;
-
 /**
  * Unit tests for the {@link Person} class.
  */
@@ -64,7 +61,7 @@ public class PersonTest {
    * decreasHikeRegistered works as intended.
    */
   @Test
-  void HikesRegisteredIncreasDecreas() {
+  void hikesRegisteredIncreasDecreas() {
     Person brotherman = new Person("Brotherman", "Testern");
     brotherman.increasHikeRegistered();
     brotherman.increasHikeRegistered();
@@ -79,11 +76,24 @@ public class PersonTest {
   }
 
   /**
-   * Positive test: verifies that creating a person with a group adds the person
-   * as a member of that group.
+   * Positive test: verifies that person names created with space is trimmed down.
    */
   @Test
-  void PersonWithoutGroupNull() {
+  void personNameIsTrimmed() {
+    Person brotherman = new Person("  Brotherman  ", "Testern  ");
+
+    assertEquals("Brotherman", brotherman.getFirstName());
+    assertEquals("Testern", brotherman.getLastName());
+    assertEquals("Brotherman Testern", brotherman.getFullName());
+  }
+
+  /**
+   * Positive test: verifies that a person with group null, returns rigth values
+   * for group check.
+   * Returns getHikegrup null and hasGroup false.
+   */
+  @Test
+  void personWithoutGroupNull() {
     Person brotherman = new Person("Brotherman", "Testern", null);
 
     assertEquals("Brotherman Testern", brotherman.getFullName());
@@ -108,19 +118,28 @@ public class PersonTest {
    * Positive test: verifies that hasGroup follows changes to the person's group.
    */
   @Test
-  void hasGroupFollowsUpdates() {
+  void hasGroupGetHikeGroupFollowsUpdates() {
     Person brotherman = new Person("Brotherman", "Testern");
+    Group group2 = new Group("Group2");
     assertFalse(brotherman.hasGroup());
+    assertNull(brotherman.getHikeGroup());
 
-    brotherman.updateHikeGroup(group);
+    group.addMember(brotherman);
+    assertEquals(1, group.getCountMembers());
+    assertEquals(0, group2.getCountMembers());
+    assertEquals(group, brotherman.getHikeGroup());
     assertTrue(brotherman.hasGroup());
 
-    brotherman.updateHikeGroup(null);
-    assertFalse(brotherman.hasGroup());
+    group2.addMember(brotherman);
+    assertEquals(0, group.getCountMembers());
+    assertEquals(1, group2.getCountMembers());
+    assertEquals(group2, brotherman.getHikeGroup());
+    assertTrue(brotherman.hasGroup());
   }
 
   /**
-   * Positive test: verifies that hikesRegistered wont go below zero.
+   * Positive test: verifies that hikesRegistered wont go below zero, and goes up
+   * after set to zero.
    */
   @Test
   void hikesRegisteredNeverBelowZero() {
@@ -129,10 +148,13 @@ public class PersonTest {
     brotherman.decreasHikeRegistered();
 
     assertEquals(0, brotherman.getHikesRegistered());
+
+    brotherman.increasHikeRegistered();
+    assertEquals(1, brotherman.getHikesRegistered());
   }
 
   /**
-   * Positiv test: verifies that a person can leav a group, and persons group i
+   * Positiv test: verifies that a person can leave a group, and persons group is
    * set to null.
    */
   @Test
@@ -140,18 +162,39 @@ public class PersonTest {
     Person brotherman = new Person("Brotherman", "Testern");
 
     group.addMember(brotherman);
+    assertEquals(1, group.getCountMembers());
     assertEquals(group, brotherman.getHikeGroup());
     assertTrue(group.checkIfMember(brotherman.getFirstName(), brotherman.getLastName()));
 
     brotherman.leaveGroup();
 
-    brotherman.updateHikeGroup(null);
-    assertEquals(null, brotherman.getHikeGroup());
+    assertEquals(0, group.getCountMembers());
+    assertNull(brotherman.getHikeGroup());
     assertFalse(group.checkIfMember(brotherman.getFirstName(), brotherman.getLastName()));
   }
 
   /**
-   * Negative test: verifies that a IllegalArgumentException throws when firstname
+   * Positive test: verifies that updateHikeGroup works as intended.
+   * group.getCountMember will be 0 since the member
+   * is not added, just associated with the group.
+   * updateHikeGroup will never be used by it self, only group wil use it.
+   */
+  @Test
+  void updateHikeGroupPerson() {
+    Person brotherman = new Person("Brotherman", "Testern");
+
+    brotherman.updateHikeGroup(group);
+    assertEquals(group, brotherman.getHikeGroup());
+    assertEquals(0, group.getCountMembers());
+
+    brotherman.updateHikeGroup(null);
+    assertNull(brotherman.getHikeGroup());
+    assertEquals(0, group.getCountMembers());
+  }
+
+  /**
+   * Negative test: verifies that an IllegalArgumentException throws when
+   * firstname
    * is empty.
    */
   @Test
@@ -159,7 +202,11 @@ public class PersonTest {
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
         () -> new Person("", "Testern"));
 
+    IllegalArgumentException exception2 = assertThrows(IllegalArgumentException.class,
+        () -> new Person("  ", "Testern"));
+
     assertEquals("Person must have a firstname!", exception.getMessage());
+    assertEquals("Person must have a firstname!", exception2.getMessage());
   }
 
   /**
@@ -171,7 +218,11 @@ public class PersonTest {
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
         () -> new Person("", "Testern", group));
 
+    IllegalArgumentException exception2 = assertThrows(IllegalArgumentException.class,
+        () -> new Person("  ", "Testern", group));
+
     assertEquals("Person must have a firstname!", exception.getMessage());
+    assertEquals("Person must have a firstname!", exception2.getMessage());
   }
 
   /**
@@ -187,6 +238,18 @@ public class PersonTest {
   }
 
   /**
+   * Negative test: verifies that a IllegalArgumentException throws when firstname
+   * is null with a group.
+   */
+  @Test
+  void throwWhenFirstnameNullGroup() {
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        () -> new Person(null, "Testern", group));
+
+    assertEquals("Person must have a firstname!", exception.getMessage());
+  }
+
+  /**
    * Negative test: verifies that a IllegalArgumentException throws when lastname
    * is empty.
    */
@@ -195,7 +258,27 @@ public class PersonTest {
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
         () -> new Person("Brotherman", ""));
 
+    IllegalArgumentException exception2 = assertThrows(IllegalArgumentException.class,
+        () -> new Person("Brotherman", "  "));
+
     assertEquals("Person must have a lastname!", exception.getMessage());
+    assertEquals("Person must have a lastname!", exception2.getMessage());
+  }
+
+  /**
+   * Negative test: verifies that a IllegalArgumentException throws when lastname
+   * is empty with a group.
+   */
+  @Test
+  void throwWhenLastNameEmptyGroup() {
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        () -> new Person("Brotherman", "", group));
+
+    IllegalArgumentException exception2 = assertThrows(IllegalArgumentException.class,
+        () -> new Person("Brotherman", "  ", group));
+
+    assertEquals("Person must have a lastname!", exception.getMessage());
+    assertEquals("Person must have a lastname!", exception2.getMessage());
   }
 
   /**
@@ -206,6 +289,18 @@ public class PersonTest {
   void throwWhenLastnameNull() {
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
         () -> new Person("Brotherman", null));
+
+    assertEquals("Person must have a lastname!", exception.getMessage());
+  }
+
+  /**
+   * Negative test: verifies that a IllegalArgumentException throws when lastname
+   * is null.
+   */
+  @Test
+  void throwWhenLastnameNullGroup() {
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        () -> new Person("Brotherman", null, group));
 
     assertEquals("Person must have a lastname!", exception.getMessage());
   }

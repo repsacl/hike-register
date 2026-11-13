@@ -2,6 +2,7 @@ package no.ntnu.idatt1003.hikeseeker.registry;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 import no.ntnu.idatt1003.hikeseeker.model.Activity;
 import no.ntnu.idatt1003.hikeseeker.model.Person;
@@ -16,7 +17,7 @@ import no.ntnu.idatt1003.hikeseeker.model.Person;
  * </p>
  */
 public class ActivityRegistry {
-  private final ArrayList<Activity> activitys = new ArrayList<>();
+  private final ArrayList<Activity> activities = new ArrayList<>();
 
   /**
    * Adds a new activity tot the activty register.
@@ -28,7 +29,7 @@ public class ActivityRegistry {
     if (newActivity.hasGroup()) {
       newActivity.getGroup().increasHikeRegistered();
     }
-    activitys.add(newActivity);
+    activities.add(newActivity);
   }
 
   /**
@@ -37,23 +38,24 @@ public class ActivityRegistry {
    * @param user
    * @return array with activitys
    */
-  public Activity[] getAllActivitys(Person user) {
+  public Activity[] getAllActivities(Person user) {
     // includes only activtys that user can see
-    return activitys.stream()
+    return activities.stream()
         .filter(act -> act.canSeeActivity(user))
+        .sorted(Comparator.comparing(Activity::getTimeRegistered))
         .toArray(Activity[]::new);
   }
 
   /**
-   * Get all activitys made by a person and returns them in an array.
+   * Get all activitys made by {@code user} and returns them in an array.
    *
    * @param user
    * @return array with activitys
    */
-  public Activity[] getOwnActivitys(Person user) {
-    // includes only activty that user logged.
-    return activitys.stream()
+  public Activity[] getOwnActivities(Person user) {
+    return activities.stream()
         .filter(act -> act.getLogger() == user)
+        .sorted(Comparator.comparing(Activity::getTimeRegistered))
         .toArray(Activity[]::new);
   }
 
@@ -64,8 +66,9 @@ public class ActivityRegistry {
    * @return array with activitys
    */
   public Activity[] getActivityTitle(String title, Person user) {
-    return activitys.stream()
+    return activities.stream()
         .filter(act -> act.getTitle().equalsIgnoreCase(title) && act.canSeeActivity(user))
+        .sorted(Comparator.comparing(Activity::getTimeRegistered))
         .toArray(Activity[]::new);
   }
 
@@ -77,8 +80,9 @@ public class ActivityRegistry {
    * @return list of activitys on the given date
    */
   public Activity[] getActivityDate(LocalDate date, Person user) {
-    return activitys.stream()
+    return activities.stream()
         .filter(act -> act.getTimeRegistered().toLocalDate().equals(date) && act.canSeeActivity(user))
+        .sorted(Comparator.comparing(Activity::getTimeRegistered))
         .toArray(Activity[]::new);
   }
 
@@ -95,10 +99,11 @@ public class ActivityRegistry {
       throw new IllegalArgumentException("Start-date cant be after end-date!");
     }
 
-    return activitys.stream()
+    return activities.stream()
         .filter(act -> !act.getTimeRegistered().toLocalDate().isBefore(startDate)
             && !act.getTimeRegistered().toLocalDate().isAfter(endDate) &&
             act.canSeeActivity(user))
+        .sorted(Comparator.comparing(Activity::getTimeRegistered))
         .toArray(Activity[]::new);
   }
 
@@ -119,6 +124,6 @@ public class ActivityRegistry {
       activity.getGroup().decreasHikeRegistered();
     }
 
-    activitys.remove(activity);
+    activities.remove(activity);
   }
 }
