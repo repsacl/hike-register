@@ -116,7 +116,7 @@ public class UserInterface {
       case "find" -> {
         if (parts.length >= 3 && parts[1].equalsIgnoreCase("person")) {
           clearPreviusLines();
-          // findPerson(parts[2].replace("\"", ""));
+          findPerson(parts[2].replace("\"", ""));
           System.out.println(Arrays.toString(parts));
         } else if (parts.length >= 3 && parts[1].equalsIgnoreCase("title")) {
           clearPreviusLines();
@@ -678,16 +678,13 @@ public class UserInterface {
   private void findPerson(String name) {
     Person[] persons = personRegistry.getPerson(name);
 
-    // if (persons == null) {
-    // System.out.println("No person found with name " + name);
-    // return;
-    // }
-
-    // perhaps make person to have count of made activities.
-    // or show all activities made by this person
     System.out.println("\n==== PERSON SEARCH ====");
 
-    if (persons.length == 0) {
+    if (persons.length == 1) {
+      System.out.println("Found one person with name " + name);
+    } else if (persons.length >= 2) {
+      System.out.println("Found multiple persons with name " + name);
+    } else if (persons.length == 0) {
       System.out.println("No person found with name " + name);
     }
 

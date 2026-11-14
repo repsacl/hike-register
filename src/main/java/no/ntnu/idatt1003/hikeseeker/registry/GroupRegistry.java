@@ -15,16 +15,18 @@ import no.ntnu.idatt1003.hikeseeker.model.Group;
 
 public class GroupRegistry {
 
-  private ArrayList<Group> groups = new ArrayList<>();
+  private final ArrayList<Group> groups = new ArrayList<>();
 
   /**
    * Adds a new group to the group registry.
    *
    * @param newGroup
+   * @throws NullPointerException     if the group is null.
+   * @throws IllegalArgumentException if the group already exists.
    */
   public void addGroup(Group newGroup) {
     if (newGroup == null) {
-      throw new IllegalArgumentException("Group added to the registry cant be null!");
+      throw new NullPointerException("Group added to the registry cant be null!");
     }
 
     if (checkIfExists(newGroup.getName())) {
@@ -38,10 +40,18 @@ public class GroupRegistry {
    * Checks if a group name already exist and returns true or false.
    *
    * @param name
-   * @return true or false
+   * @throws NullPointerException     if the name is null.
+   * @throws IllegalArgumentException if the name is blank.
    */
   public boolean checkIfExists(String name) {
-    return groups.stream().anyMatch(grp -> grp.getName().equalsIgnoreCase(name));
+    if (name == null) {
+      throw new NullPointerException("Group name to check cannot be null!");
+    }
+    if (name.isBlank()) {
+      throw new IllegalArgumentException("Group name to check cannot be empty!");
+    }
+
+    return groups.stream().anyMatch(grp -> grp.getName().equalsIgnoreCase(name.trim()));
   }
 
   /**

@@ -1,6 +1,7 @@
 package no.ntnu.idatt1003.hikeseeker.model;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 /**
@@ -44,23 +45,24 @@ public class Group {
   }
 
   /**
-   * Returns the how many hike this person has registered.
+   * Returns the how many hike this group has registered.
    *
-   * @return how many hikes this person has registered
+   * @return how many hikes this group has registered
    */
   public int getHikesRegistered() {
     return hikesRegistered;
   }
 
   /**
-   * Increases this persons hikes registered. Wont go below zero.
+   * Increases this groups hikes registered.
    */
   public void increasHikeRegistered() {
     hikesRegistered += 1;
   }
 
   /**
-   * Decreases this persons hikes registered.
+   * Decreases this groups hikes registered.
+   * Wont go below zero.
    */
   public void decreasHikeRegistered() {
     hikesRegistered -= 1;
@@ -72,13 +74,13 @@ public class Group {
   /**
    * Adds a new member to this group.
    *
-   * @throws IllegalArgumentException if the member is null or i already a member.
-   *
    * @param newMember
+   * @throws NullPointerException     if the person is null.
+   * @throws IllegalArgumentException if the person already a member.
    */
   public void addMember(Person newMember) {
     if (newMember == null) {
-      throw new IllegalArgumentException("New member cant be null.");
+      throw new NullPointerException("New member cant be null.");
     }
     if (checkIfMember(newMember.getFirstName(), newMember.getLastName())) {
       throw new IllegalArgumentException("Is already a member!");
@@ -114,12 +116,12 @@ public class Group {
   }
 
   /**
-   * Returns the time of when the group registered.
+   * Returns the time of when the group was registered.
    *
    * @return Time registered
    */
-  public LocalDateTime getTimeRegistered() {
-    return registered;
+  public LocalDate getDateRegistered() {
+    return registered.toLocalDate();
   }
 
   /**
@@ -127,8 +129,13 @@ public class Group {
    * Sets the members group to null
    *
    * @param member
+   * @throws NullPointerException if the person to remove is null.
    */
   public void removeMember(Person member) {
+    if (member == null) {
+      throw new NullPointerException("Person to removve from group cannot be null!");
+    }
+
     if (member.getHikeGroup() == this) {
       member.updateHikeGroup(null);
       members.remove(member);
@@ -138,8 +145,8 @@ public class Group {
   /**
    * Returns true or false if a person is a member.
    *
-   * @param firstName
-   * @param lastName
+   * @param firstName - firstname og person to check
+   * @param lastName  - lastname of person to check
    * @return true or false
    */
   public boolean checkIfMember(String firstName, String lastName) {
