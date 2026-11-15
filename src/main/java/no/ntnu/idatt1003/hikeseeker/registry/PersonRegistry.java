@@ -1,16 +1,13 @@
 package no.ntnu.idatt1003.hikeseeker.registry;
 
 import java.util.ArrayList;
-
 import no.ntnu.idatt1003.hikeseeker.model.Person;
 
 /**
  * Represents a registry that keeps track of all persons in the hike registry.
  *
- * <p>
- * The registry can add and remove, return persons by firstname, lastname and
- * both. returns all persons as an array.
- * </p>
+ * <p>The registry can add and remove, return persons by firstname, lastname and both. returns all
+ * persons as an array.
  */
 public class PersonRegistry {
   private final ArrayList<Person> persons = new ArrayList<>();
@@ -18,14 +15,15 @@ public class PersonRegistry {
   /**
    * Adds a new person to person registry.
    *
-   * @param newPerson
+   * @param newPerson - person to add.
    */
   public void addPerson(Person newPerson) {
     if (newPerson == null) {
       throw new IllegalArgumentException("Person added to the registry cant be null!");
     }
 
-    if (persons.stream().anyMatch(prs -> prs.getFullName().equalsIgnoreCase(newPerson.getFullName()))) {
+    if (persons.stream()
+        .anyMatch(prs -> prs.getFullName().equalsIgnoreCase(newPerson.getFullName()))) {
       throw new IllegalArgumentException("Person already exists in the registry!");
     }
 
@@ -35,7 +33,7 @@ public class PersonRegistry {
   /**
    * Gets all persons in person registry.
    *
-   * @return array with all persons
+   * @return array with all persons.
    */
   public Person[] getAllPersons() {
     return persons.toArray(new Person[0]);
@@ -44,8 +42,8 @@ public class PersonRegistry {
   /**
    * Finds person by name. The user can write firstname lastname and both.
    *
-   * @param name to search
-   * @return person matching name
+   * @param name - name to search.
+   * @return person matching name.
    */
   public Person[] getPerson(String name) {
     Person[] returnPersons = {};
@@ -58,11 +56,13 @@ public class PersonRegistry {
     if (parts.length == 2) {
       return persons.stream()
           .filter(prs -> prs.getFullName().equalsIgnoreCase(parts[0] + " " + parts[1])
-              || prs.getFirstName().equalsIgnoreCase(parts[0]) || prs.getLastName().equalsIgnoreCase(parts[1]))
+              || prs.getFirstName().equalsIgnoreCase(parts[0])
+              || prs.getLastName().equalsIgnoreCase(parts[1]))
           .toArray(Person[]::new);
     } else if (parts.length == 1) {
       return persons.stream()
-          .filter(prs -> prs.getFirstName().equalsIgnoreCase(parts[0]) || prs.getFullName().equalsIgnoreCase(parts[0])
+          .filter(prs -> prs.getFirstName().equalsIgnoreCase(parts[0])
+              || prs.getFullName().equalsIgnoreCase(parts[0])
               || prs.getLastName().equalsIgnoreCase(parts[0]))
           .toArray(Person[]::new);
     }

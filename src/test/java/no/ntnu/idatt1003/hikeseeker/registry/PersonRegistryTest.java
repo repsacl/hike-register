@@ -14,9 +14,8 @@ import no.ntnu.idatt1003.hikeseeker.model.Person;
  * Unit tests for the {@link PersonRegistry} class.
  *
  * <p>
- * Note: The basic structure of this test class was suggested by an AI assistant
- * (Claude)
- * and then reviewed and adapted by me.
+ * Note: The basic structure of this test class was suggested by an AI assistant (Claude) and then
+ * reviewed and adapted by me.
  * </p>
  */
 public class PersonRegistryTest {
@@ -40,8 +39,7 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Positive test: verifies that an empty registry returns an empty array, not
-   * null.
+   * Positive test: verifies that an empty registry returns an empty array, not null.
    */
   @Test
   void getAllPersonsOnEmptyRegistryReturnsEmptyArray() {
@@ -49,20 +47,18 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Positive test: verifies that added persons are returned in the order they
-   * were added.
+   * Positive test: verifies that added persons are returned in the order they were added.
    */
   @Test
   void getAllPersonsReturnsAddedPersonsInOrder() {
     personRegistry.addPerson(brotherman);
     personRegistry.addPerson(bob);
 
-    assertArrayEquals(new Person[] { brotherman, bob }, personRegistry.getAllPersons());
+    assertArrayEquals(new Person[] {brotherman, bob}, personRegistry.getAllPersons());
   }
 
   /**
-   * Positive test: verifies that getAllPersons returns a copy of the persons in
-   * the registry.
+   * Positive test: verifies that getAllPersons returns a copy of the persons in the registry.
    */
   @Test
   void getAllPersonsRetursnCopy() {
@@ -70,13 +66,13 @@ public class PersonRegistryTest {
 
     Person[] allPersons = personRegistry.getAllPersons();
 
-    assertArrayEquals(new Person[] { brotherman }, allPersons);
+    assertArrayEquals(new Person[] {brotherman}, allPersons);
     allPersons = null;
     assertNull(allPersons);
 
     personRegistry.addPerson(bob);
 
-    assertArrayEquals(new Person[] { brotherman, bob }, personRegistry.getAllPersons());
+    assertArrayEquals(new Person[] {brotherman, bob}, personRegistry.getAllPersons());
   }
 
   /**
@@ -84,8 +80,8 @@ public class PersonRegistryTest {
    */
   @Test
   void addPersonWithNullThrowsException() {
-    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> personRegistry.addPerson(null));
+    IllegalArgumentException exception =
+        assertThrows(IllegalArgumentException.class, () -> personRegistry.addPerson(null));
 
     assertEquals("Person added to the registry cant be null!", exception.getMessage());
   }
@@ -97,8 +93,8 @@ public class PersonRegistryTest {
   void addPersonTwiceDoesNotCreateDuplicate() {
     personRegistry.addPerson(brotherman);
 
-    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> personRegistry.addPerson(brotherman));
+    IllegalArgumentException exception =
+        assertThrows(IllegalArgumentException.class, () -> personRegistry.addPerson(brotherman));
 
     assertEquals("Person already exists in the registry!", exception.getMessage());
 
@@ -106,16 +102,15 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Negative test: verifies that the same person cannot be added twice with caps
-   * in the name.
+   * Negative test: verifies that the same person cannot be added twice with caps in the name.
    */
   @Test
   void addPersonTwiceDoesNotCreateDuplicateCaps() {
     personRegistry.addPerson(brotherman);
     Person brot = new Person("BrotherMAN", "TESTern");
 
-    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> personRegistry.addPerson(brot));
+    IllegalArgumentException exception =
+        assertThrows(IllegalArgumentException.class, () -> personRegistry.addPerson(brot));
 
     assertEquals("Person already exists in the registry!", exception.getMessage());
 
@@ -123,8 +118,7 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Positive test: verifies that persons with same firstname can be added to the
-   * registry.
+   * Positive test: verifies that persons with same firstname can be added to the registry.
    */
   @Test
   void addPersonSameFirstName() {
@@ -135,8 +129,7 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Positive test: verifies that persons with same lastname can be added to the
-   * registry.
+   * Positive test: verifies that persons with same lastname can be added to the registry.
    */
   @Test
   void addPersonSameLastName() {
@@ -153,18 +146,17 @@ public class PersonRegistryTest {
   void getPersonFindsByFirstName() {
     personRegistry.addPerson(brotherman);
 
-    assertArrayEquals(new Person[] { brotherman }, personRegistry.getPerson("Brotherman"));
+    assertArrayEquals(new Person[] {brotherman}, personRegistry.getPerson("Brotherman"));
   }
 
   /**
-   * Positive test: verifies that a person can be found with spaceing around the
-   * firstname.
+   * Positive test: verifies that a person can be found with spaceing around the firstname.
    */
   @Test
   void getPersonFindsSpaceTrim() {
     personRegistry.addPerson(brotherman);
 
-    assertArrayEquals(new Person[] { brotherman }, personRegistry.getPerson("   Brotherman  "));
+    assertArrayEquals(new Person[] {brotherman}, personRegistry.getPerson("   Brotherman  "));
   }
 
   /**
@@ -174,18 +166,17 @@ public class PersonRegistryTest {
   void getPersonFindsByLastName() {
     personRegistry.addPerson(brotherman);
 
-    assertArrayEquals(new Person[] { brotherman }, personRegistry.getPerson("Testern"));
+    assertArrayEquals(new Person[] {brotherman}, personRegistry.getPerson("Testern"));
   }
 
   /**
-   * Positive test: verifies that a person can be found with spaceing around the
-   * lastname.
+   * Positive test: verifies that a person can be found with spaceing around the lastname.
    */
   @Test
   void getPersonFindsByLastNameSpaceTrim() {
     personRegistry.addPerson(brotherman);
 
-    assertArrayEquals(new Person[] { brotherman }, personRegistry.getPerson(" Testern"));
+    assertArrayEquals(new Person[] {brotherman}, personRegistry.getPerson(" Testern"));
   }
 
   /**
@@ -196,18 +187,18 @@ public class PersonRegistryTest {
     personRegistry.addPerson(new Person("Peter", "Oppland"));
     personRegistry.addPerson(brotherman);
 
-    assertArrayEquals(new Person[] { brotherman }, personRegistry.getPerson("Brotherman Testern"));
+    assertArrayEquals(new Person[] {brotherman}, personRegistry.getPerson("Brotherman Testern"));
   }
 
   /**
-   * Positive test: verifies that a person can be found with spaceing around and
-   * inn the fullname.
+   * Positive test: verifies that a person can be found with spaceing around and inn the fullname.
    */
   @Test
   void getPersonFindsByFullNameSpaceTrim() {
     personRegistry.addPerson(brotherman);
 
-    assertArrayEquals(new Person[] { brotherman }, personRegistry.getPerson(" Brotherman         Testern   "));
+    assertArrayEquals(new Person[] {brotherman},
+        personRegistry.getPerson(" Brotherman         Testern   "));
   }
 
   /**
@@ -218,29 +209,29 @@ public class PersonRegistryTest {
     personRegistry.addPerson(new Person("Peter", "Oppland"));
     personRegistry.addPerson(brotherman);
 
-    assertArrayEquals(new Person[] { brotherman }, personRegistry.getPerson("BroTherMan"));
-    assertArrayEquals(new Person[] { brotherman }, personRegistry.getPerson("TestERN"));
-    assertArrayEquals(new Person[] { brotherman }, personRegistry.getPerson("BroTherMan TestERN"));
-    assertArrayEquals(new Person[] { brotherman }, personRegistry.getPerson("BROTHERMAN"));
-    assertArrayEquals(new Person[] { brotherman }, personRegistry.getPerson("TESTERN"));
-    assertArrayEquals(new Person[] { brotherman }, personRegistry.getPerson("BROTHERMAN TESTERN"));
+    assertArrayEquals(new Person[] {brotherman}, personRegistry.getPerson("BroTherMan"));
+    assertArrayEquals(new Person[] {brotherman}, personRegistry.getPerson("TestERN"));
+    assertArrayEquals(new Person[] {brotherman}, personRegistry.getPerson("BroTherMan TestERN"));
+    assertArrayEquals(new Person[] {brotherman}, personRegistry.getPerson("BROTHERMAN"));
+    assertArrayEquals(new Person[] {brotherman}, personRegistry.getPerson("TESTERN"));
+    assertArrayEquals(new Person[] {brotherman}, personRegistry.getPerson("BROTHERMAN TESTERN"));
   }
 
   /**
-   * Positive test: verifies that all matching persons is returned when
-   * several persons share the same firstname.
+   * Positive test: verifies that all matching persons is returned when several persons share the
+   * same firstname.
    */
   @Test
   void getPersonReturnsAllMatchesWhenFirstNameSame() {
     personRegistry.addPerson(bobT);
     personRegistry.addPerson(bob);
 
-    assertArrayEquals(new Person[] { bobT, bob }, personRegistry.getPerson("Bob"));
+    assertArrayEquals(new Person[] {bobT, bob}, personRegistry.getPerson("Bob"));
   }
 
   /**
-   * Positive test: verifies that all matching persons is returned when
-   * several persons share the same lastname.
+   * Positive test: verifies that all matching persons is returned when several persons share the
+   * same lastname.
    */
   @Test
   void getPersonReturnsAllMatchesWhenLastNameSame() {
@@ -248,12 +239,12 @@ public class PersonRegistryTest {
     personRegistry.addPerson(brotherman);
     personRegistry.addPerson(bobT);
 
-    assertArrayEquals(new Person[] { brotherman, bobT }, personRegistry.getPerson("Testern"));
+    assertArrayEquals(new Person[] {brotherman, bobT}, personRegistry.getPerson("Testern"));
   }
 
   /**
-   * Positive test: verifies that all matching persons is returned when
-   * several persons share the same firstname with search with fullname.
+   * Positive test: verifies that all matching persons is returned when several persons share the
+   * same firstname with search with fullname.
    */
   @Test
   void getPersonReturnsAllMatchesWhenFullNameShareFirstName() {
@@ -261,12 +252,12 @@ public class PersonRegistryTest {
     personRegistry.addPerson(bob);
     personRegistry.addPerson(bobT);
 
-    assertArrayEquals(new Person[] { bob, bobT }, personRegistry.getPerson("Bob Bobsen"));
+    assertArrayEquals(new Person[] {bob, bobT}, personRegistry.getPerson("Bob Bobsen"));
   }
 
   /**
-   * Positive test: verifies that all matching persons is returned when
-   * several persons share the same lastname with search with fullname.
+   * Positive test: verifies that all matching persons is returned when several persons share the
+   * same lastname with search with fullname.
    */
   @Test
   void getPersonReturnsAllMatchesWhenFullNameShareLastName() {
@@ -274,25 +265,23 @@ public class PersonRegistryTest {
     personRegistry.addPerson(brotherman);
     personRegistry.addPerson(bobT);
 
-    assertArrayEquals(new Person[] { brotherman, bobT },
+    assertArrayEquals(new Person[] {brotherman, bobT},
         personRegistry.getPerson("Brotherman Testern"));
   }
 
   /**
-   * Positive test: verifies that a person with same first- and lastname, one gets
-   * matched ones.
+   * Positive test: verifies that a person with same first- and lastname, one gets matched ones.
    */
   @Test
   void getPersonSameFirstLastNameReturnsOne() {
     Person bobbo = new Person("Bob", "Bob");
     personRegistry.addPerson(bobbo);
 
-    assertArrayEquals(new Person[] { bobbo }, personRegistry.getPerson("bob"));
+    assertArrayEquals(new Person[] {bobbo}, personRegistry.getPerson("bob"));
   }
 
   /**
-   * Negative test: verifies that a search that partly match returns an empty
-   * array.
+   * Negative test: verifies that a search that partly match returns an empty array.
    */
   @Test
   void getPersonPartlyReturnsEmptyArray() {
@@ -302,8 +291,7 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Negative test: verifies that searching for an unknown name returns an empty
-   * array.
+   * Negative test: verifies that searching for an unknown name returns an empty array.
    */
   @Test
   void getPersonWithUnknownNameReturnsEmptyArray() {
@@ -313,9 +301,7 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Negative test: verifies that searching for an unknown fullname returns an
-   * empty
-   * array.
+   * Negative test: verifies that searching for an unknown fullname returns an empty array.
    */
   @Test
   void getPersonWithUnknownFullNameReturnsEmptyArray() {
@@ -325,8 +311,7 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Negative test: verifies that searching in an empty registry returns an empty
-   * array.
+   * Negative test: verifies that searching in an empty registry returns an empty array.
    */
   @Test
   void getPersonOnEmptyRegistryReturnsEmptyArray() {
@@ -334,8 +319,7 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Negative test: verifies the behaviour when searching with null returns an
-   * empty array.
+   * Negative test: verifies the behaviour when searching with null returns an empty array.
    */
   @Test
   void getPersonWithNullReturnsEmptyArray() {
@@ -345,8 +329,7 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Negative test: verifies the behaviour when searching with blank string
-   * returns an empty array.
+   * Negative test: verifies the behaviour when searching with blank string returns an empty array.
    */
   @Test
   void getPersonWithBlankReturnsEmptyArray() {

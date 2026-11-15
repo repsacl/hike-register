@@ -16,9 +16,8 @@ import no.ntnu.idatt1003.hikeseeker.model.Group;
  * Unit tests for the {@link GroupRegistry} class.
  *
  * <p>
- * Note: The basic structure of this test class was suggested by an AI assistant
- * (Claude)
- * and then reviewed and adapted by me.
+ * Note: The basic structure of this test class was suggested by an AI assistant (Claude) and then
+ * reviewed and adapted by me.
  * </p>
  */
 public class GroupRegistryTest {
@@ -38,8 +37,7 @@ public class GroupRegistryTest {
   }
 
   /**
-   * Positive test: verifies that an empty registry returns an empty array, not
-   * null.
+   * Positive test: verifies that an empty registry returns an empty array, not null.
    */
   @Test
   void getAllGroupsOnEmptyRegistryReturnsEmptyArray() {
@@ -47,34 +45,32 @@ public class GroupRegistryTest {
   }
 
   /**
-   * Positive test: verifies that added groups are returned in the order they
-   * were added.
+   * Positive test: verifies that added groups are returned in the order they were added.
    */
   @Test
   void getAllGroupsReturnsAddedGroupsInOrder() {
     groupRegistry.addGroup(group);
     groupRegistry.addGroup(group2);
 
-    assertArrayEquals(new Group[] { group, group2 }, groupRegistry.getAllGroups());
+    assertArrayEquals(new Group[] {group, group2}, groupRegistry.getAllGroups());
   }
 
   /**
-   * Positive test: verifies that the groupRegistry returns a copy of it's
-   * registry,
+   * Positive test: verifies that the groupRegistry returns a copy of it's registry.
    */
   @Test
   void getAllGroupsReturnsCopy() {
     groupRegistry.addGroup(group);
     Group[] allGroups = groupRegistry.getAllGroups();
 
-    assertArrayEquals(new Group[] { group }, allGroups);
+    assertArrayEquals(new Group[] {group}, allGroups);
 
     allGroups = null;
     assertNull(allGroups);
 
     groupRegistry.addGroup(group2);
 
-    assertArrayEquals(new Group[] { group, group2 }, groupRegistry.getAllGroups());
+    assertArrayEquals(new Group[] {group, group2}, groupRegistry.getAllGroups());
   }
 
   /**
@@ -82,8 +78,8 @@ public class GroupRegistryTest {
    */
   @Test
   void addGroupsWithNullThrowsException() {
-    NullPointerException exception = assertThrows(NullPointerException.class,
-        () -> groupRegistry.addGroup(null));
+    NullPointerException exception =
+        assertThrows(NullPointerException.class, () -> groupRegistry.addGroup(null));
 
     assertEquals("Group added to the registry cant be null!", exception.getMessage());
     assertEquals(0, groupRegistry.getAllGroups().length);
@@ -97,16 +93,16 @@ public class GroupRegistryTest {
     groupRegistry.addGroup(group);
     assertEquals(1, groupRegistry.getAllGroups().length);
 
-    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> groupRegistry.addGroup(group));
+    IllegalArgumentException exception =
+        assertThrows(IllegalArgumentException.class, () -> groupRegistry.addGroup(group));
 
     assertEquals("Group already exists in the registry!", exception.getMessage());
     assertEquals(1, groupRegistry.getAllGroups().length);
 
     Group testGroup = new Group("TESTern");
 
-    IllegalArgumentException exception2 = assertThrows(IllegalArgumentException.class,
-        () -> groupRegistry.addGroup(testGroup));
+    IllegalArgumentException exception2 =
+        assertThrows(IllegalArgumentException.class, () -> groupRegistry.addGroup(testGroup));
 
     assertEquals("Group already exists in the registry!", exception2.getMessage());
     assertEquals(1, groupRegistry.getAllGroups().length);
@@ -126,28 +122,26 @@ public class GroupRegistryTest {
   }
 
   /**
-   * Negative test: verifies that checkIfExist throws NullPointerException when
-   * check is with null.
+   * Negative test: verifies that checkIfExist throws NullPointerException when check is with null.
    */
   @Test
   void throwWhenCheckIfExistsNull() {
-    NullPointerException exception = assertThrows(NullPointerException.class,
-        () -> groupRegistry.checkIfExists(null));
+    NullPointerException exception =
+        assertThrows(NullPointerException.class, () -> groupRegistry.checkIfExists(null));
 
     assertEquals("Group name to check cannot be null!", exception.getMessage());
   }
 
   /**
-   * Negative test: verifies that checkIfExist throws IllegalArgumentException
-   * when check is empty.
+   * Negative test: verifies that checkIfExist throws IllegalArgumentException when check is empty.
    */
   @Test
   void throwWhenCheckIfExistsEmpty() {
-    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-        () -> groupRegistry.checkIfExists(""));
+    IllegalArgumentException exception =
+        assertThrows(IllegalArgumentException.class, () -> groupRegistry.checkIfExists(""));
 
-    IllegalArgumentException exception2 = assertThrows(IllegalArgumentException.class,
-        () -> groupRegistry.checkIfExists(" "));
+    IllegalArgumentException exception2 =
+        assertThrows(IllegalArgumentException.class, () -> groupRegistry.checkIfExists(" "));
 
     assertEquals("Group name to check cannot be empty!", exception.getMessage());
     assertEquals("Group name to check cannot be empty!", exception2.getMessage());
@@ -193,8 +187,7 @@ public class GroupRegistryTest {
   }
 
   /**
-   * Negative test: verifies the behaviour when searching with blank string return
-   * null.
+   * Negative test: verifies the behaviour when searching with blank string return null.
    */
   @Test
   void getGroupWithBlankReturnsNull() {
@@ -215,8 +208,7 @@ public class GroupRegistryTest {
   }
 
   /**
-   * Edge case: verifies the behaviour when the search has leading or trailing
-   * whitespace.
+   * Edge case: verifies the behaviour when the search has leading or trailing whitespace.
    */
   @Test
   void getGroupWithSpacetrim() {

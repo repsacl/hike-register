@@ -3,30 +3,23 @@ package no.ntnu.idatt1003.hikeseeker.model;
 /**
  * Represents a person who can log activities in the hike registry.
  *
- * <p>
- * A person has a first name, a last name and optionally a hike group. The first
- * and last
- * name are immutable once the person is created, while the hike group can be
- * updated later.
- * </p>
+ * <p>A person has a first name, a last name and optionally a hike group. The first and last name
+ * are immutable once the person is created, while the hike group can be updated later.
  */
 public class Person {
 
-  private final String firstName; // egen variabel for fornavn
-  private final String lastName; // egen variabel for etternavn
-  private Group group; // hvis personen er i en tur-gruppe kan han/hun notere det her får å få det på
-                       // aktivtetene sine. Gir også mulighet for å etterhvert sortere etter
-                       // tur-grupper
+  private final String firstName;
+  private final String lastName;
+  private Group group;
   private int hikesRegistered = 0;
 
   /**
    * Creates a new person who is a member of a hike group.
    *
-   * @param firstName the person's first name, cannot be null or empty
-   * @param lastName  the person's last name, cannot be null or empty
-   * @param group     the name of the hike group, cannot be null or empty
-   * @throws IllegalArgumentException if the first name, last name is null or
-   *                                  empty
+   * @param firstName the person's first name.
+   * @param lastName the person's last name.
+   * @param group the name of the hike group.
+   * @throws IllegalArgumentException if the first name, last name is null or empty.
    */
   public Person(String firstName, String lastName, Group group) {
     if (firstName == null || firstName.isBlank()) {
@@ -45,28 +38,24 @@ public class Person {
     }
   }
 
-  // personer som skal loggføre må ikke være i en tur-gruppe
   /**
    * Creates a new person who is not a member of a hike group.
    *
-   * <p>
-   * The hike group is left unset ({@code null}) and can be added later with
-   * {@link #updateHikeGroup(String)}.
-   * </p>
+   * <p>The hike group is left unset ({@code null}) and can be added later with
+   * {@link #updateHikeGroup(Group)}.
    *
-   * @param firstName the person's first name, cannot be null
-   * @param lastName  the person's last name, cannot be null
-   * @param group     the group connected to this person i set to null
-   * @throws IllegalArgumentException if the first name or last name is null
+   * @param firstName the person's first name.
+   * @param lastName the person's last name.
+   * @throws IllegalArgumentException if the first name, last name is null or empty.
    */
   public Person(String firstName, String lastName) {
     this(firstName, lastName, null);
   }
 
   /**
-   * Returns the first name of this person.
+   * Returns the firstname of this person.
    *
-   * @return the first name of the person
+   * @return Firsname.
    */
   public String getFirstName() {
     return firstName;
@@ -75,35 +64,34 @@ public class Person {
   /**
    * Returns the last name of this person.
    *
-   * @return the last name of the person
+   * @return Lastname.
    */
   public String getLastName() {
     return lastName;
   }
 
   /**
-   * Returns the full name of this person, formatted as "lastName, firstName".
+   * Returns the fullname of this person, formatted as "firstname lastname".
    *
-   * @return the full name of the person
+   * @return Fullname.
    */
   public String getFullName() {
     return firstName + " " + lastName;
   }
 
   /**
-   * Returns the name of the hike group this person is a member of.
+   * Returns the group of the hike group this person is a member of.
    *
-   * @return the name of the hike group, or {@code null} if the person is not in a
-   *         hike group
+   * @return the group of the hike group, or {@code null} if the person is not in a hike group.
    */
   public Group getHikeGroup() {
     return group;
   }
 
   /**
-   * Returns tue or fals if person is a member in a group
+   * Returns tue or fals if person is a member in a group.
    *
-   * @return
+   * @return true or false.
    */
   public boolean hasGroup() {
     boolean isGroup = false;
@@ -116,7 +104,7 @@ public class Person {
   /**
    * Returns the how many hike this person has registered.
    *
-   * @return how many hikes this person has registered
+   * @return how many hikes this person has registered.
    */
   public int getHikesRegistered() {
     return hikesRegistered;
@@ -130,7 +118,7 @@ public class Person {
   }
 
   /**
-   * Decreases this persons hikes registered. Wont go below zero
+   * Decreases this persons hikes registered. Wont go below zero.
    */
   public void decreasHikeRegistered() {
     hikesRegistered -= 1;
@@ -140,20 +128,16 @@ public class Person {
   }
 
   /**
-   * Adds this person to a hike group, or replaces the current one.
+   * Adds a new a hike group to this persons group, or replaces the current one.
    *
-   * @param name the name of the new hike group
+   * @param newGroup - new group to add.
    */
   public void updateHikeGroup(Group newGroup) {
-    // if (newGroup == null) {
-    // group.removeMember(this);
-    // }
     group = newGroup;
   }
 
   /**
-   * Removes this person from it's current group.
-   * Group is set to null
+   * Removes this person from it's current group. Group is set to null
    */
   public void leaveGroup() {
     if (group == null) {

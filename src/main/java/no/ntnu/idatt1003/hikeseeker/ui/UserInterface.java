@@ -6,7 +6,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Scanner;
-
 import no.ntnu.idatt1003.hikeseeker.model.Activity;
 import no.ntnu.idatt1003.hikeseeker.model.Group;
 import no.ntnu.idatt1003.hikeseeker.model.Person;
@@ -14,6 +13,9 @@ import no.ntnu.idatt1003.hikeseeker.registry.ActivityRegistry;
 import no.ntnu.idatt1003.hikeseeker.registry.GroupRegistry;
 import no.ntnu.idatt1003.hikeseeker.registry.PersonRegistry;
 
+/**
+ * UserInterface for the app hike-seeker.
+ */
 public class UserInterface {
   private boolean running = true;
 
@@ -25,11 +27,10 @@ public class UserInterface {
   private Person currentUser;
 
   /**
-   * Inizialize the user interface and makes the app ready to use.
-   * Starts with pre buildt activitys, persosns and groups.
+   * Inizialize the user interface and makes the app ready to use. Starts with pre built activities,
+   * persosns and groups.
    */
   public void init() {
-    LocalDateTime now = LocalDateTime.now();
     groupRegistry.addGroup(new Group("GRUPPEN"));
     groupRegistry.addGroup(new Group("Mountain-group"));
     Group[] groups = groupRegistry.getAllGroups();
@@ -37,22 +38,48 @@ public class UserInterface {
     personRegistry.addPerson(new Person("Brotherman", "Testern", groups[0]));
     personRegistry.addPerson(new Person("Bob", "Bobsen", groups[0]));
     personRegistry.addPerson(new Person("Peter", "Oppland", groups[1]));
+    personRegistry.addPerson(new Person("Lars", "Solo"));
     Person[] persons = personRegistry.getAllPersons();
 
     currentUser = persons[2];
 
-    activityRegistry.addActivity(new Activity("En lang tur", "Turen var veldig bra og lang, ble velsig sliten", 10,
-        10, now, persons[0]));
-    activityRegistry.addActivity(new Activity("En kort tur", "Turen var kort og kjedelig. Bare skog :(", 3, 3,
-        now.minusDays(2).minusHours(5), persons[1], persons[1].getHikeGroup()));
+    LocalDateTime now = LocalDateTime.now();
+
+    activityRegistry.addActivity(new Activity("En lang tur",
+        "Turen var veldig bra og lang, ble velsig sliten", 10, 10, now, persons[0]));
     activityRegistry
-        .addActivity(new Activity("Fjelltur", "Jeg gikk til Gaustadtoppen. Det var bratt, men det gikk tilslutt.",
-            30, 8, now.minusMonths(2).minusDays(5).plusHours(2).plusMinutes(10), persons[2],
-            persons[2].getHikeGroup()));
+        .addActivity(new Activity("En kort tur", "Turen var kort og kjedelig. Bare skog :(", 3, 3,
+            now.minusDays(2).minusHours(5), persons[1], persons[1].getHikeGroup()));
+    activityRegistry.addActivity(new Activity("Fjelltur",
+        "Jeg gikk til Gaustadtoppen. Det var bratt, men det gikk tilslutt.", 30, 8,
+        now.minusMonths(2).minusDays(5).plusHours(2).plusMinutes(10), persons[2],
+        persons[2].getHikeGroup()));
+    activityRegistry.addActivity(new Activity("Trolltunga",
+        "Lang og tung dag, 10 timer tur-retur. Beina verker fortsatt.", 27, 9,
+        now.minusMonths(3).minusDays(1), persons[3]));
+
+    Activity preikestolen = new Activity("Preikestolen",
+        "Mye folk på stien, men utsikten over Lysefjorden var rå.", 8, 8,
+        now.minusDays(20).plusHours(1), persons[0], persons[0].getHikeGroup());
+    preikestolen.setShared(true);
+    activityRegistry.addActivity(preikestolen);
+
+    Activity besseggen = new Activity("Besseggen",
+        "Klassikeren i Jotunheimen. Fantastisk utsikt over Gjende og Bessvatnet.", 14, 10,
+        now.minusDays(12).minusHours(3), persons[2], persons[2].getHikeGroup());
+    besseggen.setShared(true);
+    besseggen.addCanSeeActivity(persons[3]);
+    activityRegistry.addActivity(besseggen);
+
+    Activity sondagstur = new Activity("Søndagstur",
+        "Tur rundt Sognsvann med kaffe og kanelboller.", 3.3, 5,
+        now.minusDays(7).minusHours(6), persons[1]);
+    sondagstur.addCanSeeActivity(persons[2]);
+    activityRegistry.addActivity(sondagstur);
   }
 
   /**
-   * Starts the user interface of the app
+   * Starts the user interface of the application.
    */
   public void start() {
     showMenu();
@@ -72,11 +99,9 @@ public class UserInterface {
     String[] parts = input.trim().split("\\s", 3);
     String command = parts[0].toLowerCase();
 
-    System.out.println(Arrays.toString(parts));
+    // System.out.println(Arrays.toString(parts));
 
-    // uses equalsignorecase to ignore capital letters, so the user dont have to
-    // write with uppercase letters
-    // better to use switch because
+
     switch (command) {
       case "me" -> {
         clearPreviusLines();
@@ -85,7 +110,7 @@ public class UserInterface {
       case "my" -> {
         if (parts.length >= 2 && parts[1].equalsIgnoreCase("hikes")) {
           clearPreviusLines();
-          showUsersActivitys();
+          showUsersActivities();
         } else {
           System.out.println("'My' what? Try 'my hikes' or 'help' to see all commands");
         }
@@ -121,16 +146,19 @@ public class UserInterface {
         } else if (parts.length >= 3 && parts[1].equalsIgnoreCase("title")) {
           clearPreviusLines();
           findActivityTitle(parts[2].replace("\"", ""));
-
+        } else if (parts.length >= 3 && parts[1].equalsIgnoreCase("hikes")
+            && parts[2].equalsIgnoreCase("by")) {
+          clearPreviusLines();
+          findActivitiesByPerson();
         } else if (parts.length >= 3 && parts[1].equalsIgnoreCase("date")) {
           clearPreviusLines();
           findActivityDate(parts[2]);
         } else if (parts.length == 2) {
-          System.out
-              .println("Unknown command: " + parts[1] + " try 'find title <title>' or 'help' to se all commands");
+          System.out.println("Unknown command: " + parts[1]
+              + " try 'find title <title>' or 'help' to se all commands");
         } else {
-          System.out
-              .println("Find what? Try 'find title <title>', 'find person <name>' or 'help' to see all commands");
+          System.out.println("Find what? Try 'find title <title>','find person <name>' "
+              + "or 'help' to see all commands");
         }
       }
       case "register" -> {
@@ -144,8 +172,8 @@ public class UserInterface {
           clearPreviusLines();
           regsiterUser();
         } else {
-          System.out
-              .println("Register what? Try 'register hike', 'register group' or 'help' to see more commands");
+          System.out.println("Register what? Try 'register hike', 'register group' "
+              + "or 'help' to see more commands");
         }
       }
       case "edit" -> {
@@ -153,8 +181,7 @@ public class UserInterface {
           clearPreviusLines();
           editHike();
         } else {
-          System.out
-              .println("edit what? Try 'edit hike' or 'help' to see all commands");
+          System.out.println("edit what? Try 'edit hike' or 'help' to see all commands");
         }
       }
       case "share" -> {
@@ -162,8 +189,7 @@ public class UserInterface {
           clearPreviusLines();
           shareActivityPerson();
         } else {
-          System.out
-              .println("share what? Try 'share hike' or 'help' to see all commands");
+          System.out.println("share what? Try 'share hike' or 'help' to see all commands");
         }
       }
       case "join" -> {
@@ -230,14 +256,17 @@ public class UserInterface {
   }
 
   /**
-   * Shows the current users stats
+   * Shows the current users information.
    */
   private void showUser() {
     System.out.println("\n==== CURRENT USER ====");
     showPerson(currentUser);
   }
 
-  private void showUsersActivitys() {
+  /**
+   * Shows the current users activities.
+   */
+  private void showUsersActivities() {
     Activity[] activities = activityRegistry.getOwnActivities(currentUser);
 
     if (activities.length == 0 || activities == new Activity[] {}) {
@@ -255,11 +284,9 @@ public class UserInterface {
   /**
    * Shows information about a specific activity.
    *
-   * @param activity
+   * @param activity - activty to show.
    */
   private void showActivity(Activity activity) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-
     System.out.println("Title:                  " + activity.getTitle());
     System.out.println("Description:            " + activity.getDescription()); // + "\n");
     System.out.println("Distance:               " + activity.getDistanceKm() + "km");
@@ -269,11 +296,13 @@ public class UserInterface {
       System.out.println("Group:                  " + activity.getGroup().getName());
     }
     System.out.println("Shared:                 " + activity.getShared());
-    System.out.println("Time registered:        " + formatter.format(activity.getTimeRegistered()) + "\n");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+    System.out.println(
+        "Time registered:        " + formatter.format(activity.getTimeRegistered()) + "\n");
   }
 
   /**
-   * Shows all activitys shared with the current user.
+   * Shows all activitys made by the user and shared with the user.
    */
   private void showAllActivites() {
     Activity[] activitys = activityRegistry.getAllActivities(currentUser);
@@ -292,9 +321,9 @@ public class UserInterface {
   }
 
   /**
-   * Takes a list of activtys and prints them out
+   * Takes an array of activtys and prints them out.
    *
-   * @param activityList - list of activities
+   * @param activityList - array of activities.
    */
   private void showActivityList(Activity[] activityList) {
     System.out.println();
@@ -305,9 +334,9 @@ public class UserInterface {
   }
 
   /**
-   * Takes a list of persons and prints them out
+   * Takes an array of persons and prints them out.
    *
-   * @param personList - list of activities
+   * @param personList - array of persons.
    */
   private void showPersonList(Person[] personList) {
     System.out.println();
@@ -318,7 +347,7 @@ public class UserInterface {
   }
 
   /**
-   * Shows all activities shared with the user
+   * Shows all activities shared with the user.
    */
   private void showAllShared() {
     Activity[] activities = activityRegistry.getAllActivities(currentUser);
@@ -339,7 +368,8 @@ public class UserInterface {
   }
 
   /**
-   * Registers an activity.
+   * Registers an new activity. If the user is a group member, then they get an option to share it
+   * with the group.
    */
   private void registerActivity() {
     System.out.println("\n==== REGISTER A HIKE ====");
@@ -393,7 +423,7 @@ public class UserInterface {
   }
 
   /**
-   * Edits a spesific hike
+   * Edits a hike, if it should be shared with the current users group or not.
    */
   private void editHike() {
     System.out.println("==== EDIT HIKE ====");
@@ -486,7 +516,7 @@ public class UserInterface {
   }
 
   /**
-   * Shows all groups in the groupsregistry
+   * Shows all groups in the groupsregistry.
    */
   private void showAllGroups() {
     System.out.println("\n==== ALL GROUPS ====");
@@ -503,7 +533,7 @@ public class UserInterface {
   /**
    * Shows a spesific groups information.
    *
-   * @param group
+   * @param group - group to show.
    */
   private void showGroup(Group group) {
     System.out.println("Name       " + group.getName());
@@ -512,7 +542,8 @@ public class UserInterface {
   }
 
   /**
-   * User switches a group or joins a group if not a member
+   * User switches a group or joins a group if not a member. Can choose to have no group at all ,
+   * and can write "register" to register a new group.
    */
   private void switchGroup() {
     System.out.println("\n==== JOIN GROUP ====");
@@ -546,7 +577,7 @@ public class UserInterface {
         System.out.println("\nGroup left!\n");
         showUser();
         return;
-      } else if (choice < 0) {
+      } else if (choice <= 0) {
         System.out.println("\nNumber cant be smaller than 1!\n");
         return;
       } else if (choice > groups.length) {
@@ -600,7 +631,8 @@ public class UserInterface {
   }
 
   /**
-   * Switches users with a number related to a profile.
+   * Switches users with a number related to a profile. Can write "register" to register a new
+   * user/perosn instead.
    */
   private void switchUser() {
     System.out.println("\n==== SWITCH USER ====");
@@ -630,7 +662,7 @@ public class UserInterface {
     try {
       int choice = Integer.parseInt(input);
 
-      if (choice < 0) {
+      if (choice <= 0) {
         System.out.println("\nNumber cant be smaller than 1!\n");
         return;
       } else if (choice > users.length) {
@@ -652,10 +684,10 @@ public class UserInterface {
   }
 
   /**
-   * A scanner method that allows user to cancel a registartion at any time
+   * A scanner method that allows user to cancel a registartion at any time.
    *
-   * @param promt
-   * @return input
+   * @param promt - promt to the user.
+   * @return input from the user.
    */
   private String readInputOrCancel(String promt) {
     System.out.print(promt + " -> ");
@@ -670,10 +702,10 @@ public class UserInterface {
   }
 
   /**
-   * Find a person by name. User can write firstname, lastname and both. Uses a
-   * registry function thet returns the person
+   * Find a person by name. User can write firstname, lastname and both. Prints out a list of
+   * persons containing the same name.
    *
-   * @param name
+   * @param name name of person to find.
    */
   private void findPerson(String name) {
     Person[] persons = personRegistry.getPerson(name);
@@ -692,11 +724,11 @@ public class UserInterface {
   }
 
   /**
-   * Finds a secific hike with a title-name.
-   * If an activity dose not exist,
-   * then returns a print to the user that the given title-name does not exist.
+   * Finds a secific hike with a title-name. Shows multiple activties if activties have the same
+   * title. If the activity dose not exist, then returns a print to the user that the given
+   * title-name does not exist.
    *
-   * @param title - title of activty to find
+   * @param title - title of activty to find.
    */
   private void findActivityTitle(String title) {
     Activity[] activityList = activityRegistry.getActivityTitle(title, currentUser);
@@ -714,10 +746,10 @@ public class UserInterface {
   }
 
   /**
-   * Finds a secific activity/hike with a date.
-   * If an activity dose not exist,
-   * then returns a print to the user the no activity exist with the given date.
+   * Finds a specific activity/hike with a date. If an activity dose not exist, then returns a print
+   * to the user the no activity exist with the given date.
    *
+   * @param dateString - string containg one or to dates.
    */
   private void findActivityDate(String dateString) {
     Activity[] activities = null;
@@ -747,7 +779,8 @@ public class UserInterface {
       } else if (activities.length == 1 && parts.length >= 2) {
         System.out.println("\nFound one hike with dates: " + parts[0] + " and " + parts[1] + "\n");
       } else if (activities.length > 1 && parts.length >= 2) {
-        System.out.println("\nFound multiple hikes with dates: " + parts[0] + " and " + parts[1] + "\n");
+        System.out
+            .println("\nFound multiple hikes with dates: " + parts[0] + " and " + parts[1] + "\n");
       } else if (activities.length > 1 && parts.length == 1) {
         System.out.println("\nFound multiple hikes with dates: " + dateString + "\n");
       }
@@ -760,6 +793,64 @@ public class UserInterface {
     }
   }
 
+  private void findActivitiesByPerson() {
+    System.out.println("==== FIND ACTIVITIES BY PERSON ====");
+    System.out.println("Write 'cancel' to stop the search at any time\n");
+
+    Person[] persons = personRegistry.getAllPersons();
+
+    for (int i = 0; i < persons.length; i++) {
+      if (persons[i] == currentUser) {
+        continue;
+      }
+
+      System.out.print(i + 1 + ")");
+      System.out.println(persons[i].getFullName());
+    }
+
+    System.out.println("\nSelect a person to see their activities\n");
+
+    String number = readInputOrCancel("Select a number");
+    if (number == null) {
+      return;
+    }
+
+    try {
+      int choice = Integer.parseInt(number);
+
+      if (choice <= 0) {
+        System.out.println("\nSelected number cant be less than 1!\n");
+        return;
+      } else if (choice > persons.length) {
+        System.out.println("\nSelected number cant be greater than " + persons.length + "!\n");
+        return;
+      }
+
+      Person person = null;
+
+      for (int i = 0; i < persons.length; i++) {
+        if (choice - 1 == i) {
+          person = persons[i];
+        }
+      }
+      Activity[] activities = activityRegistry.getActivitiesToPerson(person, currentUser);
+
+      if (activities.length == 0) {
+        System.out.println("\nNo visible hikes from " + person.getFullName() + " found!\n");
+      } else if (activities.length == 1) {
+        System.out.println("\nOne visible hike from " + person.getFullName() + " found!\n");
+        showActivityList(activities);
+      } else {
+        System.out.println("\nMultiple visible hikse from " + person.getFullName() + " found\n");
+        showActivityList(activities);
+      }
+
+
+    } catch (IllegalArgumentException e) {
+      System.out.println("\nCould not find activities to selected person\n");
+    }
+  }
+
   /**
    * Shares one of the users activty with another person.
    */
@@ -768,10 +859,9 @@ public class UserInterface {
     System.out.println("Write 'cancel' to end at any time\n");
 
     Activity[] activities = activityRegistry.getOwnActivities(currentUser);
-    Person[] persons = personRegistry.getAllPersons();
 
     for (int i = 0; i < activities.length; i++) {
-      System.out.println(i + 1 + ")");
+      System.out.println(i + 1 + ") ");
       showActivity(activities[i]);
     }
 
@@ -782,9 +872,15 @@ public class UserInterface {
       return;
     }
 
+    Person[] persons = personRegistry.getAllPersons();
+    System.out.println("");
     for (int i = 0; i < persons.length; i++) {
-      System.out.println(i + 1 + ")");
-      showPerson(persons[i]);
+      if (persons[i] == currentUser) {
+        continue;
+      }
+
+      System.out.print(i + 1 + ") ");
+      System.out.println(persons[i].getFullName());
     }
 
     System.out.println("\nSelect the person you want to share the hike with\n");
@@ -800,7 +896,7 @@ public class UserInterface {
       int choiceAct = Integer.parseInt(number);
       int choicePer = Integer.parseInt(personNr);
 
-      if (choiceAct < 0) {
+      if (choiceAct <= 0) {
         System.out.println("\nHike number cant be less than 1!\n");
         return;
       } else if (choiceAct > activities.length) {
@@ -808,7 +904,7 @@ public class UserInterface {
         return;
       }
 
-      if (choicePer < 0) {
+      if (choicePer <= 0) {
         System.out.println("\nPerson number cant be less than 1!\n");
         return;
       } else if (choicePer > persons.length) {
@@ -836,9 +932,9 @@ public class UserInterface {
   }
 
   /**
-   * Deletes/removes an activity. Shows all activitys made by currentuser with a
-   * number related to it. User picks number with activity it want to delete.
-   * Then deletes the activity from the activity register.
+   * Deletes/removes an activity. Shows all activitys made by currentuser with a number related to
+   * it. User picks number with activity it want to delete. Then deletes the activity from the
+   * activity register.
    */
   private void deleteActivity() {
     Activity[] activityList = activityRegistry.getOwnActivities(currentUser);
@@ -879,9 +975,9 @@ public class UserInterface {
   }
 
   /**
-   * shows a Persons info.
+   * Shows a Persons info.
    *
-   * @param person
+   * @param person - person to show.
    */
   private void showPerson(Person person) {
     System.out.println("Name:     " + person.getFullName());
@@ -894,7 +990,7 @@ public class UserInterface {
   }
 
   /**
-   * shows all users/persons
+   * Shows all users/persons in this appliactions and their stats.
    */
   private void showAllUsers() {
     Person[] users = personRegistry.getAllPersons();
@@ -909,16 +1005,18 @@ public class UserInterface {
   }
 
   /**
-   * Prints out the menu of the app.
-   * It contains the most usefull commands to navigate the application
+   * Prints out the menu of the app. It contains the most usefull commands to navigate the
+   * application
    */
   private void showMenu() {
     System.out.println("\n==== WELCOME TO THE HIKE APP ====");
     System.out.println("register hike:          -> to register a hike");
-    System.out.println("all:                    -> see all your hike activitys and activitys shared with you");
+    System.out.println(
+        "all:                    -> see all your hike activitys and activitys shared with you");
     System.out.println("my hikes                -> shows all hikes logged by you");
     System.out.println("switch user             -> switch user to a selected profile");
-    System.out.println("help:                   -> shows more options and how to use the appllication");
+    System.out
+        .println("help:                   -> shows more options and how to use the appllication");
     System.out.println("exit:                   -> exit the application");
     System.out.println("choose a command:\n");
     System.out.println("Current user logged in -> " + currentUser.getFullName());
@@ -926,23 +1024,25 @@ public class UserInterface {
   }
 
   /**
-   * Shows all options on how to use the application.
-   * It prints out lines of all the commands that is available.
-   * One line is a description on how to use the commands
+   * Shows all options on how to use the application. It prints out lines of all the commands that
+   * is available. One line is a description on how to use the commands.
    */
   private void showHelpOptions() {
     // some options are not made yet
     System.out.println("\n==== Help MENU ====");
-    System.out.println("all                         -> see all your hike activitys and hikes shared with you");
+    System.out.println(
+        "all                         -> see all your hike activitys and hikes shared with you");
     System.out.println("my hikes                    -> shows all hikes logged by you");
     System.out.println("shared                      -> shows all hikes shared with you");
-    System.out.println("switch user                 -> switch user to a selected acount or register a new user.");
-    System.out.println("users                       -> shows all persons/users in the hike registry");
+    System.out.println(
+        "switch user                 -> switch user to a selected acount or register a new user.");
+    System.out
+        .println("users                       -> shows all persons/users in the hike registry");
     System.out.println("groups                      -> shwos all groups in the hike registry");
     System.out.println("switch group                -> switch group to a new group");
     System.out.println("join group                  -> to join a new hike group");
-    System.out.println(
-        "find person 'name'          -> finds a person by firstname/lastname/fullname and shows their profile");
+    System.out.println("find person 'name'          -> finds a person by "
+        + "firstname/lastname/fullname and shows their profile");
     System.out.println("find title 'title'           -> finds a specific hike that user can see");
     System.out.println("find date 'date'            -> find hikes on a spesific date");
     System.out.println("find hike 'start' 'end'    -> find hikes between to hikes");
@@ -951,14 +1051,15 @@ public class UserInterface {
     System.out.println("register group              -> to registe a new hike group");
     System.out.println("register user               -> to registe a new user");
     System.out.println("edit hike                   -> to change a hikes sharing status");
-    System.out.println("delete hike                 -> menu of all your hikes to deletes a specific activity");
+    System.out.println(
+        "delete hike                 -> menu of all your hikes to deletes a specific activity");
     System.out.println("me                          -> shows your profile");
     System.out.println("help                        -> show all options");
     System.out.println("clear                       -> clears previus lines in the terminal");
     System.out.println("exit                        -> exits the application");
     System.out.println("\nHOW TO:");
-    System.out
-        .println("This application behave like a terminal and have different commands to do different tasks.");
+    System.out.println("This application behave like a terminal and have different commands "
+        + "to do different tasks.");
     System.out.println("You use the app by using the commands shown over.");
     System.out.println("\nCurrent user logged in -> " + currentUser.getFullName());
 
@@ -967,8 +1068,7 @@ public class UserInterface {
   }
 
   /**
-   * Clears previus prints so the terminal does not feel clauded, does not work
-   * great in an IDE or editior. Works best in a normal terminal
+   * Clears previus prints so the terminal does not feel clauded.
    */
   private static void clearPreviusLines() {
     System.out.print("\033[H\033[2J\033[3J");

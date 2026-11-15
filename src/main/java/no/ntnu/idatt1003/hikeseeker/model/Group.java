@@ -1,18 +1,15 @@
 package no.ntnu.idatt1003.hikeseeker.model;
 
-import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 /**
- * Represents a group in the hike registry that persons can join and register
- * activities to.
+ * Represents a group in the hike registry that persons can join and register activities to.
  *
- * <p>
- * A group has a name, a list of members, the time it was registered and a
- * count of how many hikes have been registered to it. A person can only be a
- * member of one group at a time; adding a person to a new group removes them
- * from their previous group.
+ * <p>A group has a name, a list of members, the time it was registered and a count of how many
+ * hikes have been registered to it. A person can only be a member of one group at a time; adding a
+ * person to a new group removes them from their previous group.
  */
 public class Group {
   private final String name;
@@ -23,9 +20,8 @@ public class Group {
   /**
    * Creates a new group.
    *
-   * @param name       - name of the group
-   * @param registered - when the group is created
-   * @throws IllegalArgumentException if the name is null or empty
+   * @param name - name of the group.
+   * @throws IllegalArgumentException if the name is null or empty.
    */
   public Group(String name) {
     if (name == null || name.isBlank()) {
@@ -38,7 +34,7 @@ public class Group {
   /**
    * Returns the name og the group.
    *
-   * @return name of the group
+   * @return name of the group.
    */
   public String getName() {
     return name;
@@ -47,7 +43,7 @@ public class Group {
   /**
    * Returns the how many hike this group has registered.
    *
-   * @return how many hikes this group has registered
+   * @return Hikes registered.
    */
   public int getHikesRegistered() {
     return hikesRegistered;
@@ -61,8 +57,7 @@ public class Group {
   }
 
   /**
-   * Decreases this groups hikes registered.
-   * Wont go below zero.
+   * Decreases this groups hikes registered. Wont go below zero.
    */
   public void decreasHikeRegistered() {
     hikesRegistered -= 1;
@@ -74,8 +69,8 @@ public class Group {
   /**
    * Adds a new member to this group.
    *
-   * @param newMember
-   * @throws NullPointerException     if the person is null.
+   * @param newMember - member to add.
+   * @throws NullPointerException if the person is null.
    * @throws IllegalArgumentException if the person already a member.
    */
   public void addMember(Person newMember) {
@@ -89,16 +84,16 @@ public class Group {
     if (newMember.hasGroup() && newMember.getHikeGroup() != this) {
       newMember.getHikeGroup().removeMember(newMember);
     }
-    // adds new member to the members list
+    // adds new member to the members list.
     members.add(newMember);
-    // updates the newMember assosiated group
+    // updates the newMember assosiated group.
     newMember.updateHikeGroup(this);
   }
 
   /**
    * Retruns how many members the group have.
    *
-   * @return count of members
+   * @return count of members.
    */
   public int getCountMembers() {
     return members.size();
@@ -107,7 +102,7 @@ public class Group {
   /**
    * Returns all mebers of this group as an array.
    *
-   * @return array of members
+   * @return array of members.
    */
   public Person[] getAllMembers() {
     Person[] allMembers = members.toArray(new Person[0]);
@@ -118,17 +113,16 @@ public class Group {
   /**
    * Returns the time of when the group was registered.
    *
-   * @return Time registered
+   * @return Time registered.
    */
   public LocalDate getDateRegistered() {
     return registered.toLocalDate();
   }
 
   /**
-   * Removes member from the group.
-   * Sets the members group to null
+   * Removes member from the group and sets the members group to null.
    *
-   * @param member
+   * @param member - member to remove.
    * @throws NullPointerException if the person to remove is null.
    */
   public void removeMember(Person member) {
@@ -145,9 +139,9 @@ public class Group {
   /**
    * Returns true or false if a person is a member.
    *
-   * @param firstName - firstname og person to check
-   * @param lastName  - lastname of person to check
-   * @return true or false
+   * @param firstName - firstname of person to check.
+   * @param lastName - lastname of person to check.
+   * @return true or false.
    */
   public boolean checkIfMember(String firstName, String lastName) {
     boolean isMember = false;

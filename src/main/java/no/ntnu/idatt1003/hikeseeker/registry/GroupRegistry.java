@@ -1,16 +1,13 @@
 package no.ntnu.idatt1003.hikeseeker.registry;
 
 import java.util.ArrayList;
-
 import no.ntnu.idatt1003.hikeseeker.model.Group;
 
 /**
  * Represents a registry that keeps track of all groups in the hike registry.
  *
- * <p>
- * The registry can add and remove groups, check if a group name already exists
- * and look up groups by name. Group names are compared without regard to case.
- * </p>
+ * <p>The registry can add and remove groups, check if a group name already exists and look up
+ * groups by name. Group names are compared without regard to case.
  */
 
 public class GroupRegistry {
@@ -20,8 +17,8 @@ public class GroupRegistry {
   /**
    * Adds a new group to the group registry.
    *
-   * @param newGroup
-   * @throws NullPointerException     if the group is null.
+   * @param newGroup - group to add.
+   * @throws NullPointerException if the group is null.
    * @throws IllegalArgumentException if the group already exists.
    */
   public void addGroup(Group newGroup) {
@@ -39,8 +36,9 @@ public class GroupRegistry {
   /**
    * Checks if a group name already exist and returns true or false.
    *
-   * @param name
-   * @throws NullPointerException     if the name is null.
+   * @param name - name to check.
+   * @return true or false.
+   * @throws NullPointerException if the name is null.
    * @throws IllegalArgumentException if the name is blank.
    */
   public boolean checkIfExists(String name) {
@@ -57,7 +55,7 @@ public class GroupRegistry {
   /**
    * Gets all groups and returns it as an array.
    *
-   * @return an array with all groups
+   * @return an array with all groups.
    */
   public Group[] getAllGroups() {
     return groups.toArray(new Group[0]);
@@ -66,17 +64,17 @@ public class GroupRegistry {
   /**
    * Removes a group from the group registry.
    *
-   * @param group
+   * @param group - group to remove.
    */
   public void removeGroup(Group group) {
     groups.remove(group);
   }
 
   /**
-   * Gets a groups name and returns it as a string.
+   * Gets a groups name and returns a matching group, or else null.
    *
-   * @param name
-   * @return group name as string
+   * @param name - name to search.
+   * @return group matching name or null.
    */
   public Group getGroup(String name) {
     if (name == null || name.isBlank()) {
@@ -84,23 +82,8 @@ public class GroupRegistry {
     }
     String searchName = name.trim();
 
-    return groups.stream()
-        .filter(grp -> grp.getName().equalsIgnoreCase(searchName))
+    return groups.stream().filter(grp -> grp.getName().equalsIgnoreCase(searchName))
         .findFirst()
         .orElse(null);
   }
-
-  // /**
-  // * Gets a groups name and returns it as a string.
-  // *
-  // * @param name
-  // * @return group name as string
-  // */
-  // public String getGroupName(String name) {
-  // return groups.stream()
-  // .filter(grp -> grp.getName().equalsIgnoreCase(name))
-  // .findFirst()
-  // .map(Group::getName)
-  // .orElse(null);
-  // }
 }

@@ -6,12 +6,9 @@ import java.util.ArrayList;
 /**
  * Represents a single hike/activity logged in the hike registry.
  *
- * <p>
- * An activity has a title, a description, a distance in kilometers, a rating
- * from 1 to 10, the time it was registered, the person who logged it and an
- * optional group. Only the logger, the group members and people added later
- * can see the activity.
- * </p>
+ * <p>An activity has a title, a description, a distance in kilometers, a rating from 1 to 10, the
+ * time it was registered, the person who logged it and an optional group. Only the logger, the
+ * group members and people added later can see the activity.
  */
 public class Activity {
 
@@ -28,19 +25,18 @@ public class Activity {
   /**
    * Creates a new activity done by a group.
    *
-   * @param title          the title, cannot be null or empty
-   * @param description    how the activity went, cannot be null or empty
-   * @param distanceKm     the distance in kilometers, must be greater than 0
-   * @param rating         the rating, from 1 to 10
-   * @param timeRegistered the date and time the activity was registered
-   * @param logger         the person who logged the activity
-   * @param group          the group that did the activity, can be null
-   * @throws IllegalArgumentException if title, description, rating and distance
-   *                                  is invalide
-   * @throws NullPointerException     if timeRegistered and logger is invalid
+   * @param title title of activty
+   * @param description how the activity went.
+   * @param distanceKm the distance in kilometers
+   * @param rating the rating, from 1 to 10.
+   * @param timeRegistered the date and time the activity was registered.
+   * @param logger the person who logged the activity.
+   * @param group the group that did the activity, can be null.
+   * @throws IllegalArgumentException if title, description, rating and distance is invalide.
+   * @throws NullPointerException if timeRegistered and logger is invalid.
    */
-  public Activity(String title, String description, double distanceKm, int rating, LocalDateTime timeRegistered,
-      Person logger, Group group) {
+  public Activity(String title, String description, double distanceKm, int rating,
+      LocalDateTime timeRegistered, Person logger, Group group) {
     if (title == null || title.isBlank()) {
       throw new IllegalArgumentException("Activity must have a title!");
     }
@@ -74,26 +70,22 @@ public class Activity {
     seeActivity.add(logger);
     this.group = group;
     this.shared = false; // private or shared activity
-
-    // updateSeeActivity();
   }
 
   /**
    * Creates a new activity without a group.
    *
-   * @param title          the title, cannot be null or empty
-   * @param description    how the activity went, cannot be null or empty
-   * @param distanceKm     the distance in kilometers, must be greater than 0
-   * @param rating         the rating, from 1 to 10
-   * @param timeRegistered the date and time the activity was registered
-   * @param logger         the person who logged the activity
-   * @param group          the group that did the activity, can be null
-   * @throws IllegalArgumentException if title, description, rating and distance
-   *                                  is invalide
-   * @throws NullPointerException     if timeRegistered and logger is invalid
+   * @param title title of activty
+   * @param description how the activity went.
+   * @param distanceKm the distance in kilometers
+   * @param rating the rating, from 1 to 10.
+   * @param timeRegistered the date and time the activity was registered.
+   * @param logger the person who logged the activity.
+   * @throws IllegalArgumentException if title, description, rating and distance is invalide.
+   * @throws NullPointerException if timeRegistered and logger is invalid.
    */
-  public Activity(String title, String description, double distanceKm, int rating, LocalDateTime timeRegistered,
-      Person logger) {
+  public Activity(String title, String description, double distanceKm, int rating,
+      LocalDateTime timeRegistered, Person logger) {
 
     this(title, description, distanceKm, rating, timeRegistered, logger, null);
   }
@@ -101,7 +93,7 @@ public class Activity {
   /**
    * Returns the title of this activity.
    *
-   * @return the title of the activity
+   * @return the title of the activity.
    */
   public String getTitle() {
     return title;
@@ -110,7 +102,7 @@ public class Activity {
   /**
    * Returns the description of this activity.
    *
-   * @return the description of the activity
+   * @return the description of the activity.
    */
   public String getDescription() {
     return description;
@@ -119,7 +111,7 @@ public class Activity {
   /**
    * Returns the distance of this activity in kilometers.
    *
-   * @return the distance of the activity in kilometers
+   * @return the distance of the activity in kilometers.
    */
   public double getDistanceKm() {
     return distanceKm;
@@ -137,7 +129,7 @@ public class Activity {
   /**
    * Returns the date and time this activity was registered.
    *
-   * @return the date and time the activity was registered
+   * @return the date and time the activity was registered.
    */
   public LocalDateTime getTimeRegistered() {
     return timeRegistered;
@@ -146,7 +138,7 @@ public class Activity {
   /**
    * Returns the person who logged this activity.
    *
-   * @return the person who logged the activity
+   * @return the person who logged the activity.
    */
   public Person getLogger() {
     return logger;
@@ -164,7 +156,7 @@ public class Activity {
   /**
    * Checks if this activity has a group.
    *
-   * @return true if the activity has a group, otherwise false
+   * @return true if this activity has a group, otherwise false
    */
   public boolean hasGroup() {
     boolean hasGroup = false;
@@ -178,7 +170,7 @@ public class Activity {
   /**
    * Returns true or false if a this activity is shared.
    *
-   * @return true or false
+   * @return true or false.
    */
   public boolean getShared() {
     return shared;
@@ -187,7 +179,8 @@ public class Activity {
   /**
    * Sets a new value, true or false for {@code shared}.
    *
-   * @param newShared - the new true or false of {@code shared}
+   * @param newShared - the new true or false of {@code shared}.
+   * @throws IllegalArgumentException if this activty has no group associated to it.
    */
   public void setShared(boolean newShared) {
     if (newShared == true && hasGroup() == false) {
@@ -199,15 +192,13 @@ public class Activity {
   /**
    * Checks if the given person can see this activity.
    *
-   * <p>
-   * The logger, the group members and the people added with
-   * {@link #addCanSeeActivity(Person)} can see it if shared is true.
-   * A person who joins the group later can see it.
-   * If people leave the group, they no longer see it.
-   * </p>
+   * <p>The logger, the group members and the people added with {@link #addCanSeeActivity(Person)}
+   * can see it if shared is true. A person who joins the group later can see it. If people leave
+   * the group, they no longer see it.
    *
-   * @param person the person to check
-   * @return true if the person can see the activity, otherwise false
+   * @param person - the person to check.
+   * @return true if the person can see the activity, otherwise false.
+   * @throws NullPointerException if person to check is null.
    */
   public boolean canSeeActivity(Person person) {
     if (person == null) {
@@ -224,10 +215,10 @@ public class Activity {
   }
 
   /**
-   * Gives a person access to see this activity. Does nothing if the person
-   * already has access.
+   * Gives a person access to see this activity. Does nothing if the person already has access.
    *
-   * @param person the person to give access
+   * @param person - the person to give access.
+   * @throws NullPointerException if person to add give access is null.
    */
   public void addCanSeeActivity(Person person) {
     if (person == null) {
@@ -242,8 +233,8 @@ public class Activity {
   /**
    * Checks if the given person has already been given access to this activity.
    *
-   * @param person the person to check
-   * @return true if the person has access, otherwise false
+   * @param person - the person to check.
+   * @return true if the person has access, otherwise false.
    */
   private boolean isAdded(Person person) {
     boolean added = false;
