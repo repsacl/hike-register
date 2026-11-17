@@ -25,10 +25,10 @@ public class PersonTest {
   }
 
   /**
-   * Positive test: verifies that a person created with valid names and hikegroup returns the full
-   * name formatted as "firstName lastname". returns firstname, returns lastname, returns hikegroup.
-   * returns hikesRegistered return true or fals if hasGroup returns right amount of members in
-   * group, (person adds it self as a member if it has a group on init).
+   * Positive test: verifies that a person created with valid names, with and without a hike group,
+   * returns the correct full name ("firstName lastName"), first name, last name, hike group, hikes
+   * registered and hasGroup. Also verifies the count of members in the group, since a person adds
+   * itself as a member when created with a group.
    */
   @Test
   void validateReturnAllTrue() {
@@ -52,11 +52,10 @@ public class PersonTest {
   }
 
   /**
-   * Positive test: verifies that the increasHikeRegistered and decreasHikeRegistered works as
-   * intended.
+   * Positive test: verifies that increasHikeRegistered and decreasHikeRegistered work as intended.
    */
   @Test
-  void hikesRegisteredIncreasDecreas() {
+  void hikesRegisteredIncreaseDecrease() {
     Person brotherman = new Person("Brotherman", "Testern");
     brotherman.increasHikeRegistered();
     brotherman.increasHikeRegistered();
@@ -71,7 +70,7 @@ public class PersonTest {
   }
 
   /**
-   * Positive test: verifies that person names created with space is trimmed down.
+   * Positive test: verifies that spaces around the first and last name are trimmed.
    */
   @Test
   void personNameIsTrimmed() {
@@ -83,8 +82,8 @@ public class PersonTest {
   }
 
   /**
-   * Positive test: verifies that a person with group null, returns rigth values for group check.
-   * Returns getHikegrup null and hasGroup false.
+   * Positive test: verifies that a person created with group null returns the right values for the
+   * group check. Returns null from getHikeGroup and false from hasGroup.
    */
   @Test
   void personWithoutGroupNull() {
@@ -132,7 +131,8 @@ public class PersonTest {
   }
 
   /**
-   * Positive test: verifies that hikesRegistered wont go below zero, and goes up after set to zero.
+   * Positive test: verifies that hikesRegistered won't go below zero, and increases again after
+   * reaching zero.
    */
   @Test
   void hikesRegisteredNeverBelowZero() {
@@ -147,7 +147,8 @@ public class PersonTest {
   }
 
   /**
-   * Positiv test: verifies that a person can leave a group, and persons group is set to null.
+   * Positive test: verifies that a person can leave a group, and that the person's group is set to
+   * null.
    */
   @Test
   void personLeaveGroup() {
@@ -166,9 +167,9 @@ public class PersonTest {
   }
 
   /**
-   * Positive test: verifies that updateHikeGroup works as intended. group.getCountMember will be 0
-   * since the member is not added, just associated with the group. updateHikeGroup will never be
-   * used by it self, only group wil use it.
+   * Positive test: verifies that updateHikeGroup works as intended. group.getCountMembers will be 0
+   * since the person is not added as a member, just associated with the group. updateHikeGroup is
+   * never used by itself, only by the group.
    */
   @Test
   void updateHikeGroupPerson() {
@@ -184,7 +185,7 @@ public class PersonTest {
   }
 
   /**
-   * Negative test: verifies that an IllegalArgumentException throws when firstname is empty.
+   * Negative test: verifies that an IllegalArgumentException is thrown when firstname is empty.
    */
   @Test
   void throwWhenFirstnameEmpty() {
@@ -199,8 +200,8 @@ public class PersonTest {
   }
 
   /**
-   * Negative test: verifies that a IllegalArgumentException throws when firstname is empty with a
-   * group.
+   * Negative test: verifies that an IllegalArgumentException is thrown when firstname is empty with
+   * a group.
    */
   @Test
   void throwWhenFirstnameEmptyGroup() {
@@ -215,7 +216,7 @@ public class PersonTest {
   }
 
   /**
-   * Negative test: verifies that a IllegalArgumentException throws when firstname is null.
+   * Negative test: verifies that an IllegalArgumentException is thrown when firstname is null.
    */
   @Test
   void throwWhenFirstnameNull() {
@@ -226,8 +227,8 @@ public class PersonTest {
   }
 
   /**
-   * Negative test: verifies that a IllegalArgumentException throws when firstname is null with a
-   * group.
+   * Negative test: verifies that an IllegalArgumentException is thrown when firstname is null with
+   * a group.
    */
   @Test
   void throwWhenFirstnameNullGroup() {
@@ -238,7 +239,7 @@ public class PersonTest {
   }
 
   /**
-   * Negative test: verifies that a IllegalArgumentException throws when lastname is empty.
+   * Negative test: verifies that an IllegalArgumentException is thrown when lastname is empty.
    */
   @Test
   void throwWhenLastNameEmpty() {
@@ -253,8 +254,8 @@ public class PersonTest {
   }
 
   /**
-   * Negative test: verifies that a IllegalArgumentException throws when lastname is empty with a
-   * group.
+   * Negative test: verifies that an IllegalArgumentException is thrown when lastname is empty with
+   * a group.
    */
   @Test
   void throwWhenLastNameEmptyGroup() {
@@ -269,7 +270,7 @@ public class PersonTest {
   }
 
   /**
-   * Negative test: verifies that a IllegalArgumentException throws when lastname is null.
+   * Negative test: verifies that an IllegalArgumentException is thrown when lastname is null.
    */
   @Test
   void throwWhenLastnameNull() {
@@ -280,7 +281,8 @@ public class PersonTest {
   }
 
   /**
-   * Negative test: verifies that a IllegalArgumentException throws when lastname is null.
+   * Negative test: verifies that an IllegalArgumentException is thrown when lastname is null with a
+   * group.
    */
   @Test
   void throwWhenLastnameNullGroup() {
@@ -288,6 +290,20 @@ public class PersonTest {
         assertThrows(IllegalArgumentException.class, () -> new Person("Brotherman", null, group));
 
     assertEquals("Person must have a lastname!", exception.getMessage());
+  }
+
+  /**
+   * Negative test: verifies that a NullPointerException is thrown when a person wants to leave a
+   * group, but has no group associated with them.
+   */
+  @Test
+  void throwWhenPersonLeaveGroupNoGroup() {
+    Person brotherman = new Person("Brotherman", "Testern");
+
+    NullPointerException exception =
+        assertThrows(NullPointerException.class, () -> brotherman.leaveGroup());
+
+    assertEquals("You are not a member of a group!", exception.getMessage());
   }
 
 }

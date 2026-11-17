@@ -7,9 +7,10 @@ import java.util.ArrayList;
 /**
  * Represents a group in the hike registry that persons can join and register activities to.
  *
- * <p>A group has a name, a list of members, the time it was registered and a count of how many
- * hikes have been registered to it. A person can only be a member of one group at a time; adding a
- * person to a new group removes them from their previous group.
+ * <p>
+ * A group has a name, a list of members, the time it was registered and a count of how many hikes
+ * have been registered to it. A person can only be a member of one group at a time; adding a person
+ * to a new group removes them from their previous group.
  */
 public class Group {
   private final String name;
@@ -75,7 +76,7 @@ public class Group {
    */
   public void addMember(Person newMember) {
     if (newMember == null) {
-      throw new NullPointerException("New member cant be null.");
+      throw new NullPointerException("New member can't be null!");
     }
     if (checkIfMember(newMember.getFirstName(), newMember.getLastName())) {
       throw new IllegalArgumentException("Is already a member!");
@@ -127,7 +128,7 @@ public class Group {
    */
   public void removeMember(Person member) {
     if (member == null) {
-      throw new NullPointerException("Person to removve from group cannot be null!");
+      throw new NullPointerException("Person to remove from group cannot be null!");
     }
 
     if (member.getHikeGroup() == this) {

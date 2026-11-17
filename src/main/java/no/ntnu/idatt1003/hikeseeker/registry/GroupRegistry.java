@@ -6,8 +6,9 @@ import no.ntnu.idatt1003.hikeseeker.model.Group;
 /**
  * Represents a registry that keeps track of all groups in the hike registry.
  *
- * <p>The registry can add and remove groups, check if a group name already exists and look up
- * groups by name. Group names are compared without regard to case.
+ * <p>
+ * The registry can add and remove groups, check if a group name already exists and look up groups
+ * by name. Group names are compared without regard to case.
  */
 
 public class GroupRegistry {
@@ -23,7 +24,7 @@ public class GroupRegistry {
    */
   public void addGroup(Group newGroup) {
     if (newGroup == null) {
-      throw new NullPointerException("Group added to the registry cant be null!");
+      throw new NullPointerException("Group added to the registry can't be null!");
     }
 
     if (checkIfExists(newGroup.getName())) {

@@ -207,7 +207,7 @@ public class UserInterface {
             currentUser.leaveGroup();
             System.out.println("\nGroup left!");
             showUser();
-          } catch (IllegalArgumentException e) {
+          } catch (NullPointerException e) {
             System.out.println("Could not leave group!: " + e.getMessage());
           }
         } else {

@@ -92,7 +92,7 @@ public class ActivityRegistry {
    */
   public Activity[] getActivityDateStartEnd(LocalDate startDate, LocalDate endDate, Person user) {
     if (startDate.isAfter(endDate)) {
-      throw new IllegalArgumentException("Start-date cant be after end-date!");
+      throw new IllegalArgumentException("Start date can't be after end date!");
     }
 
     return activities.stream()
@@ -112,7 +112,7 @@ public class ActivityRegistry {
    */
   public Activity[] getActivitiesToPerson(Person personSearch, Person user) {
     if (personSearch == null) {
-      throw new NullPointerException("Person to search cant be null!");
+      throw new NullPointerException("Person to search can't be null!");
     }
 
     return activities.stream()
@@ -130,7 +130,7 @@ public class ActivityRegistry {
    */
   public void deleteActivity(Activity activity, Person user) {
     if (activity.getLogger() != user) {
-      throw new IllegalArgumentException("Persons can not delete an others activity!");
+      throw new IllegalArgumentException("Persons can not delete another person's activity!");
     }
 
     activity.getLogger().decreasHikeRegistered();

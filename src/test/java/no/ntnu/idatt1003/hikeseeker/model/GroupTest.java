@@ -21,7 +21,7 @@ public class GroupTest {
   private Group group2;
 
   /**
-   * Creates a fresh, empty groups before each test.
+   * Creates two fresh, empty groups before each test.
    */
   @BeforeEach
   void setUp() {
@@ -30,8 +30,8 @@ public class GroupTest {
   }
 
   /**
-   * Positive test: verifies that group created with a valid string returns name returns hikes
-   * registered returns count of members returns true or false if a person is a member.
+   * Positive test: verifies that a group created with a valid name returns the correct name, hikes
+   * registered, count of members and whether a person is a member.
    */
   @Test
   void validateReturnAllTrue() {
@@ -44,7 +44,8 @@ public class GroupTest {
   }
 
   /**
-   * Positive test: verifies that all members are returned as a copy of the register in an array.
+   * Positive test: verifies that all members are returned in an array, and that a member who leaves
+   * is no longer returned.
    */
   @Test
   void getAllMembersTrue() {
@@ -59,7 +60,7 @@ public class GroupTest {
   }
 
   /**
-   * Positive test: verifies that getAllmembers retursn an empty array when there are no members in
+   * Positive test: verifies that getAllMembers returns an empty array when there are no members in
    * the group.
    */
   @Test
@@ -68,7 +69,7 @@ public class GroupTest {
   }
 
   /**
-   * Positive test: verifies getDateRegistered returns the date of it's creation.
+   * Positive test: verifies that getDateRegistered returns the date of its creation.
    */
   @Test
   void getDateRegisteredTrue() {
@@ -76,11 +77,10 @@ public class GroupTest {
   }
 
   /**
-   * Positive test: verifies that the increasHikeRegistered and decreasHikeRegistered works as
-   * intended.
+   * Positive test: verifies that increasHikeRegistered and decreasHikeRegistered work as intended.
    */
   @Test
-  void hikesRegisteredIncreasDecreas() {
+  void hikesRegisteredIncreaseDecrease() {
     assertEquals(0, group.getHikesRegistered());
 
     group.increasHikeRegistered();
@@ -92,7 +92,7 @@ public class GroupTest {
   }
 
   /**
-   * Positive test: verifies that hikesRegistered wont go below zero.
+   * Positive test: verifies that hikesRegistered won't go below zero.
    */
   @Test
   void hikesRegisteredNeverBelowZero() {
@@ -103,8 +103,8 @@ public class GroupTest {
   }
 
   /**
-   * Positive test: verifies that adding a new member to a group works as intenden and the persons
-   * groups follows.
+   * Positive test: verifies that adding a new member to a group works as intended, and that the
+   * person's group is updated.
    */
   @Test
   void addNewMemberFollowsPerson() {
@@ -119,7 +119,8 @@ public class GroupTest {
   }
 
   /**
-   * Positive test: verifies that adding a new member who is a member in another group is updated.
+   * Positive test: verifies that a new member who is a member of another group is moved to the new
+   * group and removed from the old one.
    */
   @Test
   void addNewMemberWithGroupFollows() {
@@ -140,7 +141,8 @@ public class GroupTest {
   }
 
   /**
-   * Positive test: verifies that a member who have never been in an group before, returns false.
+   * Positive test: verifies that checkIfMember returns false for a person who has never been in a
+   * group.
    */
   @Test
   void checkIfMemberNoGroup() {
@@ -151,7 +153,7 @@ public class GroupTest {
   }
 
   /**
-   * Positive test: verifies that checkIfMember ignores caps with string check.
+   * Positive test: verifies that checkIfMember ignores upper and lower case.
    */
   @Test
   void checkIfMemberCaps() {
@@ -161,7 +163,7 @@ public class GroupTest {
   }
 
   /**
-   * Positive test: verifies that removeing a meber from a group, also updates the persons
+   * Positive test: verifies that removing a member from a group also updates the person's
    * associated group.
    */
   @Test
@@ -180,7 +182,7 @@ public class GroupTest {
   }
 
   /**
-   * Positive test: verifies that removeing a meber from another group does nothing.
+   * Positive test: verifies that removing a member from a group they are not in does nothing.
    */
   @Test
   void removeMemberFromAnotherGroupNothing() {
@@ -197,7 +199,7 @@ public class GroupTest {
   }
 
   /**
-   * Negative test: verifies that a IllegalArgumentException is throw when name is null.
+   * Negative test: verifies that an IllegalArgumentException is thrown when the name is null.
    */
   @Test
   void throwWhenNameNull() {
@@ -208,7 +210,8 @@ public class GroupTest {
   }
 
   /**
-   * Negative test: verifies that a IllegalArgumentException is throw when name is empty.
+   * Negative test: verifies that an IllegalArgumentException is thrown when the name is empty or
+   * blank.
    */
   @Test
   void throwWhenNameEmpty() {
@@ -230,12 +233,12 @@ public class GroupTest {
     NullPointerException exception =
         assertThrows(NullPointerException.class, () -> group.addMember(null));
 
-    assertEquals("New member cant be null.", exception.getMessage());
+    assertEquals("New member can't be null!", exception.getMessage());
   }
 
   /**
-   * Negative test: verifies that a IllegalArgumentException is thrown when a new member added
-   * already exist.
+   * Negative test: verifies that an IllegalArgumentException is thrown when a new member with the
+   * same name already exists in the group.
    */
   @Test
   void throwWhenAddMemberExists() {
@@ -248,8 +251,8 @@ public class GroupTest {
   }
 
   /**
-   * Negative test: verifies that a IllegalArgumentException is thrown when a new member added have
-   * the same name in another group.
+   * Negative test: verifies that an IllegalArgumentException is thrown when a new member with the
+   * same name in another group is added.
    */
   @Test
   void throwWhenAddMemberSameNameInAnotherGroup() {
@@ -257,22 +260,27 @@ public class GroupTest {
     Person brotherman2 = new Person("BrotherMan", "Testern", group2);
 
     IllegalArgumentException exception =
-        assertThrows(IllegalArgumentException.class, () -> group2.addMember(brotherman2));
+        assertThrows(IllegalArgumentException.class, () -> group2.addMember(brotherman));
 
+    IllegalArgumentException exception2 =
+        assertThrows(IllegalArgumentException.class, () -> group.addMember(brotherman2));
+
+    assertEquals("Is already a member!", exception.getMessage());
     assertEquals("Is already a member!", exception.getMessage());
   }
 
   /**
-   * Negative test: verifies that a NullPointerException is thrown when a member to remvoe is null.
+   * Negative test: verifies that a NullPointerException is thrown when the member to remove is
+   * null.
    */
   @Test
-  void throwWhenRemoveMeberNull() {
+  void throwWhenRemoveMemberNull() {
     Person person = new Person("Brotherman", "Testern", group);
 
     NullPointerException exception =
         assertThrows(NullPointerException.class, () -> group.removeMember(null));
 
-    assertEquals("Person to removve from group cannot be null!", exception.getMessage());
+    assertEquals("Person to remove from group cannot be null!", exception.getMessage());
   }
 
 }

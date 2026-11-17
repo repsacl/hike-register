@@ -3,8 +3,9 @@ package no.ntnu.idatt1003.hikeseeker.model;
 /**
  * Represents a person who can log activities in the hike registry.
  *
- * <p>A person has a first name, a last name and optionally a hike group. The first and last name
- * are immutable once the person is created, while the hike group can be updated later.
+ * <p>
+ * A person has a first name, a last name and optionally a hike group. The first and last name are
+ * immutable once the person is created, while the hike group can be updated later.
  */
 public class Person {
 
@@ -41,7 +42,8 @@ public class Person {
   /**
    * Creates a new person who is not a member of a hike group.
    *
-   * <p>The hike group is left unset ({@code null}) and can be added later with
+   * <p>
+   * The hike group is left unset ({@code null}) and can be added later with
    * {@link #updateHikeGroup(Group)}.
    *
    * @param firstName the person's first name.
@@ -137,11 +139,14 @@ public class Person {
   }
 
   /**
-   * Removes this person from it's current group. Group is set to null
+   * Removes this person from it's current group. Group is set to null.
+   *
+   * @throws NullPointerException if person want to leave a group, but no groups are associated to
+   *         them.
    */
   public void leaveGroup() {
     if (group == null) {
-      throw new IllegalArgumentException("You were no group member to beging with.");
+      throw new NullPointerException("You are not a member of a group!");
     }
     group.removeMember(this);
   }

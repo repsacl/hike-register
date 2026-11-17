@@ -74,7 +74,7 @@ public class ActivityRegistryTest {
    * activities, but not the private activities of other group members.
    */
   @Test
-  void getAllActivitysGroupMemberCanseeAndPrivateActivity() {
+  void getAllActivitiesGroupMemberCanSeeAndPrivateActivity() {
     Person brotherman = new Person("Brotherman", "Testern", group);
     Person bob = new Person("Bob", "Bobsen", group);
 
@@ -102,7 +102,7 @@ public class ActivityRegistryTest {
    * Positive test: verifies that an empty array is returned when no activities have been added.
    */
   @Test
-  void getEmptyArrayIfNoActivitysAdded() {
+  void getEmptyArrayIfNoActivitiesAdded() {
     Person bob = new Person("Bob", "Bobsen");
 
     assertArrayEquals(new Activity[] {}, activityRegistry.getAllActivities(bob));
@@ -113,14 +113,14 @@ public class ActivityRegistryTest {
    * search ignores upper and lower case.
    */
   @Test
-  void getActivityTitleCanseeGroupMember() {
+  void getActivityTitleCanSeeGroupMember() {
     Person brotherman = new Person("Brotherman", "Testern", group);
     Person bob = new Person("Bob", "Bobsen", group);
 
     Activity activity = new Activity("Dårligtur", "Dårlig tur", 5, 2, time, brotherman, group);
     Activity activity2 = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman, group);
 
-    // adds to activitys to search through
+    // adds two activities to search through
     activity2.setShared(true);
     activity.setShared(true);
     activityRegistry.addActivity(activity);
@@ -137,7 +137,7 @@ public class ActivityRegistryTest {
    * the title of a group activity.
    */
   @Test
-  void getEmptyActivityTitleCantSeegroup() {
+  void getEmptyActivityTitleCantSeeGroup() {
     Person brotherman = new Person("Brotherman", "Testern", group);
     Person bob = new Person("Bob", "Bobsen");
 
@@ -156,7 +156,7 @@ public class ActivityRegistryTest {
    * Positive test: verifies that all activities with the same title are returned.
    */
   @Test
-  void getActivtyTitleSameTitle() {
+  void getActivityTitleSameTitle() {
     Person brotherman = new Person("Brotherman", "Testern", group);
 
     Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman);
@@ -173,7 +173,7 @@ public class ActivityRegistryTest {
    * Positive test: verifies that an empty array is returned when no activity has the given title.
    */
   @Test
-  void getActivtyTitlUnknownTitleEmpty() {
+  void getActivityTitleUnknownTitleEmpty() {
     Person brotherman = new Person("Brotherman", "Testern", group);
 
     Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman);
@@ -210,7 +210,7 @@ public class ActivityRegistryTest {
   }
 
   /**
-   * Negative test: verifies that a IllegalArgumentException is thrown when a person who is not the
+   * Negative test: verifies that an IllegalArgumentException is thrown when a person who is not the
    * logger deletes an activity, and that the activity and the counts are unchanged.
    */
   @Test
@@ -224,18 +224,18 @@ public class ActivityRegistryTest {
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
         () -> activityRegistry.deleteActivity(activity, bob));
 
-    assertEquals("Persons can not delete an others activity!", exception.getMessage());
+    assertEquals("Persons can not delete another person's activity!", exception.getMessage());
     assertArrayEquals(new Activity[] {activity}, activityRegistry.getAllActivities(brotherman));
     assertEquals(1, brotherman.getHikesRegistered());
     assertEquals(1, group.getHikesRegistered());
   }
 
   /**
-   * Positive test: verifies that getOwnActivitys only returns activities the person has logged, and
-   * not activities logged by other group members.
+   * Positive test: verifies that getOwnActivities only returns activities the person has logged,
+   * and not activities logged by other group members.
    */
   @Test
-  void getOwnActivitysToLoggerAndNotToGroup() {
+  void getOwnActivitiesToLoggerAndNotToGroup() {
     Person brotherman = new Person("Brotherman", "Testern", group);
     Person bob = new Person("Bob", "Bobsen", group);
 
@@ -261,10 +261,10 @@ public class ActivityRegistryTest {
 
   /**
    * Positive test: verifies that an activity shared with a person is visible to them, but is not
-   * returned by getOwnActivitys.
+   * returned by getOwnActivities.
    */
   @Test
-  void getOwnActivitysToLoggerAndNotSharedEmpty() {
+  void getOwnActivitiesToLoggerAndNotSharedEmpty() {
     Person brotherman = new Person("Brotherman", "Testern", group);
     Person bob = new Person("Bob", "Bobsen");
 
@@ -300,7 +300,7 @@ public class ActivityRegistryTest {
     activityRegistry.addActivity(activity);
     activityRegistry.addActivity(activity2);
     activityRegistry.addActivity(activity3);
-    // activity 4 wont join th array since its the day before
+    // activity4 won't be in the array since it is the day before
     activityRegistry.addActivity(activity4);
 
     assertArrayEquals(new Activity[] {activity3, activity, activity2},
@@ -314,7 +314,7 @@ public class ActivityRegistryTest {
    * activity on the given date.
    */
   @Test
-  void getActivityDateCanTSeeEmpty() {
+  void getActivityDateCantSeeEmpty() {
     Person brotherman = new Person("Brotherman", "Testern", group);
     Person bob = new Person("Bob", "Bobsen");
 
@@ -344,7 +344,7 @@ public class ActivityRegistryTest {
         time.minusDays(2).minusMinutes(1), brotherman);
 
     activityRegistry.addActivity(activity);
-    // activity is after time2 so it wont be visible between time and time2
+    // activity2 is after time2, so it won't be visible between time and time2
     activityRegistry.addActivity(activity2);
     activityRegistry.addActivity(activity3);
     activityRegistry.addActivity(activity4);
@@ -358,7 +358,7 @@ public class ActivityRegistryTest {
    * range, and an empty array when none of them are within it.
    */
   @Test
-  void getActivityDateStartEndCanTSeeEmpty() {
+  void getActivityDateStartEndCantSeeEmpty() {
     Person brotherman = new Person("Brotherman", "Testern");
     Person bob = new Person("Bob", "Bobsen");
     LocalDateTime time2 = LocalDateTime.of(2026, 10, 3, 12, 0);
@@ -379,11 +379,46 @@ public class ActivityRegistryTest {
   }
 
   /**
-   * Negative test: verifies that a IllegalArgumentException is thrown when the start date is after
+   * Positive test: verifies that the same date can be used as both start date and end date, and
+   * that all activities on that date that the person can see are returned, while activities on the
+   * day before and the day after are not returned.
+   */
+  @Test
+  void getActivityDateStartEndSameDate() {
+    Person brotherman = new Person("Brotherman", "Testern");
+    Person bob = new Person("Bob", "Bobsen");
+
+    Activity activity = new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman);
+    Activity activity2 = new Activity("Dårligtur", "Dårlig tur", 5, 2, time, bob);
+
+    Activity activity3 =
+        new Activity("Dårligtur", "Dårlig tur", 5, 2, time.plusDays(1), brotherman);
+    Activity activity4 =
+        new Activity("Dårligtur", "Dårlig tur", 5, 2, time.minusDays(1), bob);
+
+    activity.addCanSeeActivity(bob);
+    activity2.addCanSeeActivity(brotherman);
+    activity3.addCanSeeActivity(bob);
+    activity4.addCanSeeActivity(brotherman);
+
+    activityRegistry.addActivity(activity);
+    activityRegistry.addActivity(activity2);
+    // only activity and activity2 will be found
+    activityRegistry.addActivity(activity3);
+    activityRegistry.addActivity(activity4);
+
+    assertArrayEquals(new Activity[] {activity, activity2},
+        activityRegistry.getActivityDateStartEnd(time.toLocalDate(), time.toLocalDate(), bob));
+    assertArrayEquals(new Activity[] {activity, activity2}, activityRegistry
+        .getActivityDateStartEnd(time.toLocalDate(), time.toLocalDate(), brotherman));
+  }
+
+  /**
+   * Negative test: verifies that an IllegalArgumentException is thrown when the start date is after
    * the end date.
    */
   @Test
-  void getActivityDateStartGreaterStart() {
+  void getActivityDateStartAfterEnd() {
     Person brotherman = new Person("Brotherman", "Testern");
 
     LocalDateTime time2 = LocalDateTime.of(2026, 10, 3, 12, 0);
@@ -396,7 +431,7 @@ public class ActivityRegistryTest {
         assertThrows(IllegalArgumentException.class, () -> activityRegistry
             .getActivityDateStartEnd(time2.toLocalDate(), time.toLocalDate(), brotherman));
 
-    assertEquals("Start-date cant be after end-date!", exception.getMessage());
+    assertEquals("Start date can't be after end date!", exception.getMessage());
   }
 
   /**
@@ -431,8 +466,28 @@ public class ActivityRegistryTest {
   }
 
   /**
-   * Positive test: verifies that a person searching for activities from a person who not have
-   * shared with them, gets an empty array.
+   * Positive test: verifies that a person searching for activities from a person who has shared
+   * directly with them gets the shared activity.
+   */
+  @Test
+  void getActivitiesToPersonAddedActivity() {
+    Person brotherman = new Person("Brotherman", "Testern");
+    Person bob = new Person("Bob", "Bobsen");
+
+    Activity activity =
+        new Activity("Fjelltur", "Fin tur", 10, 7, time, brotherman, brotherman.getHikeGroup());
+
+    activity.addCanSeeActivity(bob);
+
+    activityRegistry.addActivity(activity);
+
+    assertArrayEquals(new Activity[] {activity},
+        activityRegistry.getActivitiesToPerson(brotherman, bob));
+  }
+
+  /**
+   * Positive test: verifies that a person searching for activities from a person who has not shared
+   * with them gets an empty array.
    */
   @Test
   void getActivitiesToPersonEmpty() {
@@ -444,5 +499,19 @@ public class ActivityRegistryTest {
     activityRegistry.addActivity(activity);
 
     assertArrayEquals(new Activity[] {}, activityRegistry.getActivitiesToPerson(brotherman, bob));
+  }
+
+  /**
+   * Negative test: verifies that a NullPointerException is thrown when the person to search for is
+   * null.
+   */
+  @Test
+  void throwWhenGetActivitiesToPersonNull() {
+    Person bob = new Person("Bob", "Bobsen");
+
+    NullPointerException exception = assertThrows(NullPointerException.class,
+        () -> activityRegistry.getActivitiesToPerson(null, bob));
+
+    assertEquals("Person to search can't be null!", exception.getMessage());
   }
 }

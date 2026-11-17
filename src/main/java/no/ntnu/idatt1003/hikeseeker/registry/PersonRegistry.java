@@ -6,7 +6,8 @@ import no.ntnu.idatt1003.hikeseeker.model.Person;
 /**
  * Represents a registry that keeps track of all persons in the hike registry.
  *
- * <p>The registry can add and remove, return persons by firstname, lastname and both. returns all
+ * <p>
+ * The registry can add and remove, return persons by firstname, lastname and both. returns all
  * persons as an array.
  */
 public class PersonRegistry {
@@ -19,7 +20,7 @@ public class PersonRegistry {
    */
   public void addPerson(Person newPerson) {
     if (newPerson == null) {
-      throw new IllegalArgumentException("Person added to the registry cant be null!");
+      throw new IllegalArgumentException("Person added to the registry can't be null!");
     }
 
     if (persons.stream()

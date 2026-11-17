@@ -58,21 +58,17 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Positive test: verifies that getAllPersons returns a copy of the persons in the registry.
+   * Positive test: verifies that getAllPersons returns a copy, so changing the returned array does
+   * not change the registry.
    */
   @Test
-  void getAllPersonsRetursnCopy() {
+  void getAllPersonsReturnsCopy() {
     personRegistry.addPerson(brotherman);
 
     Person[] allPersons = personRegistry.getAllPersons();
+    allPersons[0] = bob;
 
-    assertArrayEquals(new Person[] {brotherman}, allPersons);
-    allPersons = null;
-    assertNull(allPersons);
-
-    personRegistry.addPerson(bob);
-
-    assertArrayEquals(new Person[] {brotherman, bob}, personRegistry.getAllPersons());
+    assertArrayEquals(new Person[] {brotherman}, personRegistry.getAllPersons());
   }
 
   /**
@@ -83,7 +79,7 @@ public class PersonRegistryTest {
     IllegalArgumentException exception =
         assertThrows(IllegalArgumentException.class, () -> personRegistry.addPerson(null));
 
-    assertEquals("Person added to the registry cant be null!", exception.getMessage());
+    assertEquals("Person added to the registry can't be null!", exception.getMessage());
   }
 
   /**
@@ -118,7 +114,7 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Positive test: verifies that persons with same firstname can be added to the registry.
+   * Positive test: verifies that persons with the same first name can be added to the registry.
    */
   @Test
   void addPersonSameFirstName() {
@@ -129,7 +125,7 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Positive test: verifies that persons with same lastname can be added to the registry.
+   * Positive test: verifies that persons with the same last name can be added to the registry.
    */
   @Test
   void addPersonSameLastName() {
@@ -140,7 +136,7 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Positive test: verifies that a person can be found with firstname.
+   * Positive test: verifies that a person can be found by first name.
    */
   @Test
   void getPersonFindsByFirstName() {
@@ -150,7 +146,7 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Positive test: verifies that a person can be found with spaceing around the firstname.
+   * Positive test: verifies that a person can be found with spacing around the first name.
    */
   @Test
   void getPersonFindsSpaceTrim() {
@@ -160,7 +156,7 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Positive test: verifies that a person can be found with lastname.
+   * Positive test: verifies that a person can be found by last name.
    */
   @Test
   void getPersonFindsByLastName() {
@@ -170,7 +166,7 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Positive test: verifies that a person can be found with spaceing around the lastname.
+   * Positive test: verifies that a person can be found with spacing around the last name.
    */
   @Test
   void getPersonFindsByLastNameSpaceTrim() {
@@ -180,7 +176,7 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Positive test: verifies that a person can be found with full name.
+   * Positive test: verifies that a person can be found by full name.
    */
   @Test
   void getPersonFindsByFullName() {
@@ -191,7 +187,8 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Positive test: verifies that a person can be found with spaceing around and inn the fullname.
+   * Positive test: verifies that a person can be found with spacing around and inside the full
+   * name.
    */
   @Test
   void getPersonFindsByFullNameSpaceTrim() {
@@ -218,8 +215,8 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Positive test: verifies that all matching persons is returned when several persons share the
-   * same firstname.
+   * Positive test: verifies that all matching persons are returned when several persons share the
+   * same first name.
    */
   @Test
   void getPersonReturnsAllMatchesWhenFirstNameSame() {
@@ -230,8 +227,8 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Positive test: verifies that all matching persons is returned when several persons share the
-   * same lastname.
+   * Positive test: verifies that all matching persons are returned when several persons share the
+   * same last name.
    */
   @Test
   void getPersonReturnsAllMatchesWhenLastNameSame() {
@@ -243,8 +240,8 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Positive test: verifies that all matching persons is returned when several persons share the
-   * same firstname with search with fullname.
+   * Positive test: verifies that all matching persons are returned when several persons share the
+   * same first name and the search is by full name.
    */
   @Test
   void getPersonReturnsAllMatchesWhenFullNameShareFirstName() {
@@ -256,8 +253,8 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Positive test: verifies that all matching persons is returned when several persons share the
-   * same lastname with search with fullname.
+   * Positive test: verifies that all matching persons are returned when several persons share the
+   * same last name and the search is by full name.
    */
   @Test
   void getPersonReturnsAllMatchesWhenFullNameShareLastName() {
@@ -270,7 +267,7 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Positive test: verifies that a person with same first- and lastname, one gets matched ones.
+   * Positive test: verifies that a person with the same first and last name is only returned once.
    */
   @Test
   void getPersonSameFirstLastNameReturnsOne() {
@@ -281,7 +278,7 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Negative test: verifies that a search that partly match returns an empty array.
+   * Negative test: verifies that a search that only partly matches returns an empty array.
    */
   @Test
   void getPersonPartlyReturnsEmptyArray() {
@@ -301,7 +298,7 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Negative test: verifies that searching for an unknown fullname returns an empty array.
+   * Negative test: verifies that searching for an unknown full name returns an empty array.
    */
   @Test
   void getPersonWithUnknownFullNameReturnsEmptyArray() {
@@ -319,7 +316,7 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Negative test: verifies the behaviour when searching with null returns an empty array.
+   * Negative test: verifies that searching with null returns an empty array.
    */
   @Test
   void getPersonWithNullReturnsEmptyArray() {
@@ -329,7 +326,7 @@ public class PersonRegistryTest {
   }
 
   /**
-   * Negative test: verifies the behaviour when searching with blank string returns an empty array.
+   * Negative test: verifies that searching with a blank string returns an empty array.
    */
   @Test
   void getPersonWithBlankReturnsEmptyArray() {

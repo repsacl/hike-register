@@ -26,7 +26,7 @@ public class GroupRegistryTest {
   private Group group2;
 
   /**
-   * Creates a fresh, empty registry and groups.
+   * Creates a fresh, empty registry and two groups before each test.
    */
   @BeforeEach
   void setUp() {
@@ -56,21 +56,17 @@ public class GroupRegistryTest {
   }
 
   /**
-   * Positive test: verifies that the groupRegistry returns a copy of it's registry.
+   * Positive test: verifies that getAllGroups returns a copy, so changing the returned array does
+   * not change the registry.
    */
   @Test
   void getAllGroupsReturnsCopy() {
     groupRegistry.addGroup(group);
+
     Group[] allGroups = groupRegistry.getAllGroups();
+    allGroups[0] = group2;
 
-    assertArrayEquals(new Group[] {group}, allGroups);
-
-    allGroups = null;
-    assertNull(allGroups);
-
-    groupRegistry.addGroup(group2);
-
-    assertArrayEquals(new Group[] {group, group2}, groupRegistry.getAllGroups());
+    assertArrayEquals(new Group[] {group}, groupRegistry.getAllGroups());
   }
 
   /**
@@ -81,7 +77,7 @@ public class GroupRegistryTest {
     NullPointerException exception =
         assertThrows(NullPointerException.class, () -> groupRegistry.addGroup(null));
 
-    assertEquals("Group added to the registry cant be null!", exception.getMessage());
+    assertEquals("Group added to the registry can't be null!", exception.getMessage());
     assertEquals(0, groupRegistry.getAllGroups().length);
   }
 
@@ -109,7 +105,7 @@ public class GroupRegistryTest {
   }
 
   /**
-   * Positive test: verifies that checkIfExist works as intended.
+   * Positive test: verifies that checkIfExists works as intended.
    */
   @Test
   void checkIfExistsName() {
@@ -122,7 +118,7 @@ public class GroupRegistryTest {
   }
 
   /**
-   * Negative test: verifies that checkIfExist throws NullPointerException when check is with null.
+   * Negative test: verifies that checkIfExists throws a NullPointerException when the name is null.
    */
   @Test
   void throwWhenCheckIfExistsNull() {
@@ -133,7 +129,8 @@ public class GroupRegistryTest {
   }
 
   /**
-   * Negative test: verifies that checkIfExist throws IllegalArgumentException when check is empty.
+   * Negative test: verifies that checkIfExists throws an IllegalArgumentException when the name is
+   * empty or blank.
    */
   @Test
   void throwWhenCheckIfExistsEmpty() {
@@ -187,7 +184,7 @@ public class GroupRegistryTest {
   }
 
   /**
-   * Negative test: verifies the behaviour when searching with blank string return null.
+   * Negative test: verifies that searching with a blank string returns null.
    */
   @Test
   void getGroupWithBlankReturnsNull() {
@@ -198,7 +195,7 @@ public class GroupRegistryTest {
   }
 
   /**
-   * Negative test: verifies the behaviour when searching with null returns null.
+   * Negative test: verifies that searching with null returns null.
    */
   @Test
   void getGroupWithNullReturnsNull() {
@@ -208,10 +205,10 @@ public class GroupRegistryTest {
   }
 
   /**
-   * Edge case: verifies the behaviour when the search has leading or trailing whitespace.
+   * Edge case: verifies that a group is found when the search has leading or trailing whitespace.
    */
   @Test
-  void getGroupWithSpacetrim() {
+  void getGroupWithSpaceTrim() {
     groupRegistry.addGroup(group);
 
     assertEquals(group, groupRegistry.getGroup("       Testern"));
