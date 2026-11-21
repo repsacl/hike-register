@@ -514,4 +514,148 @@ public class ActivityRegistryTest {
 
     assertEquals("Person to search can't be null!", exception.getMessage());
   }
+
+  /**
+   * Positive test: verifies that searching by a word that only appears in an activity's title
+   * returns that activity, regardless of upper or lower case.
+   */
+  @Test
+  void getActivitiesByWordTitle() {
+    Person brotherman = new Person("Brotherman", "Testern", group);
+    Person bob = new Person("Bob", "Bobsen", group);
+
+    Activity activity = new Activity("Fjelltur", "Fint", 10, 7, time, brotherman, group);
+    Activity activity2 =
+        new Activity("Kort tur", "En kort tur", 2, 5, time.plusDays(2), brotherman, group);
+
+    activity.setShared(true);
+    activity2.setShared(true);
+
+    activityRegistry.addActivity(activity);
+    activityRegistry.addActivity(activity2);
+
+    assertArrayEquals(new Activity[] {activity},
+        activityRegistry.getActivitiesByWord("fjelltur", bob));
+  }
+
+  /**
+   * Positive test: verifies that searching by a word that only appears in an activity's description
+   * returns that activity.
+   */
+  @Test
+  void getActivitiesByWordDescription() {
+    Person brotherman = new Person("Brotherman", "Testern", group);
+    Person bob = new Person("Bob", "Bobsen", group);
+
+    Activity activity = new Activity("Fjelltur", "Fint", 10, 7, time, brotherman, group);
+    Activity activity2 =
+        new Activity("Tur", "En kort tur", 2, 5, time.plusDays(2), brotherman, group);
+
+    activity.setShared(true);
+    activity2.setShared(true);
+    activityRegistry.addActivity(activity);
+    activityRegistry.addActivity(activity2);
+
+    assertArrayEquals(new Activity[] {activity2},
+        activityRegistry.getActivitiesByWord("kort", bob));
+  }
+
+  /**
+   * Positive test: verifies that all matching activities are returned sorted by time, and that an
+   * activity matching in both title and description is only returned once.
+   */
+  @Test
+  void getActivitiesByWordTitleAndDescription() {
+    Person brotherman = new Person("Brotherman", "Testern", group);
+    Person bob = new Person("Bob", "Bobsen", group);
+
+    Activity activity = new Activity("Fjelltur", "Fint", 10, 7, time, brotherman, group);
+    Activity activity2 =
+        new Activity("Kort tur", "En kort tur", 2, 5, time.plusDays(2), brotherman, group);
+
+    activity.setShared(true);
+    activity2.setShared(true);
+    activityRegistry.addActivity(activity);
+    activityRegistry.addActivity(activity2);
+
+    assertArrayEquals(new Activity[] {activity, activity2},
+        activityRegistry.getActivitiesByWord("tur", bob));
+  }
+
+  /**
+   * Positive test: verifies that a group member does not get a matching activity that is not shared
+   * with the group.
+   */
+  @Test
+  void getActivitiesByWordCanNotSee() {
+    Person brotherman = new Person("Brotherman", "Testern", group);
+    Person bob = new Person("Bob", "Bobsen", group);
+
+    Activity activity = new Activity("Fjelltur", "Fint", 10, 7, time, brotherman, group);
+
+    activityRegistry.addActivity(activity);
+
+    assertArrayEquals(new Activity[] {},
+        activityRegistry.getActivitiesByWord("tur", bob));
+  }
+
+  /**
+   * Positive test: verifies that a person gets a matching activity that has been shared directly
+   * with them.
+   */
+  @Test
+  void getActivitiesByWordShared() {
+    Person brotherman = new Person("Brotherman", "Testern", group);
+    Person bob = new Person("Bob", "Bobsen", group);
+
+    Activity activity = new Activity("Fjelltur", "Fint", 10, 7, time, brotherman, group);
+
+    activity.addCanSeeActivity(bob);
+    activityRegistry.addActivity(activity);
+
+    assertArrayEquals(new Activity[] {activity},
+        activityRegistry.getActivitiesByWord("tur", bob));
+  }
+
+  /**
+   * Positive test: verifies that an empty array is returned when no activity contains the search
+   * word.
+   */
+  @Test
+  void getActivitiesByWordNoMatch() {
+    Person brotherman = new Person("Brotherman", "Testern", group);
+    Person bob = new Person("Bob", "Bobsen", group);
+
+    Activity activity = new Activity("Fjelltur", "Fint", 10, 7, time, brotherman, group);
+    Activity activity2 =
+        new Activity("Kort tur", "En kort tur", 2, 5, time.plusDays(2), brotherman, group);
+
+    activity.setShared(true);
+    activity2.setShared(true);
+    activityRegistry.addActivity(activity);
+    activityRegistry.addActivity(activity2);
+
+    assertArrayEquals(new Activity[] {},
+        activityRegistry.getActivitiesByWord("hike", bob));
+  }
+
+  /**
+   * Negative test: verifies that IllegalArgumentException is thrown when search word is blank.
+   */
+  @Test
+  void throwWhenGetActivitiesByWordBlank() {
+    Person brotherman = new Person("Brotherman", "Testern", group);
+    Person bob = new Person("Bob", "Bobsen", group);
+
+    Activity activity = new Activity("Fjelltur", "Fint", 10, 7, time, brotherman, group);
+
+    activity.addCanSeeActivity(bob);
+    activityRegistry.addActivity(activity);
+
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        () -> activityRegistry.getActivitiesByWord(" ", bob));
+
+    assertEquals("Word to search can't be blank!", exception.getMessage());
+  }
+
 }

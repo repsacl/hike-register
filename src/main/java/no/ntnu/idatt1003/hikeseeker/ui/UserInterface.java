@@ -146,6 +146,9 @@ public class UserInterface {
         } else if (parts.length >= 3 && parts[1].equalsIgnoreCase("title")) {
           clearPreviusLines();
           findActivityTitle(parts[2].replace("\"", ""));
+        } else if (parts.length >= 3 && parts[1].equalsIgnoreCase("word")) {
+          clearPreviusLines();
+          findActivitiesByWord(parts[2].replace("\"", ""));
         } else if (parts.length >= 3 && parts[1].equalsIgnoreCase("hikes")
             && parts[2].equalsIgnoreCase("by")) {
           clearPreviusLines();
@@ -848,6 +851,26 @@ public class UserInterface {
 
     } catch (IllegalArgumentException e) {
       System.out.println("\nCould not find activities to selected person\n");
+    }
+  }
+
+  private void findActivitiesByWord(String word) {
+    System.out.println("==== ACTIVITIES FOUND BY WORD ====");
+    try {
+      Activity[] activities = activityRegistry.getActivitiesByWord(word, currentUser);
+
+      if (activities.length == 0) {
+        System.out.println("\nNo hikes found containing " + word + "!\n");
+      } else if (activities.length == 1) {
+        System.out.println("\nOne hike found containing " + word + "!\n");
+        showActivityList(activities);
+      } else {
+        System.out.println("\nMultiple hikes found containing " + word + "!\n");
+        showActivityList(activities);
+      }
+
+    } catch (IllegalArgumentException e) {
+      System.out.println("Could not find activities by word: " + e.getMessage());
     }
   }
 

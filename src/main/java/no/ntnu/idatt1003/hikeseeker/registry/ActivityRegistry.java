@@ -43,7 +43,7 @@ public class ActivityRegistry {
   }
 
   /**
-   * Get all activities made by {@code user} and returns them in an array.
+   * Gets all activities made by {@code user} and returns them in an array.
    *
    * @param user - users activities to return.
    * @return array with activities.
@@ -68,7 +68,7 @@ public class ActivityRegistry {
   }
 
   /**
-   * Get all activities on a spesific date.
+   * Gets all activities on a spesific date.
    *
    * @param date - date to check for activities.
    * @param user - user to check if it can see the activity.
@@ -83,7 +83,7 @@ public class ActivityRegistry {
   }
 
   /**
-   * Get all activities innside an interval between a start-date and an end-date.
+   * Gets all activities innside an interval between a start-date and an end-date.
    *
    * @param startDate - first date to check.
    * @param endDate - last date to check.
@@ -117,6 +117,27 @@ public class ActivityRegistry {
 
     return activities.stream()
         .filter(act -> act.getLogger() == personSearch && act.canSeeActivity(user))
+        .sorted(Comparator.comparing(Activity::getTimeRegistered))
+        .toArray(Activity[]::new);
+  }
+
+  /**
+   * Gets all activities containing the a word in the title and/or description. Returns them in an
+   * array if the {@code user} can see them.
+   *
+   * @param word - word to search.
+   * @param user - the user who search.
+   * @return array of activities matching the search word.
+   */
+  public Activity[] getActivitiesByWord(String word, Person user) {
+    if (word.isBlank()) {
+      throw new IllegalArgumentException("Word to search can't be blank!");
+    }
+
+    return activities.stream()
+        .filter(act -> (act.getTitle().toLowerCase().contains(word.toLowerCase())
+            || act.getDescription().toLowerCase().contains(word.toLowerCase()))
+            && act.canSeeActivity(user))
         .sorted(Comparator.comparing(Activity::getTimeRegistered))
         .toArray(Activity[]::new);
   }
